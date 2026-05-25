@@ -3,15 +3,21 @@
 
   var SUPABASE_URL = 'https://vhnourjddnlslgabrasb.supabase.co';
   var SUPABASE_KEY = 'sb_publishable_y5l1cAZXoAj8xaSVXUkBfw_Pk9pxb6H';
+  var ADMIN_EMAIL = 'snowsiro@gmail.com';
   var sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
   var currentInquiryId = null;
   var inquiryFilter = 'all';
+  var requestFilter = 'all';
 
   // ── Auth ─────────────────────────────────────────────────────────
   sb.auth.getSession().then(function (ref) {
     var session = ref.data.session;
     if (!session) { location.href = 'index.html'; return; }
+    // 관리자 외 접근 차단
+    if (session.user.email !== ADMIN_EMAIL) {
+      location.href = '../portal/dashboard.html'; return;
+    }
     var userEl = document.getElementById('adminUser');
     if (userEl) userEl.textContent = session.user.email;
     init();
@@ -30,6 +36,7 @@
     bindModals();
     bindClientForm();
     bindInquiryForm();
+    bindRequestFilters();
   }
 
   // ── Stats ─────────────────────────────────────────────────────────
@@ -243,6 +250,68 @@
     });
   }
 
+  // ── Update Requests ───────────────────────────────────────────────
+  async function loadRequests() {
+    var query = sb.from('update_requests').select('*').order('created_at', { ascending: false });
+    if (requestFilter !== 'all') query = query.eq('status', requestFilter);
+
+    var { data } = await query;
+    var tbody = document.getElementById('requestsBody');
+    if (!tbody) return;
+
+    var typeLabels = { content: 'Inhalt', menu: 'Speisekarte', design: 'Design', other: 'Sonstiges' };
+    var pending = (data || []).filter(function (r) { return r.status === 'pending'; }).length;
+    var badge = document.getElementById('pendingBadge');
+    if (badge) { badge.textContent = pending; badge.style.display = pending > 0 ? 'inline-flex' : 'none'; }
+
+    if (!data || data.length === 0) {
+      tbody.innerHTML = '<tr class="empty-row"><td colspan="6">Keine Änderungswünsche vorhanden.</td></tr>';
+      return;
+    }
+
+    tbody.innerHTML = data.map(function (r) {
+      return '<tr>' +
+        '<td>' + formatDate(r.created_at) + '</td>' +
+        '<td>' + esc(r.client_email) + '</td>' +
+        '<td>' + (typeLabels[r.type] || r.type) + '</td>' +
+        '<td style="max-width:240px;word-break:break-word">' + esc(r.description) + '</td>' +
+        '<td>' + reqStatusBadge(r.status) + '</td>' +
+        '<td>' +
+          '<select class="req-status-select" data-id="' + r.id + '" style="font-size:12px;padding:4px 8px;border:1px solid var(--border);border-radius:6px;background:#fff">' +
+          '<option value="pending"' + (r.status === 'pending' ? ' selected' : '') + '>Ausstehend</option>' +
+          '<option value="in_progress"' + (r.status === 'in_progress' ? ' selected' : '') + '>In Bearbeitung</option>' +
+          '<option value="done"' + (r.status === 'done' ? ' selected' : '') + '>Erledigt</option>' +
+          '</select>' +
+        '</td>' +
+        '</tr>';
+    }).join('');
+
+    // Status 변경 이벤트
+    tbody.querySelectorAll('.req-status-select').forEach(function (sel) {
+      sel.addEventListener('change', async function () {
+        var { error } = await sb.from('update_requests').update({ status: sel.value }).eq('id', sel.getAttribute('data-id'));
+        if (!error) { showToast('Status aktualisiert'); loadRequests(); loadStats(); }
+      });
+    });
+  }
+
+  function reqStatusBadge(status) {
+    var map = { pending: 'badge-new', in_progress: 'badge-contacted', done: 'badge-active' };
+    var labels = { pending: 'Ausstehend', in_progress: 'In Bearbeitung', done: 'Erledigt' };
+    return '<span class="badge ' + (map[status] || '') + '">' + (labels[status] || status) + '</span>';
+  }
+
+  function bindRequestFilters() {
+    document.querySelectorAll('[data-req-status]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        document.querySelectorAll('[data-req-status]').forEach(function (b) { b.classList.remove('active'); });
+        btn.classList.add('active');
+        requestFilter = btn.getAttribute('data-req-status');
+        loadRequests();
+      });
+    });
+  }
+
   // ── Tabs ──────────────────────────────────────────────────────────
   function bindTabs() {
     document.querySelectorAll('.tab-btn').forEach(function (btn) {
@@ -254,6 +323,7 @@
         document.getElementById('tab-' + tab).classList.add('active');
         if (tab === 'clients') loadClients();
         if (tab === 'inquiries') loadInquiries();
+        if (tab === 'requests') loadRequests();
       });
     });
   }

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mein Bereich — lokalonline.at</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../admin/admin.css" />
+  <style>
+    .portal-hero {
+      background: linear-gradient(135deg, var(--primary) 0%, #2a527f 100%);
+      color: #fff;
+      padding: 32px 24px;
+    }
+    .portal-hero h1 { font-size: 1.4rem; font-weight: 800; margin-bottom: 4px; }
+    .portal-hero p { font-size: 14px; opacity: 0.75; }
+    .portal-content { max-width: 800px; margin: 0 auto; padding: 24px; }
+    .info-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px 24px;
+      margin-bottom: 20px;
+    }
+    .info-card h2 {
+      font-size: 13px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+    }
+    .info-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .info-field label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--text-muted); display: block; margin-bottom: 4px; }
+    .info-field span { font-size: 15px; font-weight: 600; color: var(--text); }
+    .page-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--primary);
+      font-weight: 600;
+      font-size: 14px;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+      word-break: break-all;
+    }
+    .not-found {
+      text-align: center;
+      padding: 48px 24px;
+      color: var(--text-muted);
+    }
+    .not-found h2 { font-size: 1.2rem; font-weight: 700; color: var(--text); margin-bottom: 8px; }
+    @media (max-width: 480px) { .info-grid-2 { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="admin-header">
+    <span class="admin-logo">lokalonline<span>.at</span></span>
+    <div class="admin-header-right">
+      <span class="admin-user" id="portalUser"></span>
+      <button class="btn btn-ghost btn-sm" id="logoutBtn">Abmelden</button>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <div class="portal-hero">
+    <h1 id="heroTitle">Willkommen!</h1>
+    <p id="heroSub">Ihr persönlicher Bereich bei lokalonline.at</p>
+  </div>
+
+  <!-- Content -->
+  <div class="portal-content" id="portalContent">
+    <div class="not-found">
+      <p>Wird geladen…</p>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="portal.js"></script>
+</body>
+</html>

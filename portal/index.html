@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kundenportal — lokalonline.at</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../admin/admin.css" />
+</head>
+<body>
+  <div class="login-page">
+    <div class="login-card">
+      <div class="login-logo">lokalonline<span>.at</span></div>
+      <div class="login-subtitle">Kundenportal</div>
+      <form id="loginForm">
+        <div class="form-group">
+          <label for="email">E-Mail</label>
+          <input type="email" id="email" placeholder="ihre@email.at" required autocomplete="email" />
+        </div>
+        <div class="form-group">
+          <label for="password">Passwort</label>
+          <input type="password" id="password" placeholder="••••••••" required autocomplete="current-password" />
+        </div>
+        <button type="submit" class="btn btn-primary btn-full" id="loginBtn">Anmelden</button>
+        <div class="error-msg" id="errorMsg"></div>
+      </form>
+      <p style="margin-top:20px;text-align:center;font-size:12px;color:var(--text-muted)">
+        Noch kein Zugang? <a href="/#contact" style="color:var(--primary)">Kontakt aufnehmen</a>
+      </p>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script>
+    var sb = supabase.createClient(
+      'https://vhnourjddnlslgabrasb.supabase.co',
+      'sb_publishable_y5l1cAZXoAj8xaSVXUkBfw_Pk9pxb6H'
+    );
+
+    sb.auth.getSession().then(function (ref) {
+      if (ref.data.session) location.href = 'dashboard.html';
+    });
+
+    document.getElementById('loginForm').addEventListener('submit', async function (e) {
+      e.preventDefault();
+      var btn = document.getElementById('loginBtn');
+      var errEl = document.getElementById('errorMsg');
+      btn.textContent = '…'; btn.disabled = true;
+      errEl.classList.remove('show');
+
+      var { error } = await sb.auth.signInWithPassword({
+        email: document.getElementById('email').value,
+        password: document.getElementById('password').value
+      });
+
+      if (error) {
+        errEl.textContent = 'E-Mail oder Passwort falsch.';
+        errEl.classList.add('show');
+        btn.textContent = 'Anmelden'; btn.disabled = false;
+      } else {
+        location.href = 'dashboard.html';
+      }
+    });
+  </script>
+</body>
+</html>

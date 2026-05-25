@@ -42,6 +42,9 @@
         Anfragen <span class="badge-count" id="newBadge" style="display:none"></span>
       </button>
       <button class="tab-btn" data-tab="clients">Kunden</button>
+      <button class="tab-btn" data-tab="requests">
+        Änderungswünsche <span class="badge-count" id="pendingBadge" style="display:none"></span>
+      </button>
     </div>
 
     <!-- Anfragen Tab -->
@@ -97,6 +100,33 @@
       </div>
     </div>
   </div>
+
+    <!-- Änderungswünsche Tab -->
+    <div class="tab-content" id="tab-requests">
+      <div class="table-toolbar">
+        <div class="filter-group">
+          <button class="filter-btn active" data-req-status="all">Alle</button>
+          <button class="filter-btn" data-req-status="pending">Ausstehend</button>
+          <button class="filter-btn" data-req-status="in_progress">In Bearbeitung</button>
+          <button class="filter-btn" data-req-status="done">Erledigt</button>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Datum</th>
+              <th>Kunde</th>
+              <th>Art</th>
+              <th>Beschreibung</th>
+              <th>Status</th>
+              <th>Aktionen</th>
+            </tr>
+          </thead>
+          <tbody id="requestsBody"></tbody>
+        </table>
+      </div>
+    </div>
 
   <!-- Inquiry Detail Modal -->
   <div class="modal-overlay" id="inquiryOverlay">

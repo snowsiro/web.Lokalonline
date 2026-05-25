@@ -342,6 +342,31 @@
     });
   }
 
+  // ── Stripe 결제 버튼 ──────────────────────────────────────────────
+  document.querySelectorAll('.stripe-plan-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var plan = btn.getAttribute('data-plan');
+      var isYearly = document.getElementById('billingToggle') && document.getElementById('billingToggle').checked;
+      var key = plan + (isYearly ? '_yearly' : '_monthly');
+      var cfg = window.STRIPE_CONFIG;
+      var url = cfg && cfg.links && cfg.links[key];
+
+      if (url) {
+        window.open(url, '_blank', 'noopener');
+      } else {
+        // Payment Link 미설정 시 문의 섹션으로
+        var contact = document.getElementById('contact');
+        if (contact) contact.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        // 플랜 이름 자동 선택
+        var planSelect = document.getElementById('plan');
+        if (planSelect) {
+          planSelect.value = plan;
+          planSelect.dispatchEvent(new Event('change'));
+        }
+      }
+    });
+  });
+
   // ── Footer year ───────────────────────────────────────────────────
   var yearEl = document.getElementById('year');
   if (yearEl) yearEl.textContent = new Date().getFullYear();

@@ -9,6 +9,7 @@
   var currentInquiryId = null;
   var inquiryFilter = 'all';
   var requestFilter = 'all';
+  var signupFilter = 'all';
 
   // ── Auth ─────────────────────────────────────────────────────────
   sb.auth.getSession().then(function (ref) {
@@ -37,27 +38,38 @@
     bindClientForm();
     bindInquiryForm();
     bindRequestFilters();
+    bindSignupFilters();
   }
 
   // ── Stats ─────────────────────────────────────────────────────────
   async function loadStats() {
-    var [inqRes, clientRes] = await Promise.all([
+    var [inqRes, clientRes, signupRes] = await Promise.all([
       sb.from('inquiries').select('status'),
-      sb.from('clients').select('status')
+      sb.from('clients').select('status'),
+      sb.from('signups').select('status')
     ]);
 
     var inquiries = inqRes.data || [];
     var clients = clientRes.data || [];
+    var signups = signupRes.data || [];
     var newCount = inquiries.filter(function (i) { return i.status === 'new'; }).length;
+    var newSignups = signups.filter(function (s) { return s.status === 'new'; }).length;
 
     setText('statNew', newCount);
     setText('statTotal', inquiries.length);
     setText('statClients', clients.filter(function (c) { return c.status === 'active'; }).length);
+    setText('statSignups', signups.length);
 
     var badge = document.getElementById('newBadge');
     if (badge) {
       badge.textContent = newCount;
       badge.style.display = newCount > 0 ? 'inline-flex' : 'none';
+    }
+
+    var signupBadge = document.getElementById('signupBadge');
+    if (signupBadge) {
+      signupBadge.textContent = newSignups;
+      signupBadge.style.display = newSignups > 0 ? 'inline-flex' : 'none';
     }
   }
 
@@ -312,6 +324,90 @@
     });
   }
 
+  // ── Signups ───────────────────────────────────────────────────────
+  async function loadSignups() {
+    var query = sb.from('signups').select('*').order('created_at', { ascending: false });
+    if (signupFilter !== 'all') query = query.eq('status', signupFilter);
+
+    var { data } = await query;
+    var tbody = document.getElementById('signupsBody');
+    if (!tbody) return;
+
+    if (!data || data.length === 0) {
+      tbody.innerHTML = '<tr class="empty-row"><td colspan="8">Noch keine Registrierungen.</td></tr>';
+      return;
+    }
+
+    tbody.innerHTML = data.map(function (s) {
+      var social = [];
+      if (s.instagram) social.push('<a href="https://instagram.com/' + esc(s.instagram.replace('@','')) + '" target="_blank" style="color:var(--primary)">@' + esc(s.instagram.replace('@','')) + '</a>');
+      if (s.website) social.push('<a href="' + (s.website.startsWith('http') ? '' : 'https://') + esc(s.website) + '" target="_blank" style="color:var(--primary)">' + esc(s.website) + '</a>');
+      return '<tr>' +
+        '<td>' + formatDate(s.created_at) + '</td>' +
+        '<td><strong>' + esc(s.name || '—') + '</strong>' + (s.address ? '<br><span style="color:var(--text-muted);font-size:11px">' + esc(s.address) + '</span>' : '') + '</td>' +
+        '<td>' + (s.business ? esc(s.business) : '<span style="color:var(--text-muted)">—</span>') + '</td>' +
+        '<td><a href="mailto:' + esc(s.email) + '" style="color:var(--primary)">' + esc(s.email) + '</a></td>' +
+        '<td>' + (s.phone ? esc(s.phone) : '—') + '</td>' +
+        '<td style="font-size:12px">' + (social.length ? social.join('<br>') : '—') + '</td>' +
+        '<td>' + signupStatusBadge(s.status) + '</td>' +
+        '<td style="display:flex;gap:6px;flex-wrap:wrap">' +
+          '<button class="btn btn-outline btn-sm" onclick="markSignupContacted(\'' + s.id + '\')"' + (s.status === 'contacted' ? ' style="opacity:.4" disabled' : '') + '>Kontaktiert</button>' +
+          '<button class="btn btn-primary btn-sm" onclick="convertSignupToInquiry(\'' + s.id + '\')">→ Anfrage</button>' +
+        '</td>' +
+        '</tr>';
+    }).join('');
+  }
+
+  function signupStatusBadge(status) {
+    var map = { new: 'badge-new', contacted: 'badge-contacted' };
+    var labels = { new: 'Neu', contacted: 'Kontaktiert' };
+    return '<span class="badge ' + (map[status] || 'badge-new') + '">' + (labels[status] || status) + '</span>';
+  }
+
+  window.markSignupContacted = async function (id) {
+    var { error } = await sb.from('signups').update({ status: 'contacted' }).eq('id', id);
+    if (!error) { showToast('Als kontaktiert markiert'); loadSignups(); loadStats(); }
+  };
+
+  window.convertSignupToInquiry = async function (id) {
+    var { data } = await sb.from('signups').select('*').eq('id', id).single();
+    if (!data) return;
+
+    var { error } = await sb.from('inquiries').insert([{
+      name: data.name || '',
+      email: data.email,
+      business: data.business,
+      phone: data.phone,
+      status: 'new',
+      notes: [
+        data.address ? 'Adresse: ' + data.address : '',
+        data.instagram ? 'Instagram: ' + data.instagram : '',
+        data.website ? 'Website: ' + data.website : ''
+      ].filter(Boolean).join(' | ') || null
+    }]);
+
+    if (!error) {
+      await sb.from('signups').update({ status: 'contacted' }).eq('id', id);
+      showToast('Anfrage erstellt');
+      loadSignups();
+      loadInquiries();
+      loadStats();
+    } else {
+      showToast('Fehler: ' + error.message);
+    }
+  };
+
+  function bindSignupFilters() {
+    document.querySelectorAll('[data-signup-status]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        document.querySelectorAll('[data-signup-status]').forEach(function (b) { b.classList.remove('active'); });
+        btn.classList.add('active');
+        signupFilter = btn.getAttribute('data-signup-status');
+        loadSignups();
+      });
+    });
+  }
+
   // ── Tabs ──────────────────────────────────────────────────────────
   function bindTabs() {
     document.querySelectorAll('.tab-btn').forEach(function (btn) {
@@ -324,6 +420,7 @@
         if (tab === 'clients') loadClients();
         if (tab === 'inquiries') loadInquiries();
         if (tab === 'requests') loadRequests();
+        if (tab === 'signups') loadSignups();
       });
     });
   }

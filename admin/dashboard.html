@@ -33,6 +33,10 @@
       <div class="stat-number" id="statClients">—</div>
       <div class="stat-label">Aktive Kunden</div>
     </div>
+    <div class="stat-card">
+      <div class="stat-number" id="statSignups">—</div>
+      <div class="stat-label">Registrierungen</div>
+    </div>
   </div>
 
   <!-- Main -->
@@ -44,6 +48,9 @@
       <button class="tab-btn" data-tab="clients">Kunden</button>
       <button class="tab-btn" data-tab="requests">
         Änderungswünsche <span class="badge-count" id="pendingBadge" style="display:none"></span>
+      </button>
+      <button class="tab-btn" data-tab="signups">
+        Registrierungen <span class="badge-count" id="signupBadge" style="display:none"></span>
       </button>
     </div>
 
@@ -99,7 +106,6 @@
         </table>
       </div>
     </div>
-  </div>
 
     <!-- Änderungswünsche Tab -->
     <div class="tab-content" id="tab-requests">
@@ -127,6 +133,35 @@
         </table>
       </div>
     </div>
+
+    <!-- Registrierungen Tab -->
+    <div class="tab-content" id="tab-signups">
+      <div class="table-toolbar">
+        <div class="filter-group">
+          <button class="filter-btn active" data-signup-status="all">Alle</button>
+          <button class="filter-btn" data-signup-status="new">Neu</button>
+          <button class="filter-btn" data-signup-status="contacted">Kontaktiert</button>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Datum</th>
+              <th>Name</th>
+              <th>Betrieb</th>
+              <th>E-Mail</th>
+              <th>Telefon</th>
+              <th>Instagram / Web</th>
+              <th>Status</th>
+              <th>Aktionen</th>
+            </tr>
+          </thead>
+          <tbody id="signupsBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
 
   <!-- Inquiry Detail Modal -->
   <div class="modal-overlay" id="inquiryOverlay">

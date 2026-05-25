@@ -130,7 +130,15 @@
       }
 
       signupSubmitBtn.disabled = true; signupSubmitBtn.textContent = '…';
-      var { error } = await sbClient.auth.signUp({ email: email, password: password, options: { data: { full_name: name } } });
+      var meta = {
+        full_name: name,
+        business:  document.getElementById('signupBusiness').value.trim() || null,
+        phone:     document.getElementById('signupPhone').value.trim() || null,
+        address:   document.getElementById('signupAddress').value.trim() || null,
+        instagram: document.getElementById('signupInstagram').value.trim() || null,
+        website:   document.getElementById('signupWebsite').value.trim() || null
+      };
+      var { error } = await sbClient.auth.signUp({ email: email, password: password, options: { data: meta } });
 
       if (error) {
         errEl.textContent = error.message;

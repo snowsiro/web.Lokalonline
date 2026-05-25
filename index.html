@@ -88,22 +88,45 @@
       </div>
       <!-- Signup -->
       <div class="auth-panel" id="panelSignup">
+        <!-- 필수 -->
         <div class="auth-form-group">
-          <label data-de="Ihr Name" data-en="Your name">Ihr Name</label>
+          <label data-de="Ihr Name *" data-en="Your name *">Ihr Name *</label>
           <input type="text" id="signupName" placeholder="Maria Mustermann" autocomplete="name" />
         </div>
         <div class="auth-form-group">
-          <label data-de="E-Mail" data-en="Email">E-Mail</label>
+          <label data-de="E-Mail *" data-en="Email *">E-Mail *</label>
           <input type="email" id="signupEmail" placeholder="ihre@email.at" autocomplete="email" />
         </div>
         <div class="auth-form-group">
-          <label data-de="Passwort (min. 6 Zeichen)" data-en="Password (min. 6 characters)">Passwort (min. 6 Zeichen)</label>
+          <label data-de="Passwort * (min. 6 Zeichen)" data-en="Password * (min. 6 characters)">Passwort * (min. 6 Zeichen)</label>
           <input type="password" id="signupPassword" placeholder="••••••••" autocomplete="new-password" />
+        </div>
+        <!-- 선택 -->
+        <div class="auth-divider" data-de="Angaben zu Ihrem Betrieb (optional)" data-en="About your business (optional)">Angaben zu Ihrem Betrieb (optional)</div>
+        <div class="auth-form-group">
+          <label data-de="Betriebsname" data-en="Business name">Betriebsname</label>
+          <input type="text" id="signupBusiness" placeholder="Café Wien" autocomplete="organization" />
+        </div>
+        <div class="auth-form-group">
+          <label data-de="Telefon" data-en="Phone">Telefon</label>
+          <input type="tel" id="signupPhone" placeholder="+43 660 000 00 00" autocomplete="tel" />
+        </div>
+        <div class="auth-form-group">
+          <label data-de="Adresse" data-en="Address">Adresse</label>
+          <input type="text" id="signupAddress" placeholder="Mariahilfer Str. 1, 1060 Wien" autocomplete="street-address" />
+        </div>
+        <div class="auth-form-group">
+          <label data-de="Instagram" data-en="Instagram">Instagram</label>
+          <input type="text" id="signupInstagram" placeholder="@cafewien" />
+        </div>
+        <div class="auth-form-group">
+          <label data-de="Website / Sonstige Links" data-en="Website / Other links">Website / Sonstige Links</label>
+          <input type="text" id="signupWebsite" placeholder="www.cafewien.at" />
         </div>
         <button class="btn btn-primary btn-full" id="signupSubmitBtn" data-de="Konto erstellen" data-en="Create account">Konto erstellen</button>
         <div class="auth-error" id="signupError"></div>
-        <div class="auth-success" id="signupSuccess" style="display:none" data-de="✓ Konto erstellt! Sie können sich jetzt anmelden." data-en="✓ Account created! You can now sign in.">
-          ✓ Konto erstellt! Sie können sich jetzt anmelden.
+        <div class="auth-success" id="signupSuccess" style="display:none" data-de="✓ Konto erstellt!" data-en="✓ Account created!">
+          ✓ Konto erstellt!
         </div>
       </div>
     </div>

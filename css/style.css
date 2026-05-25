@@ -278,6 +278,17 @@ img { max-width: 100%; display: block; }
   box-shadow: 0 0 0 3px rgba(30,58,95,0.1);
 }
 
+.auth-divider {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  border-top: 1px solid var(--border);
+  padding-top: 14px;
+  margin: 6px 0 14px;
+}
+
 .auth-error {
   margin-top: 10px; font-size: 13px;
   color: #e53e3e; display: none;

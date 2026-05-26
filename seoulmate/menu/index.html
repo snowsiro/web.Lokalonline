@@ -1025,7 +1025,7 @@ body:not(.admin-mode) .has-photo:hover{color:var(--accent);text-decoration-color
 
 <script>
 // ── CONFIG ──
-var EDGE_FN   = 'https://vhnourjddnlslgabrasb.supabase.co/functions/v1/github_upload';
+var SB_URL    = 'https://vhnourjddnlslgabrasb.supabase.co';
 var SB_ANON   = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZobm91cmpkZG5sc2xnYWJyYXNiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3NDI1MDcsImV4cCI6MjA5NTMxODUwN30.UQEpGFXm7L1RZPZwUDQGByTQinK1iX12fz6llSfuzMY';
 var GH_REPO   = 'snowsiro/Lokalonline';
 var GH_BRANCH = 'main';
@@ -1033,6 +1033,7 @@ var DATA_PATH = 'seoulmate/menu/data.json';
 var IMG_DIR   = 'seoulmate/menu/img/';
 var ADMIN_PW  = 'Seoulmate2026';
 
+var GH_TOKEN  = '';
 var photos    = {};
 var overrides = {};
 
@@ -1099,25 +1100,40 @@ function markHasPhoto(id, url){
   }
 }
 
-// ── GITHUB API (via Supabase Edge Function) ──
-async function ghPutFile(path, contentBase64, message){
+// ── GITHUB API (direct, token from Supabase DB) ──
+async function fetchGhToken(){
   try {
-    var r = await fetch(EDGE_FN, {
-      method: 'POST',
-      headers: { 'Authorization': 'Bearer ' + SB_ANON, 'apikey': SB_ANON, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action: 'put-file', path: path, content: contentBase64, message: message })
+    var r = await fetch(SB_URL + '/rest/v1/app_config?key=eq.github_token&select=value', {
+      headers: { 'apikey': SB_ANON, 'Authorization': 'Bearer ' + SB_ANON }
     });
-    var text = await r.text();
-    try {
-      var d = JSON.parse(text);
-      if(!d.ok) { toast('❌ ' + (d.error || 'Fehler: ' + r.status)); return false; }
-      return true;
-    } catch(e) {
-      toast('❌ Server: ' + text.substring(0,80));
-      return false;
-    }
-  } catch(e) {
-    toast('❌ Netzwerk: ' + e.message);
+    if(!r.ok) return '';
+    var d = await r.json();
+    return d[0] ? d[0].value : '';
+  } catch(e){ return ''; }
+}
+
+async function ghPutFile(path, contentBase64, message){
+  if(!GH_TOKEN){ toast('⚠️ Token fehlt'); return false; }
+  try {
+    var apiUrl = 'https://api.github.com/repos/' + GH_REPO + '/contents/' + path;
+    // get current SHA
+    var shaRes = await fetch(apiUrl + '?ref=' + GH_BRANCH, {
+      headers: { 'Authorization': 'Bearer ' + GH_TOKEN, 'Accept': 'application/vnd.github+json' }
+    });
+    var sha = null;
+    if(shaRes.ok){ var sd = await shaRes.json(); sha = sd.sha || null; }
+
+    var body = { message: message, content: contentBase64, branch: GH_BRANCH };
+    if(sha) body.sha = sha;
+    var r = await fetch(apiUrl, {
+      method: 'PUT',
+      headers: { 'Authorization': 'Bearer ' + GH_TOKEN, 'Accept': 'application/vnd.github+json', 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+    if(!r.ok){ var e = await r.json(); toast('❌ GitHub: ' + (e.message || r.status)); return false; }
+    return true;
+  } catch(e){
+    toast('❌ ' + e.message);
     return false;
   }
 }
@@ -1290,7 +1306,7 @@ function openPwModal(){ var o=document.getElementById('pwOverlay'); o.classList.
 function closePwModal(){ document.getElementById('pwOverlay').classList.remove('open'); document.body.style.overflow=''; }
 function handlePwOverlayClick(e){ if(e.target===document.getElementById('pwOverlay')) closePwModal(); }
 function togglePwVisibility(){ var i=document.getElementById('pwInput'),b=document.getElementById('pwToggle'); if(i.type==='password'){i.type='text';b.textContent='🙈';}else{i.type='password';b.textContent='👁';} }
-function checkPassword(){ var i=document.getElementById('pwInput'),e=document.getElementById('pwError'); if(i.value===ADMIN_PW){closePwModal();setAdminMode(true);}else{i.classList.add('error');e.textContent='비밀번호가 틀렸습니다';i.value='';setTimeout(function(){i.classList.remove('error');},400);setTimeout(function(){i.focus();},50);} }
+async function checkPassword(){ var i=document.getElementById('pwInput'),e=document.getElementById('pwError'); if(i.value===ADMIN_PW){closePwModal();toast('⏳ Token laden...');GH_TOKEN=await fetchGhToken();if(!GH_TOKEN)toast('⚠️ Token konnte nicht geladen werden');setAdminMode(true);}else{i.classList.add('error');e.textContent='비밀번호가 틀렸습니다';i.value='';setTimeout(function(){i.classList.remove('error');},400);setTimeout(function(){i.focus();},50);} }
 
 // ── TOAST ──
 var toastTimer;

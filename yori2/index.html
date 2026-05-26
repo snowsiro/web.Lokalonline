@@ -845,64 +845,64 @@ footer {
 
 <div class="toast" id="toast"></div>
 
-<!-- Firebase -->
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
-  import { getFirestore, collection, addDoc, getDocs, orderBy, query, serverTimestamp }
-    from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
-  const firebaseConfig = {
-    apiKey:"AIzaSyCCWXJRC0nMq8YX7x4DrIOoir4dJkQuNV4",
-    authDomain:"yori2-wien.firebaseapp.com",
-    projectId:"yori2-wien",
-    storageBucket:"yori2-wien.firebasestorage.app",
-    messagingSenderId:"905431915759",
-    appId:"1:905431915759:web:c7b2a8fac924ebabfdcf1a"
-  };
-  const app = initializeApp(firebaseConfig);
-  const db  = getFirestore(app);
-  async function loadReviews() {
-    try {
-      const q = query(collection(db,"reviews"), orderBy("createdAt","desc"));
-      const snap = await getDocs(q);
-      const grid = document.getElementById('reviewsGrid');
-      const noMsg = document.getElementById('noReviews');
-      if (!snap.empty) {
-        if (noMsg) noMsg.remove();
-        snap.forEach(doc => {
-          const d = doc.data();
-          const stars = '★'.repeat(d.stars)+'☆'.repeat(5-d.stars);
-          const card = document.createElement('div');
-          card.className='review-card';
-          card.innerHTML=`<div class="review-stars">${stars}</div><p class="review-text">"${d.text}"</p><div class="review-author"><div class="review-avatar">${d.name.charAt(0).toUpperCase()}</div><div><div class="review-name">${d.name}</div><div class="review-date">${d.date||''}</div></div></div>`;
-          grid.appendChild(card);
-        });
-      }
-    } catch(e) { console.log(e); }
+<!-- Supabase Reviews -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script>
+(function(){
+  var CLIENT_SLUG = 'yori2';
+  var sb = supabase.createClient(
+    'https://vhnourjddnlslgabrasb.supabase.co',
+    'sb_publishable_y5l1cAZXoAj8xaSVXUkBfw_Pk9pxb6H'
+  );
+
+  function renderCard(r){
+    var stars='★'.repeat(r.stars)+'☆'.repeat(5-r.stars);
+    var card=document.createElement('div'); card.className='review-card';
+    card.innerHTML='<div class="review-stars">'+stars+'</div><p class="review-text">"'+r.text+'"</p><div class="review-author"><div class="review-avatar">'+r.name.charAt(0).toUpperCase()+'</div><div><div class="review-name">'+r.name+'</div><div class="review-date">'+(r.date||'')+'</div></div></div>';
+    return card;
   }
-  window.submitReviewDB = async function() {
-    const name=document.getElementById('rvName').value.trim();
-    const text=document.getElementById('rvText').value.trim();
-    const date=document.getElementById('rvDate').value;
-    const stars=window._stars||0;
-    if (!name||!text||stars===0) { showToast(window.T[window.currentLang].toast_err); return; }
-    const btn=document.querySelector('.review-submit');
+
+  async function loadReviews(){
+    try{
+      var {data,error}=await sb.from('reviews')
+        .select('*')
+        .eq('client_slug',CLIENT_SLUG)
+        .eq('approved',true)
+        .order('created_at',{ascending:false});
+      if(error) throw error;
+      var grid=document.getElementById('reviewsGrid');
+      var noMsg=document.getElementById('noReviews');
+      if(data&&data.length>0){
+        if(noMsg) noMsg.remove();
+        data.forEach(function(r){ grid.appendChild(renderCard(r)); });
+      }
+    }catch(e){ console.log(e); }
+  }
+
+  window.submitReviewDB=async function(){
+    var name=document.getElementById('rvName').value.trim();
+    var text=document.getElementById('rvText').value.trim();
+    var date=document.getElementById('rvDate').value;
+    var stars=window._stars||0;
+    if(!name||!text||stars===0){showToast(window.T[window.currentLang].toast_err);return;}
+    var btn=document.querySelector('.review-submit');
     btn.disabled=true; btn.style.opacity='0.4';
-    try {
-      const dateStr=date?date.replace('-','. ')+'.':new Date().toLocaleDateString('de-AT',{year:'numeric',month:'long'});
-      await addDoc(collection(db,"reviews"),{name,text,stars,date:dateStr,createdAt:serverTimestamp()});
-      const noMsg=document.getElementById('noReviews');
+    try{
+      var dateStr=date?date.replace('-','. ')+'.':new Date().toLocaleDateString('de-AT',{year:'numeric',month:'long'});
+      var {error}=await sb.from('reviews').insert([{client_slug:CLIENT_SLUG,name:name,text:text,stars:stars,date:dateStr}]);
+      if(error) throw error;
+      var noMsg=document.getElementById('noReviews');
       if(noMsg) noMsg.remove();
-      const s='★'.repeat(stars)+'☆'.repeat(5-stars);
-      const card=document.createElement('div'); card.className='review-card';
-      card.innerHTML=`<div class="review-stars">${s}</div><p class="review-text">"${text}"</p><div class="review-author"><div class="review-avatar">${name.charAt(0).toUpperCase()}</div><div><div class="review-name">${name}</div><div class="review-date">${dateStr}</div></div></div>`;
-      document.getElementById('reviewsGrid').prepend(card);
-      ['rvName','rvText','rvDate'].forEach(id=>document.getElementById(id).value='');
-      window._stars=0; document.querySelectorAll('.star-btn').forEach(b=>b.classList.remove('on'));
+      document.getElementById('reviewsGrid').prepend(renderCard({name:name,text:text,stars:stars,date:dateStr}));
+      ['rvName','rvText','rvDate'].forEach(function(id){document.getElementById(id).value='';});
+      window._stars=0; document.querySelectorAll('.star-btn').forEach(function(b){b.classList.remove('on');});
       showToast(window.T[window.currentLang].toast_rev);
-    } catch(e) { showToast('Fehler. Bitte erneut versuchen.'); }
+    }catch(e){ showToast('Fehler. Bitte erneut versuchen.'); }
     btn.disabled=false; btn.style.opacity='1';
   };
-  window.addEventListener('DOMContentLoaded',()=>{ setLang('de'); loadReviews(); });
+
+  window.addEventListener('DOMContentLoaded',function(){ setLang('de'); loadReviews(); });
+})();
 </script>
 
 <script>

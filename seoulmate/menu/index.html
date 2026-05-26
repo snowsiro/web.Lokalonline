@@ -1175,7 +1175,7 @@ function buildZone(zone, id){
         var path = IMG_DIR + id + '.jpg';
         var ok = await ghPutFile(path, b64, 'Add photo: ' + id);
         if(ok){
-          photos[id] = 'https://lokalonline.at/' + path;
+          photos[id] = 'https://raw.githubusercontent.com/' + GH_REPO + '/' + GH_BRANCH + '/' + path;
           await saveDataJson();
           markHasPhoto(id, photos[id]);
           buildZone(zone, id);

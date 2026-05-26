@@ -233,11 +233,11 @@ body.admin-mode .menu-item{position:relative;border:1px dashed rgba(212,43,43,0.
 <!-- SECTION NAV -->
 <nav class="section-nav">
   <button class="nav-tab active" onclick="scrollToSection('tteokbokki')">Tteokbokki</button>
-  <button class="nav-tab" onclick="scrollToSection('corndog')">Corndog</button>
+  <button class="nav-tab" onclick="scrollToSection('noodle')">Noodle</button>
   <button class="nav-tab" onclick="scrollToSection('chicken')">Chicken</button>
-  <button class="nav-tab" onclick="scrollToSection('deopbap')">Deopbap</button>
+  <button class="nav-tab" onclick="scrollToSection('cupbap')">Cupbap</button>
   <button class="nav-tab" onclick="scrollToSection('gimbap')">Gimbap</button>
-  <button class="nav-tab" onclick="scrollToSection('bites')">Bites</button>
+  <button class="nav-tab" onclick="scrollToSection('side')">Side</button>
 </nav>
 
 <div class="page-wrap">
@@ -246,16 +246,22 @@ body.admin-mode .menu-item{position:relative;border:1px dashed rgba(212,43,43,0.
 <section class="menu-section" id="tteokbokki">
   <div class="section-eyebrow">01</div>
   <div class="section-title"><span data-lang="de">Tteokbokki</span><span data-lang="en">Tteokbokki</span><span data-lang="ko">떡볶이</span></div>
-  <div class="section-note"><span data-lang="de">Koreanische Reiskuchen in würziger Sauce</span><span data-lang="en">Korean rice cakes in spicy sauce</span><span data-lang="ko">매콤한 소스의 한국 떡볶이</span></div>
+  <div class="section-note">
+    <span data-lang="de">Koreanische Reiskuchen und Fischkuchen in würziger Sauce (Vegane Optionen erhältlich)</span>
+    <span data-lang="en">Korean rice cakes and fish cakes in a spicy sauce (Vegan options available)</span>
+    <span data-lang="ko">한국식 떡과 어묵을 매콤한 소스에 (비건 옵션 가능)</span>
+  </div>
   <div class="section-divider"></div>
   <div class="items-grid">
 
     <div class="menu-item">
       <div class="item-body">
-        <div class="item-code">T1</div>
-        <div class="item-name" id="n-T1">Original</div>
-        <span class="item-ko">오리지널</span>
-        <div class="item-desc"><span data-lang="de">Klassisch scharf — auch mild erhältlich</span><span data-lang="en">Classically spicy — mild available</span><span data-lang="ko">클래식 매콤 — 순한맛 가능</span></div>
+        <div class="item-name">Original</div>
+        <div class="item-desc">
+          <span data-lang="de">Original Tteokbokki mit einem gekochten Ei</span>
+          <span data-lang="en">Original Tteokbokki with a boiled egg</span>
+          <span data-lang="ko">오리지널 떡볶이, 삶은 달걀 포함</span>
+        </div>
         <div class="item-tags"><span class="tag tag-scharf">Scharf</span></div>
       </div>
       <div class="item-price-wrap"><div class="item-price">€ 10,–</div></div>
@@ -263,118 +269,291 @@ body.admin-mode .menu-item{position:relative;border:1px dashed rgba(212,43,43,0.
 
     <div class="menu-item">
       <div class="item-body">
-        <div class="item-code">T2</div>
-        <div class="item-name" id="n-T2">Cheese</div>
-        <span class="item-ko">치즈</span>
-        <div class="item-desc"><span data-lang="de">Schmelzkäse-Sauce</span><span data-lang="en">Melted cheese sauce</span><span data-lang="ko">고소한 치즈 소스 떡볶이</span></div>
+        <div class="item-name">Cheese <span style="color:#f59e0b;font-size:0.75rem">★</span></div>
+        <div class="item-desc">
+          <span data-lang="de">Original Tteokbokki mit geschmolzenem Käse</span>
+          <span data-lang="en">Original Tteokbokki topped with melted cheese</span>
+          <span data-lang="ko">오리지널 떡볶이 위에 녹인 치즈</span>
+        </div>
       </div>
       <div class="item-price-wrap"><div class="item-price">€ 11,–</div></div>
     </div>
 
     <div class="menu-item">
       <div class="item-body">
-        <div class="item-code">T3</div>
-        <div class="item-name" id="n-T3">Rosé</div>
-        <span class="item-ko">로제</span>
-        <div class="item-desc"><span data-lang="de">Cremig-würzige Rosé-Sauce</span><span data-lang="en">Creamy spicy rosé sauce</span><span data-lang="ko">크리미하고 매콤한 로제 소스</span></div>
+        <div class="item-name">Rosé <span class="tag" style="background:#e8f5e9;color:#2e7d32;font-size:0.6rem;letter-spacing:0.06em;padding:2px 6px;border-radius:3px;font-weight:700">HALAL</span></div>
+        <div class="item-desc">
+          <span data-lang="de">In einer cremigen, würzigen Sauce mit Hähnchenwurst</span>
+          <span data-lang="en">In a creamy, spicy sauce with chicken sausage</span>
+          <span data-lang="ko">크리미하고 매콤한 소스에 닭 소시지</span>
+        </div>
         <div class="item-tags"><span class="tag tag-pikant">Pikant</span></div>
       </div>
       <div class="item-price-wrap"><div class="item-price">€ 11,–</div></div>
     </div>
 
   </div>
+  <div class="section-note" style="margin-top:16px">
+    <span data-lang="de">+ Size up! +€ 5 &nbsp;|&nbsp; + Ramyun Nudeln +€ 3 &nbsp;|&nbsp; + Udon Nudeln +€ 3</span>
+    <span data-lang="en">+ Size up! +€ 5 &nbsp;|&nbsp; + Ramyun Noodles +€ 3 &nbsp;|&nbsp; + Udon Noodles +€ 3</span>
+    <span data-lang="ko">+ 사이즈업 +€ 5 &nbsp;|&nbsp; + 라면 사리 +€ 3 &nbsp;|&nbsp; + 우동 사리 +€ 3</span>
+  </div>
 </section>
 
-<!-- ═══ CORNDOG ═══ -->
-<section class="menu-section" id="corndog">
+<!-- ═══ NOODLE ═══ -->
+<section class="menu-section" id="noodle">
   <div class="section-eyebrow">02</div>
-  <div class="section-title"><span data-lang="de">Corndog</span><span data-lang="en">Corndog</span><span data-lang="ko">콘도그</span></div>
-  <div class="section-note"><span data-lang="de">Handgemachte koreanische Corndogs</span><span data-lang="en">Handmade Korean corndogs</span><span data-lang="ko">직접 만드는 한국식 콘도그</span></div>
-  <div class="section-divider"></div>
-  <div class="items-grid">
-
-    <div class="menu-item">
-      <div class="item-body">
-        <div class="item-code">CD1</div>
-        <div class="item-name" id="n-CD1">Original</div>
-        <span class="item-ko">오리지널</span>
-        <div class="item-desc"><span data-lang="de">Chicken Corndog, klassischer Teigmantel</span><span data-lang="en">Chicken corndog, classic batter</span><span data-lang="ko">치킨 콘도그, 클래식 반죽</span></div>
-      </div>
-      <div class="item-price-wrap"><div class="item-price">€ 7,50</div></div>
-    </div>
-
-    <div class="menu-item">
-      <div class="item-body">
-        <div class="item-code">CD2</div>
-        <div class="item-name" id="n-CD2">Half-Half</div>
-        <span class="item-ko">하프하프</span>
-        <div class="item-desc"><span data-lang="de">Käse-Wurst &amp; Käse</span><span data-lang="en">Cheese sausage &amp; cheese</span><span data-lang="ko">치즈 소시지 &amp; 치즈</span></div>
-      </div>
-      <div class="item-price-wrap"><div class="item-price">€ 8,–</div></div>
-    </div>
-
-    <div class="menu-item">
-      <div class="item-body">
-        <div class="item-code">CD3</div>
-        <div class="item-name" id="n-CD3">Cheese Only</div>
-        <span class="item-ko">치즈온리</span>
-        <div class="item-desc"><span data-lang="de">Mozzarella Cheese</span><span data-lang="en">Mozzarella cheese</span><span data-lang="ko">모짜렐라 치즈만 쏙</span></div>
-      </div>
-      <div class="item-price-wrap"><div class="item-price">€ 8,50</div></div>
-    </div>
-
+  <div class="section-title"><span data-lang="de">Noodle</span><span data-lang="en">Noodle</span><span data-lang="ko">누들</span></div>
+  <div class="section-note">
+    <span data-lang="de">Koreanische Nudeln (Vegane Optionen erhältlich)</span>
+    <span data-lang="en">Korean noodles (Vegan options available)</span>
+    <span data-lang="ko">한국식 면 요리 (비건 옵션 가능)</span>
   </div>
-</section>
-
-<!-- ═══ CHICKEN ═══ -->
-<section class="menu-section" id="chicken">
-  <div class="section-eyebrow">03</div>
-  <div class="section-title"><span data-lang="de">Chicken 'Boneless'</span><span data-lang="en">Chicken 'Boneless'</span><span data-lang="ko">치킨 (뼈없음)</span></div>
-  <div class="section-note"><span data-lang="de">Knusprig frittiert — Spicy garlic soy honey</span><span data-lang="en">Crispy fried — spicy garlic soy honey</span><span data-lang="ko">바삭하게 튀긴 — 스파이시 갈릭 소이 허니</span></div>
   <div class="section-divider"></div>
   <div class="items-grid">
 
     <div class="menu-item">
       <div class="item-body">
-        <div class="item-code">CK1</div>
-        <div class="item-name" id="n-CK1">Seoulmate Chicken</div>
-        <span class="item-ko">씰메이트 치킨</span>
-        <div class="item-desc"><span data-lang="de">Spicy garlic soy honey — knusprig &amp; saftig</span><span data-lang="en">Spicy garlic soy honey — crispy &amp; juicy</span><span data-lang="ko">스파이시 갈릭 소이 허니 — 바삭하고 촉촉한</span></div>
+        <div class="item-name">Japchae <span class="tag tag-veg">Veg</span></div>
+        <div class="item-desc">
+          <span data-lang="de">Gebratene Glasnudeln mit Gemüse</span>
+          <span data-lang="en">Stir-fried glass noodles with vegetables</span>
+          <span data-lang="ko">채소를 넣은 볶음 당면</span>
+        </div>
+      </div>
+      <div class="item-price-wrap"><div class="item-price">€ 9,–</div></div>
+    </div>
+
+    <div class="menu-item">
+      <div class="item-body">
+        <div class="item-name">Kimchi Japchae <span style="color:#f59e0b;font-size:0.75rem">★</span> <span class="tag tag-veg">Veg</span></div>
+        <div class="item-desc">
+          <span data-lang="de">Gebratene Glasnudeln mit Kimchi</span>
+          <span data-lang="en">Stir-fried glass noodles with kimchi</span>
+          <span data-lang="ko">김치를 넣은 볶음 당면</span>
+        </div>
         <div class="item-tags"><span class="tag tag-pikant">Pikant</span></div>
       </div>
-      <div class="item-price-wrap">
-        <div class="item-price">€ 11,–</div>
-        <div class="item-price-sm"><span data-lang="de">Size-Up +€ 5</span><span data-lang="en">Size-Up +€ 5</span><span data-lang="ko">사이즈업 +€ 5</span></div>
-      </div>
+      <div class="item-price-wrap"><div class="item-price">€ 10,–</div></div>
     </div>
-
-  </div>
-</section>
-
-<!-- ═══ DEOPBAP ═══ -->
-<section class="menu-section" id="deopbap">
-  <div class="section-eyebrow">04</div>
-  <div class="section-title"><span data-lang="de">Deopbap</span><span data-lang="en">Deopbap</span><span data-lang="ko">덮밥</span></div>
-  <div class="section-note"><span data-lang="de">Koreanische Reisschüssel</span><span data-lang="en">Korean rice bowl</span><span data-lang="ko">한국식 덮밥</span></div>
-  <div class="section-divider"></div>
-  <div class="items-grid">
 
     <div class="menu-item">
       <div class="item-body">
-        <div class="item-code">D1</div>
-        <div class="item-name" id="n-D1">Bulgogi</div>
-        <span class="item-ko">불고기</span>
-        <div class="item-desc"><span data-lang="de">Mariniertes Rindfleisch auf Reis</span><span data-lang="en">Marinated beef on rice</span><span data-lang="ko">달콤 짭조름한 소불고기 덮밥</span></div>
+        <div class="item-name">Cheese Ramyeon <span class="tag tag-veg">Veg</span></div>
+        <div class="item-desc">
+          <span data-lang="de">Koreanisches Ramyeon mit Käse</span>
+          <span data-lang="en">Korean Ramyeon with cheese</span>
+          <span data-lang="ko">치즈 라면</span>
+        </div>
+      </div>
+      <div class="item-price-wrap"><div class="item-price">€ 9,–</div></div>
+    </div>
+
+    <div class="menu-item">
+      <div class="item-body">
+        <div class="item-name">Kimchi Ramyeon <span class="tag tag-veg">Veg</span></div>
+        <div class="item-desc">
+          <span data-lang="de">Koreanisches Ramyeon mit Kimchi</span>
+          <span data-lang="en">Korean Ramyeon with Kimchi</span>
+          <span data-lang="ko">김치 라면</span>
+        </div>
+        <div class="item-tags"><span class="tag tag-pikant">Pikant</span></div>
+      </div>
+      <div class="item-price-wrap"><div class="item-price">€ 9,–</div></div>
+    </div>
+
+    <div class="menu-item">
+      <div class="item-body">
+        <div class="item-name">Mandu Ramyeon <span class="tag tag-veg">Veg</span></div>
+        <div class="item-desc">
+          <span data-lang="de">Koreanisches Ramyeon mit Knödeln</span>
+          <span data-lang="en">Korean Ramyeon with dumplings</span>
+          <span data-lang="ko">만두 라면</span>
+        </div>
+      </div>
+      <div class="item-price-wrap"><div class="item-price">€ 10,–</div></div>
+    </div>
+
+    <div class="menu-item">
+      <div class="item-body">
+        <div class="item-name">Kimchi Udon <span class="tag tag-veg">Veg</span></div>
+        <div class="item-desc">
+          <span data-lang="de">Warme Kimchi-Nudelsuppe</span>
+          <span data-lang="en">Warm kimchi noodle soup</span>
+          <span data-lang="ko">따뜻한 김치 우동 국물</span>
+        </div>
+        <div class="item-tags"><span class="tag tag-pikant">Pikant</span></div>
+      </div>
+      <div class="item-price-wrap"><div class="item-price">€ 11,–</div></div>
+    </div>
+
+    <div class="menu-item">
+      <div class="item-body">
+        <div class="item-name">Bulgogi Udon</div>
+        <div class="item-desc">
+          <span data-lang="de">Warme Bulgogi-Nudelsuppe</span>
+          <span data-lang="en">Warm bulgogi noodle soup</span>
+          <span data-lang="ko">따뜻한 불고기 우동 국물</span>
+        </div>
       </div>
       <div class="item-price-wrap"><div class="item-price">€ 12,–</div></div>
     </div>
 
     <div class="menu-item">
       <div class="item-body">
-        <div class="item-code">D2</div>
-        <div class="item-name" id="n-D2">Spicy Dakgalbi</div>
-        <span class="item-ko">닭갈비</span>
-        <div class="item-desc"><span data-lang="de">Würziges Hühnchen auf Reis</span><span data-lang="en">Spicy chicken on rice</span><span data-lang="ko">매콤한 닭갈비 덮밥</span></div>
+        <div class="item-name">Kimchi Guksu <span class="tag tag-veg">Veg</span></div>
+        <div class="item-desc">
+          <span data-lang="de">Nudeln mit Kimchi in würzig-scharfer Kimchi-Sauce</span>
+          <span data-lang="en">Noodles with kimchi in a spicy-Kimchi sauce</span>
+          <span data-lang="ko">매콤한 김치 소스 국수</span>
+        </div>
+        <div class="item-tags"><span class="tag tag-scharf">Scharf</span></div>
+      </div>
+      <div class="item-price-wrap"><div class="item-price">€ 11,–</div></div>
+    </div>
+
+    <div class="menu-item">
+      <div class="item-body">
+        <div class="item-name">Soy Guksu <span class="tag tag-veg">Veg</span></div>
+        <div class="item-desc">
+          <span data-lang="de">Nudeln in hausgemachter Sojasoße, garniert mit Mukeunji</span>
+          <span data-lang="en">Noodles in homemade soy sauce topped with mukeunji</span>
+          <span data-lang="ko">직접 만든 간장 소스 국수, 묵은지 토핑</span>
+        </div>
+      </div>
+      <div class="item-price-wrap"><div class="item-price">€ 11,–</div></div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══ KOREAN FRIED CHICKEN ═══ -->
+<section class="menu-section" id="chicken">
+  <div class="section-eyebrow">03</div>
+  <div class="section-title">
+    <span data-lang="de">Korean Fried Chicken <span class="tag" style="background:#e8f5e9;color:#2e7d32;font-size:0.6rem;letter-spacing:0.06em;padding:2px 6px;border-radius:3px;font-weight:700">HALAL</span></span>
+    <span data-lang="en">Korean Fried Chicken <span class="tag" style="background:#e8f5e9;color:#2e7d32;font-size:0.6rem;letter-spacing:0.06em;padding:2px 6px;border-radius:3px;font-weight:700">HALAL</span></span>
+    <span data-lang="ko">한국식 프라이드 치킨 <span class="tag" style="background:#e8f5e9;color:#2e7d32;font-size:0.6rem;letter-spacing:0.06em;padding:2px 6px;border-radius:3px;font-weight:700">HALAL</span></span>
+  </div>
+  <div class="section-note">
+    <span data-lang="de">Wähle deine Sauce / Wähle Wings oder Boneless</span>
+    <span data-lang="en">Choose your sauce / Choose Wings or Boneless</span>
+    <span data-lang="ko">소스 선택 / Wings 또는 Boneless 선택</span>
+  </div>
+  <div class="section-divider"></div>
+
+  <div class="special-grid">
+
+    <div class="special-card">
+      <div class="item-name">SEOULMATE <span style="color:#f59e0b;font-size:0.75rem">★</span></div>
+      <div class="item-desc" style="margin-top:6px">
+        <span data-lang="de">Soy Garlic Spicy</span>
+        <span data-lang="en">Soy Garlic Spicy</span>
+        <span data-lang="ko">간장 갈릭 스파이시</span>
+      </div>
+    </div>
+
+    <div class="special-card">
+      <div class="item-name">SWEET SPICY</div>
+      <div class="item-desc" style="margin-top:6px">
+        <span data-lang="de">Sweet &amp; Spicy</span>
+        <span data-lang="en">Sweet &amp; Spicy</span>
+        <span data-lang="ko">스위트 스파이시</span>
+      </div>
+    </div>
+
+    <div class="special-card">
+      <div class="item-name">FRIED</div>
+      <div class="item-desc" style="margin-top:6px">
+        <span data-lang="de">Original</span>
+        <span data-lang="en">Original</span>
+        <span data-lang="ko">오리지널</span>
+      </div>
+    </div>
+
+    <div class="special-card">
+      <div class="item-name">CREAMY SPICY</div>
+      <div class="item-desc" style="margin-top:6px">
+        <span data-lang="de">Creamy Spicy (+€1)</span>
+        <span data-lang="en">Creamy Spicy (+€1)</span>
+        <span data-lang="ko">크리미 스파이시 (+€1)</span>
+      </div>
+    </div>
+
+    <div class="special-card">
+      <div class="item-name">HOT SPICY</div>
+      <div class="item-desc" style="margin-top:6px">
+        <span data-lang="de">Sweet &amp; Hot Spicy</span>
+        <span data-lang="en">Sweet &amp; Hot Spicy</span>
+        <span data-lang="ko">스위트 핫 스파이시</span>
+      </div>
+    </div>
+
+  </div>
+
+  <div style="margin-top:28px;overflow-x:auto">
+    <table class="size-table" style="min-width:340px">
+      <thead>
+        <tr>
+          <th></th>
+          <th><span data-lang="de">Wings</span><span data-lang="en">Wings</span><span data-lang="ko">윙</span></th>
+          <th><span data-lang="de">Boneless</span><span data-lang="en">Boneless</span><span data-lang="ko">순살</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span data-lang="de">Small</span><span data-lang="en">Small</span><span data-lang="ko">스몰</span></td>
+          <td><span data-lang="de">8 Stk. — € 11,–</span><span data-lang="en">8 pcs — € 11,–</span><span data-lang="ko">8개 — € 11,–</span></td>
+          <td><span data-lang="de">5 Stk. — € 11,–</span><span data-lang="en">5 pcs — € 11,–</span><span data-lang="ko">5개 — € 11,–</span></td>
+        </tr>
+        <tr>
+          <td><span data-lang="de">Large</span><span data-lang="en">Large</span><span data-lang="ko">라지</span></td>
+          <td><span data-lang="de">12 Stk. — € 16,–</span><span data-lang="en">12 pcs — € 16,–</span><span data-lang="ko">12개 — € 16,–</span></td>
+          <td><span data-lang="de">8 Stk. — € 16,–</span><span data-lang="en">8 pcs — € 16,–</span><span data-lang="ko">8개 — € 16,–</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="section-note" style="margin-top:16px">
+    <span data-lang="de">+ Reis € 2 &nbsp;|&nbsp; + Kimchi € 4 &nbsp;|&nbsp; + Yuzu Coleslaw Salat € 5</span>
+    <span data-lang="en">+ Rice € 2 &nbsp;|&nbsp; + Kimchi € 4 &nbsp;|&nbsp; + Yuzu Coleslaw Salad € 5</span>
+    <span data-lang="ko">+ 밥 € 2 &nbsp;|&nbsp; + 김치 € 4 &nbsp;|&nbsp; + 유자 코올슬로 샐러드 € 5</span>
+  </div>
+</section>
+
+<!-- ═══ CUPBAP ═══ -->
+<section class="menu-section" id="cupbap">
+  <div class="section-eyebrow">04</div>
+  <div class="section-title"><span data-lang="de">Cupbap</span><span data-lang="en">Cupbap</span><span data-lang="ko">컵밥</span></div>
+  <div class="section-note">
+    <span data-lang="de">Koreanische Reisschüssel</span>
+    <span data-lang="en">Korean rice bowl</span>
+    <span data-lang="ko">한국식 컵밥</span>
+  </div>
+  <div class="section-divider"></div>
+  <div class="items-grid">
+
+    <div class="menu-item">
+      <div class="item-body">
+        <div class="item-name">Bulgogi</div>
+        <div class="item-desc">
+          <span data-lang="de">Mariniertes Rindfleisch und Gemüse</span>
+          <span data-lang="en">Marinated beef and vegetables</span>
+          <span data-lang="ko">불고기와 채소</span>
+        </div>
+      </div>
+      <div class="item-price-wrap"><div class="item-price">€ 12,–</div></div>
+    </div>
+
+    <div class="menu-item">
+      <div class="item-body">
+        <div class="item-name">Spicy Dakgalbi <span style="color:#f59e0b;font-size:0.75rem">★</span> <span class="tag" style="background:#e8f5e9;color:#2e7d32;font-size:0.6rem;letter-spacing:0.06em;padding:2px 6px;border-radius:3px;font-weight:700">HALAL</span></div>
+        <div class="item-desc">
+          <span data-lang="de">Würziges gebratenes Hähnchen mit Gemüse</span>
+          <span data-lang="en">Stir-fried spicy chicken with vegetables</span>
+          <span data-lang="ko">매콤한 닭갈비와 채소</span>
+        </div>
         <div class="item-tags"><span class="tag tag-scharf">Scharf</span></div>
       </div>
       <div class="item-price-wrap"><div class="item-price">€ 12,–</div></div>
@@ -382,10 +561,12 @@ body.admin-mode .menu-item{position:relative;border:1px dashed rgba(212,43,43,0.
 
     <div class="menu-item">
       <div class="item-body">
-        <div class="item-code">D3</div>
-        <div class="item-name" id="n-D3">Seoulmate Chicken</div>
-        <span class="item-ko">씰메이트 치킨</span>
-        <div class="item-desc"><span data-lang="de">Knuspriges Chicken auf Reis</span><span data-lang="en">Crispy chicken on rice</span><span data-lang="ko">바삭한 씰메이트 치킨 덮밥</span></div>
+        <div class="item-name">Seoulmate Chicken</div>
+        <div class="item-desc">
+          <span data-lang="de">Seoulmate Chicken, Ei</span>
+          <span data-lang="en">Seoulmate Chicken, egg</span>
+          <span data-lang="ko">씰메이트 치킨, 달걀</span>
+        </div>
         <div class="item-tags"><span class="tag tag-pikant">Pikant</span></div>
       </div>
       <div class="item-price-wrap"><div class="item-price">€ 12,–</div></div>
@@ -393,20 +574,50 @@ body.admin-mode .menu-item{position:relative;border:1px dashed rgba(212,43,43,0.
 
     <div class="menu-item">
       <div class="item-body">
-        <div class="item-code">D4</div>
-        <div class="item-name" id="n-D4">Tuna Mayo</div>
-        <span class="item-ko">참치마요</span>
-        <div class="item-desc"><span data-lang="de">Thunfisch &amp; Mayonnaise auf Reis</span><span data-lang="en">Tuna &amp; mayo on rice</span><span data-lang="ko">참치마요 덮밥</span></div>
+        <div class="item-name">Spicy Tofu <span class="tag tag-veg">Veg</span></div>
+        <div class="item-desc">
+          <span data-lang="de">Würziges gebratenes Tofu mit Gemüse</span>
+          <span data-lang="en">Stir-fried spicy Tofu with vegetables</span>
+          <span data-lang="ko">매콤한 두부볶음과 채소</span>
+        </div>
+        <div class="item-tags"><span class="tag tag-scharf">Scharf</span></div>
+      </div>
+      <div class="item-price-wrap"><div class="item-price">€ 12,–</div></div>
+    </div>
+
+    <div class="menu-item">
+      <div class="item-body">
+        <div class="item-name">Tuna Mayo</div>
+        <div class="item-desc">
+          <span data-lang="de">Thunfisch Mayo mit Ei, Nori</span>
+          <span data-lang="en">Tuna mayo with egg, Nori</span>
+          <span data-lang="ko">참치마요, 달걀, 노리</span>
+        </div>
       </div>
       <div class="item-price-wrap"><div class="item-price">€ 11,–</div></div>
     </div>
 
     <div class="menu-item">
       <div class="item-body">
-        <div class="item-code">D5</div>
-        <div class="item-name" id="n-D5">Kimchi Tuna</div>
-        <span class="item-ko">김치참치</span>
-        <div class="item-desc"><span data-lang="de">Kimchi &amp; Thunfisch auf Reis</span><span data-lang="en">Kimchi &amp; tuna on rice</span><span data-lang="ko">김치 참치 덮밥</span></div>
+        <div class="item-name">Kimchi Tuna</div>
+        <div class="item-desc">
+          <span data-lang="de">Gebratenes Kimchi mit Thunfisch, Ei, Nori, Mayo</span>
+          <span data-lang="en">Stir-fried kimchi with tuna, egg, Nori, Mayo</span>
+          <span data-lang="ko">볶음 김치, 참치, 달걀, 노리, 마요</span>
+        </div>
+        <div class="item-tags"><span class="tag tag-pikant">Pikant</span></div>
+      </div>
+      <div class="item-price-wrap"><div class="item-price">€ 11,–</div></div>
+    </div>
+
+    <div class="menu-item">
+      <div class="item-body">
+        <div class="item-name">Kimchi Rice <span class="tag tag-veg">Veg</span></div>
+        <div class="item-desc">
+          <span data-lang="de">Gebratener Kimchi-Reis, Nori</span>
+          <span data-lang="en">Stir-fried kimchi rice, Nori</span>
+          <span data-lang="ko">볶음 김치밥, 노리</span>
+        </div>
         <div class="item-tags"><span class="tag tag-pikant">Pikant</span></div>
       </div>
       <div class="item-price-wrap"><div class="item-price">€ 11,–</div></div>
@@ -419,47 +630,70 @@ body.admin-mode .menu-item{position:relative;border:1px dashed rgba(212,43,43,0.
 <section class="menu-section" id="gimbap">
   <div class="section-eyebrow">05</div>
   <div class="section-title"><span data-lang="de">Gimbap</span><span data-lang="en">Gimbap</span><span data-lang="ko">김밥</span></div>
-  <div class="section-note"><span data-lang="de">Koreanische Reisrollen</span><span data-lang="en">Korean seaweed rice rolls</span><span data-lang="ko">한국식 김밥 — 한 줄</span></div>
+  <div class="section-note">
+    <span data-lang="de">Koreanische Reisrollen</span>
+    <span data-lang="en">Korean rice rolls</span>
+    <span data-lang="ko">한국식 김밥</span>
+  </div>
   <div class="section-divider"></div>
   <div class="items-grid">
 
     <div class="menu-item">
       <div class="item-body">
-        <div class="item-code">G1</div>
-        <div class="item-name" id="n-G1">Original</div>
-        <span class="item-ko">오리지널</span>
-        <div class="item-desc"><span data-lang="de">Klassische Gimbap-Rolle</span><span data-lang="en">Classic gimbap roll</span><span data-lang="ko">클래식 오리지널 김밥</span></div>
+        <div class="item-name">Original <span class="tag" style="background:#e8f5e9;color:#2e7d32;font-size:0.6rem;letter-spacing:0.06em;padding:2px 6px;border-radius:3px;font-weight:700">HALAL</span></div>
+        <div class="item-desc">
+          <span data-lang="de">Schinken, Möhre, Ei, Gurke, Danmuji</span>
+          <span data-lang="en">Ham, carrot, egg, cucumber, danmuji</span>
+          <span data-lang="ko">햄, 당근, 달걀, 오이, 단무지</span>
+        </div>
       </div>
       <div class="item-price-wrap"><div class="item-price">€ 9,–</div></div>
     </div>
 
     <div class="menu-item">
       <div class="item-body">
-        <div class="item-code">G2</div>
-        <div class="item-name" id="n-G2">Veggie</div>
-        <span class="item-ko">야채</span>
-        <div class="item-desc"><span data-lang="de">Vegetarisch</span><span data-lang="en">Vegetarian</span><span data-lang="ko">야채 가득 채식 김밥</span></div>
-        <div class="item-tags"><span class="tag tag-veg">Vegetarisch</span></div>
+        <div class="item-name">Veggie <span class="tag tag-veg">Veg</span></div>
+        <div class="item-desc">
+          <span data-lang="de">Möhre, Ei, Gurke, Danmuji</span>
+          <span data-lang="en">Carrot, egg, cucumber, danmuji</span>
+          <span data-lang="ko">당근, 달걀, 오이, 단무지</span>
+        </div>
       </div>
       <div class="item-price-wrap"><div class="item-price">€ 9,–</div></div>
     </div>
 
     <div class="menu-item">
       <div class="item-body">
-        <div class="item-code">G3</div>
-        <div class="item-name" id="n-G3">Ham &amp; Cheese</div>
-        <span class="item-ko">햄치즈</span>
-        <div class="item-desc"><span data-lang="de">Schinken &amp; Käse</span><span data-lang="en">Ham &amp; cheese</span><span data-lang="ko">햄과 치즈 김밥</span></div>
+        <div class="item-name">Ham &amp; Cheese <span class="tag" style="background:#e8f5e9;color:#2e7d32;font-size:0.6rem;letter-spacing:0.06em;padding:2px 6px;border-radius:3px;font-weight:700">HALAL</span></div>
+        <div class="item-desc">
+          <span data-lang="de">Schinken, Käse, Möhre, Ei, Gurke, Danmuji</span>
+          <span data-lang="en">Ham, Cheese, carrot, egg, cucumber, danmuji</span>
+          <span data-lang="ko">햄, 치즈, 당근, 달걀, 오이, 단무지</span>
+        </div>
       </div>
       <div class="item-price-wrap"><div class="item-price">€ 10,–</div></div>
     </div>
 
     <div class="menu-item">
       <div class="item-body">
-        <div class="item-code">G4</div>
-        <div class="item-name" id="n-G4">Mukeunji</div>
-        <span class="item-ko">묵은지</span>
-        <div class="item-desc"><span data-lang="de">Gereifter Kimchi</span><span data-lang="en">Aged kimchi</span><span data-lang="ko">깊은 맛의 묵은지 김밥</span></div>
+        <div class="item-name">Tuna Mayo <span style="color:#f59e0b;font-size:0.75rem">★</span></div>
+        <div class="item-desc">
+          <span data-lang="de">Thunfisch &amp; Mayo, Ei, Möhre, Gurke</span>
+          <span data-lang="en">Tuna &amp; mayo, egg, carrot, cucumber</span>
+          <span data-lang="ko">참치마요, 달걀, 당근, 오이</span>
+        </div>
+      </div>
+      <div class="item-price-wrap"><div class="item-price">€ 11,–</div></div>
+    </div>
+
+    <div class="menu-item">
+      <div class="item-body">
+        <div class="item-name">Mukeunji (Kimchi) Veggie <span class="tag tag-veg">Veg</span></div>
+        <div class="item-desc">
+          <span data-lang="de">Mukeunji (Gereifter Kimchi), Möhre, Ei, Gurke</span>
+          <span data-lang="en">Mukeunji (Aged kimchi), carrot, egg, cucumber</span>
+          <span data-lang="ko">묵은지, 당근, 달걀, 오이</span>
+        </div>
         <div class="item-tags"><span class="tag tag-pikant">Pikant</span></div>
       </div>
       <div class="item-price-wrap"><div class="item-price">€ 11,–</div></div>
@@ -467,20 +701,25 @@ body.admin-mode .menu-item{position:relative;border:1px dashed rgba(212,43,43,0.
 
     <div class="menu-item">
       <div class="item-body">
-        <div class="item-code">G5</div>
-        <div class="item-name" id="n-G5">Tuna Mayo</div>
-        <span class="item-ko">참치마요</span>
-        <div class="item-desc"><span data-lang="de">Thunfisch &amp; Mayonnaise</span><span data-lang="en">Tuna &amp; mayo</span><span data-lang="ko">참치마요 김밥</span></div>
+        <div class="item-name">Mukeunji (Kimchi)</div>
+        <div class="item-desc">
+          <span data-lang="de">Mukeunji (Gereifter Kimchi), Thunfisch &amp; Mayo, Möhre, Ei</span>
+          <span data-lang="en">Mukeunji (Aged kimchi), tuna &amp; mayo, carrot, egg</span>
+          <span data-lang="ko">묵은지, 참치마요, 당근, 달걀</span>
+        </div>
+        <div class="item-tags"><span class="tag tag-pikant">Pikant</span></div>
       </div>
-      <div class="item-price-wrap"><div class="item-price">€ 11,–</div></div>
+      <div class="item-price-wrap"><div class="item-price">€ 12,–</div></div>
     </div>
 
     <div class="menu-item">
       <div class="item-body">
-        <div class="item-code">G6</div>
-        <div class="item-name" id="n-G6">Bulgogi</div>
-        <span class="item-ko">불고기</span>
-        <div class="item-desc"><span data-lang="de">Mariniertes Rindfleisch</span><span data-lang="en">Marinated beef</span><span data-lang="ko">소불고기 김밥</span></div>
+        <div class="item-name">Bulgogi</div>
+        <div class="item-desc">
+          <span data-lang="de">Bulgogi, Möhre, Ei, Gurke, Danmuji</span>
+          <span data-lang="en">Bulgogi, carrot, egg, cucumber, danmuji</span>
+          <span data-lang="ko">불고기, 당근, 달걀, 오이, 단무지</span>
+        </div>
       </div>
       <div class="item-price-wrap"><div class="item-price">€ 12,–</div></div>
     </div>
@@ -488,44 +727,175 @@ body.admin-mode .menu-item{position:relative;border:1px dashed rgba(212,43,43,0.
   </div>
 </section>
 
-<!-- ═══ BITES ═══ -->
-<section class="menu-section" id="bites">
+<!-- ═══ SIDE MENU ═══ -->
+<section class="menu-section" id="side">
   <div class="section-eyebrow">06</div>
-  <div class="section-title"><span data-lang="de">Bites</span><span data-lang="en">Bites</span><span data-lang="ko">비츠</span></div>
-  <div class="section-note"><span data-lang="de">Kleine Snacks &amp; Häppchen</span><span data-lang="en">Small snacks &amp; bites</span><span data-lang="ko">작은 스낵 &amp; 간식</span></div>
+  <div class="section-title"><span data-lang="de">Side Menu</span><span data-lang="en">Side Menu</span><span data-lang="ko">사이드</span></div>
+  <div class="section-note">
+    <span data-lang="de">Koreanische Beilagen</span>
+    <span data-lang="en">Korean side dishes</span>
+    <span data-lang="ko">한국식 사이드 메뉴</span>
+  </div>
   <div class="section-divider"></div>
   <div class="extras-grid">
 
     <div class="menu-item">
       <div class="item-body">
-        <div class="item-code">B1</div>
-        <div class="item-name" id="n-B1">Cup-Tteokbokki</div>
-        <span class="item-ko">컵떡볶이</span>
-        <div class="item-desc"><span data-lang="de">Kleine Portion Tteokbokki im Becher</span><span data-lang="en">Small portion tteokbokki in a cup</span><span data-lang="ko">작은 컵 사이즈 떡볶이</span></div>
-        <div class="item-tags"><span class="tag tag-scharf">Scharf</span></div>
+        <div class="item-name">Kimchi <span class="tag tag-veg">Veg</span></div>
+        <div class="item-desc">
+          <span data-lang="de">Koreanisches fermentiertes Weißkohl</span>
+          <span data-lang="en">Korean fermented Cabbage</span>
+          <span data-lang="ko">한국식 발효 배추 김치</span>
+        </div>
       </div>
-      <div class="item-price-wrap"><div class="item-price">€ 3,–</div></div>
+      <div class="item-price-wrap"><div class="item-price">€ 4,–</div></div>
     </div>
 
     <div class="menu-item">
       <div class="item-body">
-        <div class="item-code">B2</div>
-        <div class="item-name" id="n-B2">So-Tteok So-Tteok</div>
-        <span class="item-ko">소떡소떡</span>
-        <div class="item-desc"><span data-lang="de">Würstchen &amp; Reiskuchen am Spieß</span><span data-lang="en">Sausage &amp; rice cake on a skewer</span><span data-lang="ko">소시지와 떡을 번갈아 꽂은 꼬치</span></div>
-      </div>
-      <div class="item-price-wrap"><div class="item-price">€ 3,–</div></div>
-    </div>
-
-    <div class="menu-item">
-      <div class="item-body">
-        <div class="item-code">B3</div>
-        <div class="item-name" id="n-B3">Mandu</div>
-        <span class="item-ko">만두</span>
-        <div class="item-desc"><span data-lang="de">9 Stück, vegetarisch oder Hühnchen</span><span data-lang="en">9 pieces, veggie or chicken</span><span data-lang="ko">9개, 야채 또는 치킨 만두</span></div>
-        <div class="item-tags"><span class="tag tag-veg">Veg. verfügbar</span></div>
+        <div class="item-name">Yuzu Coleslaw Salad <span style="color:#f59e0b;font-size:0.75rem">★</span> <span class="tag tag-veg">Veg</span></div>
+        <div class="item-desc">
+          <span data-lang="de">Kohl- &amp; Möhrensalat mit Yuzu-Dressing</span>
+          <span data-lang="en">Cabbage &amp; carrot salad with yuzu dressing</span>
+          <span data-lang="ko">양배추 &amp; 당근 샐러드, 유자 드레싱</span>
+        </div>
       </div>
       <div class="item-price-wrap"><div class="item-price">€ 5,–</div></div>
+    </div>
+
+    <div class="menu-item">
+      <div class="item-body">
+        <div class="item-name">Tteok-kochi <span style="color:#f59e0b;font-size:0.75rem">★</span> <span class="tag tag-veg">Veg</span></div>
+        <div class="item-desc">
+          <span data-lang="de">Gegrillter Reiskuchen-Spieß, süß-scharfe Sauce</span>
+          <span data="en">Grilled rice cake skewer, sweet-spicy sauce</span>
+          <span data-lang="en">Grilled rice cake skewer, sweet-spicy sauce</span>
+          <span data-lang="ko">구운 떡꼬치, 달콤 매콤 소스</span>
+        </div>
+        <div class="item-tags"><span class="tag tag-pikant">Pikant</span></div>
+      </div>
+      <div class="item-price-wrap"><div class="item-price">€ 5,–</div></div>
+    </div>
+
+    <div class="menu-item">
+      <div class="item-body">
+        <div class="item-name">Yuzu Cucumber Salad <span class="tag tag-veg">Veg</span></div>
+        <div class="item-desc">
+          <span data-lang="de">Gurkensalat, hausgemachtes Yuzu-Dressing</span>
+          <span data-lang="en">Cucumber salad, homemade yuzu dressing</span>
+          <span data-lang="ko">오이 샐러드, 직접 만든 유자 드레싱</span>
+        </div>
+      </div>
+      <div class="item-price-wrap"><div class="item-price">€ 5,–</div></div>
+    </div>
+
+    <div class="menu-item">
+      <div class="item-body">
+        <div class="item-name">So-Tteok So-Tteok <span class="tag" style="background:#e8f5e9;color:#2e7d32;font-size:0.6rem;letter-spacing:0.06em;padding:2px 6px;border-radius:3px;font-weight:700">HALAL</span></div>
+        <div class="item-desc">
+          <span data-lang="de">Gegrillter Reiskuchen &amp; Hähnchenwurst-Spieß, süß-scharfe Sauce</span>
+          <span data-lang="en">Grilled rice cake &amp; chicken sausage skewer, sweet-spicy sauce</span>
+          <span data-lang="ko">구운 떡 &amp; 닭 소시지 꼬치, 달콤 매콤 소스</span>
+        </div>
+        <div class="item-tags"><span class="tag tag-pikant">Pikant</span></div>
+      </div>
+      <div class="item-price-wrap"><div class="item-price">€ 5,–</div></div>
+    </div>
+
+    <div class="menu-item">
+      <div class="item-body">
+        <div class="item-name">Cold Tofu <span class="tag tag-veg">Veg</span></div>
+        <div class="item-desc">
+          <span data-lang="de">Tofu mit hausgemachter Sojasoße</span>
+          <span data-lang="en">Tofu with homemade Soy sauce</span>
+          <span data-lang="ko">두부, 직접 만든 간장 소스</span>
+        </div>
+      </div>
+      <div class="item-price-wrap"><div class="item-price">€ 5,–</div></div>
+    </div>
+
+    <div class="menu-item">
+      <div class="item-body">
+        <div class="item-name">Fried Mandu</div>
+        <div class="item-desc">
+          <span data-lang="de">Hähnchen / Kimchi Hähnchen / Bulgogi / Tofu <span class="tag tag-veg">Veg</span> — Knusprig frittierte Knödel, 4 Stk.</span>
+          <span data-lang="en">Chicken / Kimchi Chicken / Bulgogi / Tofu <span class="tag tag-veg">Veg</span> — Fried crispy dumplings, 4 pcs.</span>
+          <span data-lang="ko">치킨 / 김치 치킨 / 불고기 / 두부 <span class="tag tag-veg">Veg</span> — 바삭한 군만두 4개</span>
+        </div>
+      </div>
+      <div class="item-price-wrap"><div class="item-price">€ 5,–</div></div>
+    </div>
+
+    <div class="menu-item">
+      <div class="item-body">
+        <div class="item-name">Yachae-Jeon <span class="tag tag-veg">Veg</span></div>
+        <div class="item-desc">
+          <span data-lang="de">Vegane Gemüsepfannkuchen, 2 Stk.</span>
+          <span data-lang="en">Vegan vegetable pancakes, 2 pcs.</span>
+          <span data-lang="ko">비건 야채전 2개</span>
+        </div>
+      </div>
+      <div class="item-price-wrap"><div class="item-price">€ 6,–</div></div>
+    </div>
+
+    <div class="menu-item">
+      <div class="item-body">
+        <div class="item-name">Gimmari / Spicy Gimmari <span class="tag tag-veg">Veg</span></div>
+        <div class="item-desc">
+          <span data-lang="de">Frittierte Glasnudelrollen, 4 Stk.</span>
+          <span data-lang="en">Fried glass noodle-rolls, 4 pcs.</span>
+          <span data-lang="ko">튀긴 당면 김말이 4개</span>
+        </div>
+      </div>
+      <div class="item-price-wrap"><div class="item-price">€ 6,–</div></div>
+    </div>
+
+    <div class="menu-item">
+      <div class="item-body">
+        <div class="item-name">Kimchi-Jeon</div>
+        <div class="item-desc">
+          <span data-lang="de">Mini-Kimchi-Pfannkuchen mit Tintenfisch, 4 Stk.</span>
+          <span data-lang="en">Mini Kimchi pancakes with squid, 4 pcs.</span>
+          <span data-lang="ko">미니 김치전 (오징어 포함) 4개</span>
+        </div>
+      </div>
+      <div class="item-price-wrap"><div class="item-price">€ 7,–</div></div>
+    </div>
+
+    <div class="menu-item">
+      <div class="item-body">
+        <div class="item-name">Steamed Mandu Kimchi / Spicy <span class="tag tag-veg">Veg</span></div>
+        <div class="item-desc">
+          <span data-lang="de">Gedämpfte würzige Veggie-Knödel, 6 Stk.</span>
+          <span data-lang="en">Steamed spicy veggie dumplings, 6 pcs.</span>
+          <span data-lang="ko">쪄낸 매콤 야채 만두 6개</span>
+        </div>
+      </div>
+      <div class="item-price-wrap"><div class="item-price">€ 6,–</div></div>
+    </div>
+
+    <div class="menu-item">
+      <div class="item-body">
+        <div class="item-name">Tofu Kimchi <span class="tag tag-veg">Veg</span></div>
+        <div class="item-desc">
+          <span data-lang="de">Heißes Tofu mit gebratenem Kimchi</span>
+          <span data-lang="en">Hot Tofu with grilled Kimchi</span>
+          <span data-lang="ko">따뜻한 두부에 구운 김치</span>
+        </div>
+      </div>
+      <div class="item-price-wrap"><div class="item-price">€ 8,–</div></div>
+    </div>
+
+    <div class="menu-item">
+      <div class="item-body">
+        <div class="item-name">Kimchi 500g <span class="tag tag-veg">Veg</span></div>
+        <div class="item-desc">
+          <span data-lang="de">Kimchi zum Mitnehmen, 500g</span>
+          <span data-lang="en">Kimchi to go, 500g</span>
+          <span data-lang="ko">김치 500g (포장)</span>
+        </div>
+      </div>
+      <div class="item-price-wrap"><div class="item-price">€ 8,–</div></div>
     </div>
 
   </div>
@@ -646,7 +1016,7 @@ function scrollToSection(id){
   document.querySelectorAll('.nav-tab').forEach(function(t){ t.classList.remove('active'); });
   event.currentTarget.classList.add('active');
 }
-const secs = ['tteokbokki','corndog','chicken','deopbap','gimbap','bites'];
+const secs = ['tteokbokki','noodle','chicken','cupbap','gimbap','side'];
 const obs = new IntersectionObserver(function(entries){
   entries.forEach(function(e){
     if(e.isIntersecting){

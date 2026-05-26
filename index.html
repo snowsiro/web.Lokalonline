@@ -247,7 +247,7 @@
           <div class="mosaic-overlay"></div>
           <div class="mosaic-info">
             <div class="mosaic-cat" data-de="GASTRONOMIE" data-en="RESTAURANT">GASTRONOMIE</div>
-            <div class="mosaic-name">Yori2 · Wien 3</div>
+            <div class="mosaic-name">Yori2 · Wien 6</div>
           </div>
         </a>
 
@@ -276,6 +276,8 @@
   <!-- ░░ PRICING ░░ -->
   <section class="section pricing" id="pricing">
     <div class="container">
+      <span class="section-tag" data-de="PREISE" data-en="PRICING">PREISE</span>
+      <h2 class="section-title" data-de="Alles inklusive — €29/Monat" data-en="All inclusive — €29/month">Alles inklusive — €29/Monat</h2>
       <div class="pricing-card-wrap">
         <div class="pricing-card">
           <span class="pricing-tag" data-de="ALLES INKLUSIVE" data-en="ALL INCLUSIVE">ALLES INKLUSIVE</span>
@@ -288,11 +290,23 @@
           <p class="pricing-note" data-de="Hosting, Wartung, Support und regelmäßige Updates inklusive. Keine Einrichtungsgebühren, kein Risiko." data-en="Hosting, maintenance, support and regular updates included. No setup fees, no risk.">
             Hosting, Wartung, Support und regelmäßige Updates inklusive.<br>Keine Einrichtungsgebühren, kein Risiko.
           </p>
+          <ul class="pricing-features" style="list-style:none;text-align:left;margin-bottom:28px;display:flex;flex-direction:column;gap:10px">
+            <li class="pricing-check" data-de="Professionelle Einzelseiten-Website" data-en="Professional single-page website">Professionelle Einzelseiten-Website</li>
+            <li class="pricing-check" data-de="Eigene Adresse (lokalonline.at/ihr-betrieb)" data-en="Own address (lokalonline.at/your-business)">Eigene Adresse (lokalonline.at/ihr-betrieb)</li>
+            <li class="pricing-check" data-de="Mobilfreundliches Design" data-en="Mobile-friendly design">Mobilfreundliches Design</li>
+            <li class="pricing-check" data-de="Digitale Speisekarte + QR-Code" data-en="Digital menu + QR code">Digitale Speisekarte + QR-Code</li>
+            <li class="pricing-check" data-de="SNS Profilseite (Link-in-Bio)" data-en="SNS profile page (link-in-bio)">SNS Profilseite (Link-in-Bio)</li>
+            <li class="pricing-check" data-de="Kundenbewertungen auf der Website" data-en="Customer reviews on the website">Kundenbewertungen auf der Website</li>
+            <li class="pricing-check" data-de="Updates & Support inklusive" data-en="Updates & support included">Updates &amp; Support inklusive</li>
+          </ul>
           <hr class="pricing-divider" />
           <div class="pricing-checks">
             <span class="pricing-check" data-de="Keine versteckten Kosten" data-en="No hidden fees">Keine versteckten Kosten</span>
             <span class="pricing-check" data-de="Jederzeit kündbar" data-en="Cancel anytime">Jederzeit kündbar</span>
             <span class="pricing-check" data-de="Persönlicher Kontakt in Wien" data-en="Personal contact in Vienna">Persönlicher Kontakt in Wien</span>
+          </div>
+          <div style="margin-top:28px">
+            <a href="#contact" class="btn btn-primary btn-full" style="border-radius:100px;padding:14px 24px;font-size:16px" data-de="Jetzt kostenlos anfragen" data-en="Request for free">Jetzt kostenlos anfragen</a>
           </div>
         </div>
       </div>
@@ -314,35 +328,46 @@
 
         <div class="contact-right">
           <form class="contact-form" id="contactForm">
-            <!-- hidden fields kept for JS compatibility -->
-            <input type="hidden" id="name" name="name" value="—" />
-
-            <div class="form-field">
-              <label for="business" data-de="NAME DES LOKALS" data-en="BUSINESS NAME">NAME DES LOKALS</label>
-              <input type="text" id="business" name="business" placeholder="z.B. Café Zentral" />
+            <div class="form-row-two">
+              <div class="form-field">
+                <label for="name" data-de="IHR NAME *" data-en="YOUR NAME *">IHR NAME *</label>
+                <input type="text" id="name" name="name" required placeholder="Maria Mustermann" />
+              </div>
+              <div class="form-field">
+                <label for="business" data-de="BETRIEBSNAME" data-en="BUSINESS NAME">BETRIEBSNAME</label>
+                <input type="text" id="business" name="business" placeholder="Café Zentral" />
+              </div>
+            </div>
+            <div class="form-row-two">
+              <div class="form-field">
+                <label for="email" data-de="E-MAIL-ADRESSE *" data-en="EMAIL ADDRESS *">E-MAIL-ADRESSE *</label>
+                <input type="email" id="email" name="email" required placeholder="ihre@adresse.at" />
+              </div>
+              <div class="form-field">
+                <label for="phone" data-de="TELEFON (OPTIONAL)" data-en="PHONE (OPTIONAL)">TELEFON (OPTIONAL)</label>
+                <input type="tel" id="phone" name="phone" placeholder="+43 660 000 00 00" />
+              </div>
             </div>
             <div class="form-field">
-              <label for="email" data-de="EMAIL ADRESSE" data-en="EMAIL ADDRESS">EMAIL ADRESSE</label>
-              <input type="email" id="email" name="email" required placeholder="ihre@adresse.at" />
+              <label for="plan" data-de="INTERESSIERTER PLAN" data-en="INTERESTED PLAN">INTERESSIERTER PLAN</label>
+              <select id="plan" name="plan">
+                <option value="flat" selected data-de="Flat — €29/Monat" data-en="Flat — €29/month">Flat — €29/Monat</option>
+                <option value="unsure" data-de="Noch nicht sicher" data-en="Not sure yet">Noch nicht sicher</option>
+              </select>
             </div>
             <div class="form-field">
-              <label for="message" data-de="NACHRICHT" data-en="MESSAGE">NACHRICHT</label>
+              <label for="message" data-de="IHRE NACHRICHT" data-en="YOUR MESSAGE">IHRE NACHRICHT</label>
               <textarea id="message" name="message" rows="4" placeholder="Wie können wir helfen?"></textarea>
             </div>
-            <!-- hidden fields -->
-            <input type="hidden" id="phone" name="phone" value="" />
-            <select id="plan" name="plan" style="display:none">
-              <option value="standard" selected>Standard</option>
-            </select>
 
             <label class="form-check-label">
               <input type="checkbox" name="dsgvo" required />
-              <span data-de="Ich stimme zu, dass meine Daten zur Kontaktaufnahme gemäß DSGVO verarbeitet werden." data-en="I agree that my data will be processed for contact purposes in accordance with GDPR.">
-                Ich stimme zu, dass meine Daten zur Kontaktaufnahme gemäß <a href="/impressum.html" style="color:var(--orange)">DSGVO</a> verarbeitet werden.
+              <span data-de="Ich stimme der Verarbeitung meiner Daten gemäß der Datenschutzerklärung zu." data-en="I agree to the processing of my data in accordance with the privacy policy.">
+                Ich stimme der Verarbeitung meiner Daten gemäß der <a href="/impressum.html" style="color:var(--orange)">Datenschutzerklärung</a> zu. *
               </span>
             </label>
 
-            <button type="submit" class="btn btn-dark" style="align-self:flex-start;padding:13px 32px" data-de="Anfrage senden" data-en="Send inquiry">Anfrage senden</button>
+            <button type="submit" class="btn btn-dark" style="align-self:flex-start;padding:13px 32px" data-de="Anfrage absenden" data-en="Send inquiry">Anfrage absenden</button>
 
             <div class="form-success" id="formSuccess">
               <span data-de="✓ Ihre Anfrage wurde gesendet! Wir melden uns bald." data-en="✓ Your inquiry was sent! We'll be in touch soon.">
@@ -360,10 +385,10 @@
   <div class="popup-overlay" id="promoOverlay">
     <div class="popup" id="promoPopup" role="dialog" aria-modal="true">
       <button class="popup-close" id="promoClose" aria-label="Schließen">✕</button>
-      <div class="popup-label">LIMITED OFFER</div>
-      <div class="popup-title" data-de="Early Bird Rabatt" data-en="Early Bird Discount">Early Bird Rabatt</div>
-      <p class="popup-text" data-de="Die ersten 3 Monate um nur €19 sichern. Nur für die nächsten 5 Kunden aus Wien!" data-en="Lock in the first 3 months for just €19. Only for the next 5 customers in Vienna!">
-        Die ersten 3 Monate um nur €19 sichern. Nur für die nächsten 5 Kunden aus Wien!
+      <div class="popup-label">🎉 EARLY BIRD</div>
+      <div class="popup-title" data-de="Erster Monat gratis!" data-en="First month free!">Erster Monat gratis!</div>
+      <p class="popup-text" data-de="Für die ersten 10 Kunden: starten Sie ohne Risiko — der erste Monat ist kostenlos. Danach nur €29/Monat." data-en="For the first 10 customers: start risk-free — your first month is on us. Then just €29/month.">
+        Für die ersten 10 Kunden: starten Sie ohne Risiko — der erste Monat ist kostenlos. Danach nur <strong style="color:#fff">€29/Monat</strong>.
       </p>
       <!-- kept for JS compatibility -->
       <div class="popup-badge" style="display:none"></div>

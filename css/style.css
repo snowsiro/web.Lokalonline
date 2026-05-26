@@ -536,6 +536,8 @@ img { max-width: 100%; display: block; }
 }
 /* form */
 .contact-form { display: flex; flex-direction: column; gap: 14px; }
+.form-row-two { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+@media (max-width: 560px) { .form-row-two { grid-template-columns: 1fr; } }
 .form-field label {
   display: block;
   font-size: 10px;

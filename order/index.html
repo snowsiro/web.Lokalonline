@@ -1,22 +1,23 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="de">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>주문하기 — lokalonline.at</title>
+  <title>Anfrage stellen — lokalonline.at</title>
   <meta name="robots" content="noindex" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
-      --primary: #2563eb;
-      --primary-dark: #1d4ed8;
-      --bg: #f8fafc;
+      --orange: #e06535;
+      --orange-dark: #c9572a;
+      --dark: #1b0d07;
+      --bg: #f9f6f3;
       --card: #ffffff;
-      --border: #e2e8f0;
-      --text: #0f172a;
-      --text-muted: #64748b;
+      --border: #e8e0d8;
+      --text: #1b0d07;
+      --text-muted: #7a6a60;
       --error: #dc2626;
       --success: #16a34a;
       --radius: 12px;
@@ -29,37 +30,77 @@
     }
     /* Header */
     .order-header {
-      background: #fff;
-      border-bottom: 1px solid var(--border);
-      padding: 16px 24px;
+      background: var(--dark);
+      padding: 0 24px;
+      height: 60px;
       display: flex;
       align-items: center;
       justify-content: space-between;
     }
     .order-logo {
-      font-size: 18px;
+      font-size: 17px;
       font-weight: 700;
-      color: var(--text);
+      color: #fff;
       text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
-    .order-logo span { color: var(--primary); }
+    .order-logo .dot {
+      width: 8px; height: 8px;
+      background: var(--orange);
+      border-radius: 50%;
+      display: inline-block;
+    }
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .lang-toggle {
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.2);
+      color: rgba(255,255,255,0.8);
+      font-family: inherit;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 5px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.2s;
+      letter-spacing: 0.05em;
+    }
+    .lang-toggle:hover { background: rgba(255,255,255,0.18); }
     .order-secure {
       font-size: 12px;
-      color: var(--text-muted);
+      color: rgba(255,255,255,0.45);
       display: flex;
       align-items: center;
       gap: 4px;
     }
     /* Wrapper */
     .order-wrap {
-      max-width: 560px;
+      max-width: 580px;
       margin: 0 auto;
-      padding: 32px 16px 64px;
+      padding: 36px 16px 72px;
+    }
+    /* Intro */
+    .order-intro {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+    .order-intro h1 {
+      font-size: 22px;
+      font-weight: 800;
+      margin-bottom: 6px;
+    }
+    .order-intro p {
+      font-size: 14px;
+      color: var(--text-muted);
+      line-height: 1.6;
     }
     /* Progress */
-    .progress-wrap {
-      margin-bottom: 32px;
-    }
+    .progress-wrap { margin-bottom: 28px; }
     .progress-steps {
       display: flex;
       align-items: center;
@@ -84,10 +125,9 @@
       z-index: 0;
       transition: background .3s;
     }
-    .progress-step.done:not(:last-child)::after { background: var(--primary); }
+    .progress-step.done:not(:last-child)::after { background: var(--orange); }
     .step-circle {
-      width: 32px;
-      height: 32px;
+      width: 32px; height: 32px;
       border-radius: 50%;
       background: var(--border);
       color: var(--text-muted);
@@ -100,21 +140,16 @@
       z-index: 1;
       transition: background .3s, color .3s;
     }
-    .progress-step.active .step-circle {
-      background: var(--primary);
-      color: #fff;
-    }
-    .progress-step.done .step-circle {
-      background: var(--primary);
-      color: #fff;
-    }
+    .progress-step.active .step-circle { background: var(--orange); color: #fff; }
+    .progress-step.done .step-circle { background: var(--orange); color: #fff; }
     .step-label {
       font-size: 11px;
       color: var(--text-muted);
       margin-top: 4px;
       font-weight: 500;
+      text-align: center;
     }
-    .progress-step.active .step-label { color: var(--primary); font-weight: 600; }
+    .progress-step.active .step-label { color: var(--orange); font-weight: 600; }
     /* Card */
     .order-card {
       background: var(--card);
@@ -131,11 +166,10 @@
       font-size: 14px;
       color: var(--text-muted);
       margin-bottom: 24px;
+      line-height: 1.5;
     }
     /* Form */
-    .form-group {
-      margin-bottom: 16px;
-    }
+    .form-group { margin-bottom: 16px; }
     .form-group label {
       display: block;
       font-size: 13px;
@@ -161,8 +195,8 @@
     .form-group input:focus,
     .form-group select:focus,
     .form-group textarea:focus {
-      border-color: var(--primary);
-      box-shadow: 0 0 0 3px rgba(37,99,235,.1);
+      border-color: var(--orange);
+      box-shadow: 0 0 0 3px rgba(224,101,53,.1);
     }
     .form-group textarea { resize: vertical; min-height: 80px; }
     .form-row {
@@ -185,7 +219,7 @@
       transition: border-color .2s, background .2s;
       text-align: center;
     }
-    .file-upload-label:hover { border-color: var(--primary); background: #eff6ff; }
+    .file-upload-label:hover { border-color: var(--orange); background: #fdf6f2; }
     .file-upload-label .upload-icon { font-size: 28px; }
     .file-upload-label .upload-text { font-size: 13px; font-weight: 600; color: var(--text); }
     .file-upload-label .upload-hint { font-size: 11px; color: var(--text-muted); }
@@ -202,23 +236,14 @@
       font-size: 13px;
     }
     .file-preview.show { display: flex; }
-    .file-preview img {
-      width: 40px;
-      height: 40px;
-      object-fit: cover;
-      border-radius: 6px;
-    }
+    .file-preview img { width: 40px; height: 40px; object-fit: cover; border-radius: 6px; }
     .file-preview .file-name { flex: 1; color: var(--success); font-weight: 500; word-break: break-all; }
     .file-preview .file-remove { cursor: pointer; color: var(--text-muted); font-size: 16px; line-height: 1; }
     /* Buttons */
-    .btn-row {
-      display: flex;
-      gap: 10px;
-      margin-top: 24px;
-    }
+    .btn-row { display: flex; gap: 10px; margin-top: 24px; }
     .btn {
-      padding: 11px 24px;
-      border-radius: 8px;
+      padding: 12px 24px;
+      border-radius: 100px;
       font-size: 15px;
       font-weight: 600;
       font-family: inherit;
@@ -226,87 +251,28 @@
       border: none;
       transition: all .2s;
     }
-    .btn-primary {
-      background: var(--primary);
-      color: #fff;
-      flex: 1;
-    }
-    .btn-primary:hover { background: var(--primary-dark); }
-    .btn-primary:disabled { opacity: .6; cursor: not-allowed; }
+    .btn-primary { background: var(--orange); color: #fff; flex: 1; }
+    .btn-primary:hover { background: var(--orange-dark); transform: translateY(-1px); }
+    .btn-primary:disabled { opacity: .6; cursor: not-allowed; transform: none; }
     .btn-outline {
       background: #fff;
       color: var(--text);
       border: 1px solid var(--border);
-      padding: 11px 20px;
+      padding: 12px 20px;
     }
     .btn-outline:hover { background: var(--bg); }
     /* Error */
-    .field-error {
-      font-size: 12px;
-      color: var(--error);
-      margin-top: 4px;
-      display: none;
-    }
+    .field-error { font-size: 12px; color: var(--error); margin-top: 4px; display: none; }
     .field-error.show { display: block; }
-    input.invalid, textarea.invalid { border-color: var(--error); }
+    input.invalid, textarea.invalid, select.invalid { border-color: var(--error); }
     /* Steps */
     .step-panel { display: none; }
     .step-panel.active { display: block; }
-    /* Summary (step 3) */
-    .summary-box {
-      background: #f8fafc;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 16px;
-      margin-bottom: 20px;
-    }
-    .summary-item {
-      display: flex;
-      justify-content: space-between;
-      font-size: 13px;
-      padding: 4px 0;
-      border-bottom: 1px solid #f0f4f8;
-    }
-    .summary-item:last-child { border-bottom: none; }
-    .summary-item .s-label { color: var(--text-muted); }
-    .summary-item .s-val { font-weight: 500; text-align: right; max-width: 60%; word-break: break-word; }
-    /* Loading */
-    .btn-spinner {
-      display: inline-block;
-      width: 16px; height: 16px;
-      border: 2px solid rgba(255,255,255,.4);
-      border-top-color: #fff;
-      border-radius: 50%;
-      animation: spin .6s linear infinite;
-      margin-right: 6px;
-      vertical-align: middle;
-    }
-    @keyframes spin { to { transform: rotate(360deg); } }
-    /* Success */
-    .success-panel {
-      display: none;
-      text-align: center;
-      padding: 40px 20px;
-    }
-    .success-panel.show { display: block; }
-    .success-icon { font-size: 56px; margin-bottom: 16px; }
-    .success-title { font-size: 22px; font-weight: 700; margin-bottom: 8px; }
-    .success-sub { font-size: 14px; color: var(--text-muted); line-height: 1.6; }
-    /* Notice */
-    .notice-box {
-      background: #eff6ff;
-      border: 1px solid #bfdbfe;
-      border-radius: 8px;
-      padding: 12px 16px;
-      font-size: 13px;
-      color: #1e40af;
-      margin-bottom: 20px;
-      line-height: 1.5;
-    }
+    /* Step tag */
     .step-tag {
       display: inline-block;
-      background: #eff6ff;
-      color: var(--primary);
+      background: #fdf0ea;
+      color: var(--orange);
       font-size: 11px;
       font-weight: 700;
       padding: 3px 10px;
@@ -330,17 +296,11 @@
       background: var(--bg);
       border: 1px solid var(--border);
     }
-    .photo-thumb-wrap img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
+    .photo-thumb-wrap img { width: 100%; height: 100%; object-fit: cover; }
     .photo-thumb-remove {
       position: absolute;
-      top: 4px;
-      right: 4px;
-      width: 20px;
-      height: 20px;
+      top: 4px; right: 4px;
+      width: 20px; height: 20px;
       border-radius: 50%;
       background: rgba(0,0,0,.55);
       color: #fff;
@@ -349,7 +309,6 @@
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      line-height: 1;
     }
     .menu-note {
       background: #fefce8;
@@ -362,31 +321,95 @@
       margin-bottom: 20px;
     }
     .menu-note strong { display: block; margin-bottom: 4px; }
+    .notice-box {
+      background: #fdf0ea;
+      border: 1px solid #f8cbb0;
+      border-radius: 8px;
+      padding: 12px 16px;
+      font-size: 13px;
+      color: #7c3015;
+      margin-bottom: 20px;
+      line-height: 1.5;
+    }
+    /* Loading spinner */
+    .btn-spinner {
+      display: inline-block;
+      width: 16px; height: 16px;
+      border: 2px solid rgba(255,255,255,.4);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin .6s linear infinite;
+      margin-right: 6px;
+      vertical-align: middle;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    /* Success */
+    .success-panel { display: none; text-align: center; padding: 40px 20px; }
+    .success-panel.show { display: block; }
+    .success-icon { font-size: 56px; margin-bottom: 16px; }
+    .success-title { font-size: 22px; font-weight: 700; margin-bottom: 8px; }
+    .success-sub { font-size: 14px; color: var(--text-muted); line-height: 1.6; }
+    /* Signup prompt */
+    .signup-prompt { margin-top: 28px; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px 20px; text-align: left; }
+    .signup-prompt-heading { font-size: 15px; font-weight: 700; margin-bottom: 6px; }
+    .signup-prompt-desc { font-size: 13px; color: var(--text-muted); line-height: 1.5; margin-bottom: 16px; }
+    .signup-email-display { font-size: 13px; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 9px 12px; margin-bottom: 10px; color: var(--text-muted); }
+    .signup-input { width: 100%; padding: 10px 14px; border: 1.5px solid var(--border); border-radius: 8px; font-size: 14px; font-family: inherit; outline: none; transition: border-color .15s; }
+    .signup-input:focus { border-color: var(--orange); }
+    .signup-btn { margin-top: 10px; width: 100%; padding: 11px; background: var(--orange); color: #fff; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; transition: background .15s; }
+    .signup-btn:hover { background: var(--orange-dark); }
+    .signup-btn:disabled { opacity: .6; cursor: default; }
+    .signup-msg { margin-top: 10px; font-size: 13px; }
+    /* Optional badge */
+    .optional-badge {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 500;
+      color: var(--text-muted);
+      background: var(--bg);
+      border: 1px solid var(--border);
+      padding: 1px 7px;
+      border-radius: 10px;
+      margin-left: 6px;
+      vertical-align: middle;
+      letter-spacing: 0.02em;
+    }
   </style>
 </head>
 <body>
 
   <header class="order-header">
-    <a href="/" class="order-logo">lokalonline<span>.</span>at</a>
-    <div class="order-secure">🔒 보안 결제</div>
+    <a href="/" class="order-logo">
+      <span class="dot"></span>
+      lokalonline.at
+    </a>
+    <div class="header-right">
+      <button class="lang-toggle" id="langToggle">EN</button>
+      <div class="order-secure" id="secureLabel">🔒 Sicher &amp; verschlüsselt</div>
+    </div>
   </header>
 
   <div class="order-wrap">
+
+    <div class="order-intro">
+      <h1 id="introTitle">Kostenlose Anfrage stellen</h1>
+      <p id="introSub">Füllen Sie das Formular aus — wir erstellen Ihnen innerhalb von 24 Stunden einen kostenlosen Prototyp Ihrer Website.</p>
+    </div>
 
     <!-- Progress -->
     <div class="progress-wrap" id="progressWrap">
       <div class="progress-steps">
         <div class="progress-step active" id="pStep1">
           <div class="step-circle">1</div>
-          <div class="step-label">기본 정보</div>
+          <div class="step-label" id="lblStep1">Betrieb</div>
         </div>
         <div class="progress-step" id="pStep2">
           <div class="step-circle">2</div>
-          <div class="step-label">추가 정보</div>
+          <div class="step-label" id="lblStep2">Details</div>
         </div>
         <div class="progress-step" id="pStep3">
           <div class="step-circle">3</div>
-          <div class="step-label">파일 업로드</div>
+          <div class="step-label" id="lblStep3">Dateien</div>
         </div>
       </div>
     </div>
@@ -396,100 +419,116 @@
 
       <!-- Step 1 -->
       <div class="step-panel active" id="panelStep1">
-        <div class="step-tag">Step 1 / 3</div>
-        <div class="card-title">기본 정보</div>
-        <div class="card-sub">업장에 대한 기본 정보를 입력해주세요.</div>
+        <div class="step-tag" id="tag1">Schritt 1 / 3</div>
+        <div class="card-title" id="title1">Angaben zu Ihrem Betrieb</div>
+        <div class="card-sub" id="sub1">Bitte geben Sie die grundlegenden Informationen zu Ihrem Lokal ein.</div>
 
         <div class="form-group">
-          <label>업장명 <span class="req">*</span></label>
-          <input type="text" id="f_business_name" placeholder="예: 카페 비엔나" />
-          <div class="field-error" id="err_business_name">업장명을 입력해주세요.</div>
+          <label id="lbl_business_name">Betriebsname <span class="req">*</span></label>
+          <input type="text" id="f_business_name" placeholder="z.B. Café Zentral" />
+          <div class="field-error" id="err_business_name">Bitte geben Sie den Betriebsnamen ein.</div>
         </div>
+
         <div class="form-group">
-          <label>업종 <span class="req">*</span></label>
+          <label id="lbl_business_type">Branche <span class="req">*</span></label>
           <select id="f_business_type">
-            <option value="">— 선택해주세요 —</option>
-            <option value="카페">카페</option>
-            <option value="레스토랑">레스토랑</option>
-            <option value="한식당">한식당</option>
-            <option value="아시안 음식점">아시안 음식점</option>
-            <option value="패스트푸드">패스트푸드</option>
-            <option value="베이커리">베이커리</option>
-            <option value="바 / 펍">바 / 펍</option>
-            <option value="네일 / 뷰티샵">네일 / 뷰티샵</option>
-            <option value="미용실 / 헤어샵">미용실 / 헤어샵</option>
-            <option value="소매점">소매점</option>
-            <option value="기타">기타</option>
+            <option value="" id="opt_placeholder">— Bitte wählen —</option>
+            <option value="Café" id="opt_cafe">Café</option>
+            <option value="Restaurant" id="opt_restaurant">Restaurant</option>
+            <option value="Asiatisches Restaurant" id="opt_asian">Asiatisches Restaurant</option>
+            <option value="Bäckerei" id="opt_bakery">Bäckerei</option>
+            <option value="Bar / Pub" id="opt_bar">Bar / Pub</option>
+            <option value="Nagelstudio / Beauty" id="opt_nail">Nagelstudio / Beauty</option>
+            <option value="Friseur / Hairstudio" id="opt_hair">Friseur / Hairstudio</option>
+            <option value="Einzelhandel" id="opt_retail">Einzelhandel</option>
+            <option value="Schnellimbiss" id="opt_fastfood">Schnellimbiss</option>
+            <option value="Sonstiges" id="opt_other">Sonstiges</option>
           </select>
-          <div class="field-error" id="err_business_type">업종을 선택해주세요.</div>
+          <div class="field-error" id="err_business_type">Bitte wählen Sie Ihre Branche aus.</div>
         </div>
+
         <div class="form-group">
-          <label>주소 <span class="req">*</span></label>
-          <input type="text" id="f_address" placeholder="예: Mariahilfer Str. 1, 1060 Wien" />
-          <div class="field-error" id="err_address">주소를 입력해주세요.</div>
+          <label id="lbl_address">Adresse <span class="req">*</span></label>
+          <input type="text" id="f_address" placeholder="Mariahilfer Str. 1, 1060 Wien" />
+          <div class="field-error" id="err_address">Bitte geben Sie die Adresse ein.</div>
         </div>
+
         <div class="form-row">
           <div class="form-group">
-            <label>전화번호 <span class="req">*</span></label>
+            <label id="lbl_phone">Telefonnummer <span class="req">*</span></label>
             <input type="tel" id="f_phone" placeholder="+43 660 000 00 00" />
-            <div class="field-error" id="err_phone">전화번호를 입력해주세요.</div>
+            <div class="field-error" id="err_phone">Bitte geben Sie die Telefonnummer ein.</div>
           </div>
           <div class="form-group">
-            <label>이메일 <span class="req">*</span></label>
-            <input type="email" id="f_email" placeholder="owner@example.at" />
-            <div class="field-error" id="err_email">이메일을 입력해주세요.</div>
+            <label id="lbl_email">E-Mail-Adresse <span class="req">*</span></label>
+            <input type="email" id="f_email" placeholder="info@meinbetrieb.at" />
+            <div class="field-error" id="err_email">Bitte geben Sie eine gültige E-Mail-Adresse ein.</div>
           </div>
+        </div>
+
+        <div class="form-group">
+          <label id="lbl_contact_name">Ihr Name <span class="req">*</span></label>
+          <input type="text" id="f_contact_name" placeholder="Maria Mustermann" />
+          <div class="field-error" id="err_contact_name">Bitte geben Sie Ihren Namen ein.</div>
         </div>
 
         <div class="btn-row">
-          <button class="btn btn-primary" id="btn1Next">다음 →</button>
+          <button class="btn btn-primary" id="btn1Next">Weiter →</button>
         </div>
       </div>
 
       <!-- Step 2 -->
       <div class="step-panel" id="panelStep2">
-        <div class="step-tag">Step 2 / 3</div>
-        <div class="card-title">추가 정보</div>
-        <div class="card-sub">SNS, 영업시간, 요청사항을 입력해주세요.</div>
+        <div class="step-tag" id="tag2">Schritt 2 / 3</div>
+        <div class="card-title" id="title2">Details &amp; Wünsche</div>
+        <div class="card-sub" id="sub2">Diese Angaben helfen uns, Ihren Prototyp möglichst genau nach Ihren Vorstellungen zu gestalten.</div>
 
         <div class="form-group">
-          <label>업장 한 줄 소개 (선택)</label>
-          <input type="text" id="f_description" placeholder="예: 비엔나 한복판의 아늑한 한식 카페" maxlength="80" />
+          <label id="lbl_description">Kurzbeschreibung Ihres Betriebs <span class="optional-badge" id="badge_opt1">optional</span></label>
+          <input type="text" id="f_description" placeholder="z.B. Gemütliches koreanisches Restaurant im Herzen Wiens" maxlength="100" />
         </div>
+
         <div class="form-group">
-          <label>인스타그램 (선택)</label>
-          <input type="text" id="f_instagram" placeholder="@cafewien" />
+          <label id="lbl_instagram">Instagram <span class="optional-badge" id="badge_opt2">optional</span></label>
+          <input type="text" id="f_instagram" placeholder="@meinbetrieb" />
         </div>
+
         <div class="form-group">
-          <label>영업시간</label>
-          <textarea id="f_hours" rows="3" placeholder="예:
-월–금: 09:00–18:00
-토: 10:00–16:00
-일: 휴무"></textarea>
+          <label id="lbl_website">Bestehende Website <span class="optional-badge" id="badge_opt3">optional</span></label>
+          <input type="text" id="f_website" placeholder="www.meinbetrieb.at" />
         </div>
+
         <div class="form-group">
-          <label>요청사항 (선택)</label>
-          <textarea id="f_notes" rows="3" placeholder="특별히 원하시는 내용이 있으면 적어주세요. 예: 메뉴판 포함, 특정 색상 등"></textarea>
+          <label id="lbl_hours">Öffnungszeiten <span class="optional-badge" id="badge_opt4">optional</span></label>
+          <textarea id="f_hours" rows="4" placeholder="z.B.
+Mo–Fr: 09:00–18:00
+Sa: 10:00–16:00
+So: Ruhetag"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label id="lbl_notes">Besondere Wünsche <span class="optional-badge" id="badge_opt5">optional</span></label>
+          <textarea id="f_notes" rows="3" placeholder="z.B. Speisekarte integrieren, bestimmte Farben, Bewertungsbereich, etc."></textarea>
         </div>
 
         <div class="btn-row">
-          <button class="btn btn-outline" id="btn2Back">← 이전</button>
-          <button class="btn btn-primary" id="btn2Next">다음 →</button>
+          <button class="btn btn-outline" id="btn2Back">← Zurück</button>
+          <button class="btn btn-primary" id="btn2Next">Weiter →</button>
         </div>
       </div>
 
       <!-- Step 3 -->
       <div class="step-panel" id="panelStep3">
-        <div class="step-tag">Step 3 / 3</div>
-        <div class="card-title">파일 업로드</div>
-        <div class="card-sub">로고와 대표 사진을 업로드해주세요. (선택사항, 나중에 이메일로 보내셔도 됩니다)</div>
+        <div class="step-tag" id="tag3">Schritt 3 / 3</div>
+        <div class="card-title" id="title3">Dateien hochladen</div>
+        <div class="card-sub" id="sub3">Logo und Fotos sind optional — Sie können diese auch später per E-Mail zusenden.</div>
 
         <div class="form-group">
-          <label>로고 이미지</label>
+          <label id="lbl_logo">Logo <span class="optional-badge" id="badge_logo">optional</span></label>
           <label class="file-upload-label" id="logoUploadLabel">
             <span class="upload-icon">🖼️</span>
-            <span class="upload-text">로고 파일 선택</span>
-            <span class="upload-hint">PNG, JPG, SVG · 최대 5MB</span>
+            <span class="upload-text" id="logoUploadText">Logo-Datei auswählen</span>
+            <span class="upload-hint">PNG, JPG, SVG · max. 5 MB</span>
             <input type="file" id="f_logo" accept="image/*" />
           </label>
           <div class="file-preview" id="logoPreview">
@@ -500,32 +539,30 @@
         </div>
 
         <div class="form-group">
-          <label>업장 사진 (최대 5장)</label>
+          <label id="lbl_photos">Fotos Ihres Betriebs <span class="optional-badge" id="badge_photos">optional</span></label>
           <label class="file-upload-label" id="photoUploadLabel">
             <span class="upload-icon">📷</span>
-            <span class="upload-text">사진 파일 선택 (여러 장 동시 선택 가능)</span>
-            <span class="upload-hint">PNG, JPG · 장당 최대 10MB · 최대 5장</span>
+            <span class="upload-text" id="photoUploadText">Fotos auswählen (mehrere möglich)</span>
+            <span class="upload-hint" id="photoUploadHint">PNG, JPG · max. 10 MB pro Bild · max. 5 Bilder</span>
             <input type="file" id="f_photos" accept="image/*" multiple />
           </label>
           <div class="photo-grid" id="photoGrid"></div>
         </div>
 
-        <div class="menu-note">
-          <strong>📋 온라인 메뉴판이 필요하신가요?</strong>
-          메뉴판 사진을 위 사진란에 함께 업로드해 주시거나,<br>
-          나중에 이메일(<a href="mailto:hallo@lokalonline.at" style="color:#92400e">hallo@lokalonline.at</a>)로 보내주셔도 됩니다.
+        <div class="menu-note" id="menuNote">
+          <strong id="menuNoteTitle">📋 Digitale Speisekarte gewünscht?</strong>
+          <span id="menuNoteText">Laden Sie hier Fotos Ihrer Speisekarte hoch oder senden Sie diese später per E-Mail an <a href="mailto:hallo@lokalonline.at" style="color:#92400e">hallo@lokalonline.at</a>.</span>
         </div>
 
-        <div class="notice-box">
-          💳 다음 단계에서 Stripe 결제 페이지로 이동합니다.<br>
-          결제 완료 후 <strong>영업일 기준 1~2일 내</strong>에 작업을 시작합니다.
+        <div class="notice-box" id="noticeBox">
+          ✉️ <span id="noticeText">Nach dem Absenden erhalten Sie innerhalb von <strong>24 Stunden</strong> einen kostenlosen Prototyp. Kein Zahlungspflicht — erst schauen, dann entscheiden.</span>
         </div>
 
         <div id="submitError" style="color:var(--error);font-size:13px;margin-bottom:12px;display:none"></div>
 
         <div class="btn-row">
-          <button class="btn btn-outline" id="btn3Back">← 이전</button>
-          <button class="btn btn-primary" id="btnSubmit">결제하기 →</button>
+          <button class="btn btn-outline" id="btn3Back">← Zurück</button>
+          <button class="btn btn-primary" id="btnSubmit">Anfrage absenden →</button>
         </div>
       </div>
 
@@ -534,8 +571,18 @@
     <!-- Success -->
     <div class="success-panel" id="successPanel">
       <div class="success-icon">✅</div>
-      <div class="success-title">정보가 저장되었습니다!</div>
-      <div class="success-sub">잠시 후 결제 페이지로 이동합니다…<br>이동하지 않으면 <a href="https://buy.stripe.com/00w3co2jBeC35iM1Agf3a00" style="color:var(--primary)">여기를 클릭</a>해주세요.</div>
+      <div class="success-title" id="successTitle">Anfrage erfolgreich gesendet!</div>
+      <div class="success-sub" id="successSub">Vielen Dank! Wir melden uns innerhalb von 24 Stunden mit einem kostenlosen Prototyp Ihrer Website.<br><br><a href="/" style="color:var(--orange);font-weight:600">← Zurück zur Startseite</a></div>
+
+      <!-- Account creation prompt -->
+      <div class="signup-prompt" id="signupPrompt">
+        <div class="signup-prompt-heading" id="spHeading">🔐 Konto erstellen</div>
+        <div class="signup-prompt-desc" id="spDesc">Erstellen Sie jetzt ein Konto, um den Status Ihrer Anfrage zu verfolgen und später einfach auf Ihr Kundenportal zuzugreifen.</div>
+        <div class="signup-email-display" id="spEmail"></div>
+        <input type="password" id="spPassword" class="signup-input" placeholder="Passwort wählen (min. 8 Zeichen)" autocomplete="new-password" />
+        <button id="spBtn" class="signup-btn">Konto erstellen</button>
+        <div id="spMsg" class="signup-msg"></div>
+      </div>
     </div>
 
   </div><!-- /order-wrap -->
@@ -545,18 +592,265 @@
   (function () {
     var SB_URL = 'https://vhnourjddnlslgabrasb.supabase.co';
     var SB_KEY = 'sb_publishable_y5l1cAZXoAj8xaSVXUkBfw_Pk9pxb6H';
-    var STRIPE_LINK = 'https://buy.stripe.com/00w3co2jBeC35iM1Agf3a00';
     var sb = supabase.createClient(SB_URL, SB_KEY);
 
+    var currentLang = localStorage.getItem('lang') || 'de';
     var currentStep = 1;
     var logoFile = null;
     var photoFiles = [];
+
+    // ── Translations ───────────────────────────────────────────────
+    var T = {
+      de: {
+        langBtn: 'EN',
+        secureLabel: '🔒 Sicher & verschlüsselt',
+        introTitle: 'Kostenlose Anfrage stellen',
+        introSub: 'Füllen Sie das Formular aus — wir erstellen Ihnen innerhalb von 24 Stunden einen kostenlosen Prototyp Ihrer Website.',
+        lblStep1: 'Betrieb', lblStep2: 'Details', lblStep3: 'Dateien',
+        tag1: 'Schritt 1 / 3', tag2: 'Schritt 2 / 3', tag3: 'Schritt 3 / 3',
+        title1: 'Angaben zu Ihrem Betrieb',
+        sub1: 'Bitte geben Sie die grundlegenden Informationen zu Ihrem Lokal ein.',
+        title2: 'Details & Wünsche',
+        sub2: 'Diese Angaben helfen uns, Ihren Prototyp möglichst genau nach Ihren Vorstellungen zu gestalten.',
+        title3: 'Dateien hochladen',
+        sub3: 'Logo und Fotos sind optional — Sie können diese auch später per E-Mail zusenden.',
+        lbl_business_name: 'Betriebsname',
+        lbl_business_type: 'Branche',
+        lbl_address: 'Adresse',
+        lbl_phone: 'Telefonnummer',
+        lbl_email: 'E-Mail-Adresse',
+        lbl_contact_name: 'Ihr Name',
+        lbl_description: 'Kurzbeschreibung Ihres Betriebs',
+        lbl_instagram: 'Instagram',
+        lbl_website: 'Bestehende Website',
+        lbl_hours: 'Öffnungszeiten',
+        lbl_notes: 'Besondere Wünsche',
+        lbl_logo: 'Logo',
+        lbl_photos: 'Fotos Ihres Betriebs',
+        optional: 'optional',
+        ph_business_name: 'z.B. Café Zentral',
+        ph_address: 'Mariahilfer Str. 1, 1060 Wien',
+        ph_phone: '+43 660 000 00 00',
+        ph_email: 'info@meinbetrieb.at',
+        ph_contact_name: 'Maria Mustermann',
+        ph_description: 'z.B. Gemütliches koreanisches Restaurant im Herzen Wiens',
+        ph_instagram: '@meinbetrieb',
+        ph_website: 'www.meinbetrieb.at',
+        ph_hours: 'z.B.\nMo–Fr: 09:00–18:00\nSa: 10:00–16:00\nSo: Ruhetag',
+        ph_notes: 'z.B. Speisekarte integrieren, bestimmte Farben, Bewertungsbereich, etc.',
+        opt_placeholder: '— Bitte wählen —',
+        opt_cafe: 'Café', opt_restaurant: 'Restaurant', opt_asian: 'Asiatisches Restaurant',
+        opt_bakery: 'Bäckerei', opt_bar: 'Bar / Pub', opt_nail: 'Nagelstudio / Beauty',
+        opt_hair: 'Friseur / Hairstudio', opt_retail: 'Einzelhandel',
+        opt_fastfood: 'Schnellimbiss', opt_other: 'Sonstiges',
+        err_business_name: 'Bitte geben Sie den Betriebsnamen ein.',
+        err_business_type: 'Bitte wählen Sie Ihre Branche aus.',
+        err_address: 'Bitte geben Sie die Adresse ein.',
+        err_phone: 'Bitte geben Sie die Telefonnummer ein.',
+        err_email: 'Bitte geben Sie eine gültige E-Mail-Adresse ein.',
+        err_contact_name: 'Bitte geben Sie Ihren Namen ein.',
+        btn1Next: 'Weiter →', btn2Back: '← Zurück', btn2Next: 'Weiter →',
+        btn3Back: '← Zurück', btnSubmit: 'Anfrage absenden →',
+        logoUploadText: 'Logo-Datei auswählen',
+        photoUploadText: 'Fotos auswählen (mehrere möglich)',
+        photoUploadHint: 'PNG, JPG · max. 10 MB pro Bild · max. 5 Bilder',
+        menuNoteTitle: '📋 Digitale Speisekarte gewünscht?',
+        menuNoteText: 'Laden Sie hier Fotos Ihrer Speisekarte hoch oder senden Sie diese später per E-Mail an',
+        noticeText: 'Nach dem Absenden erhalten Sie innerhalb von 24 Stunden einen kostenlosen Prototyp. Kein Zahlungspflicht — erst schauen, dann entscheiden.',
+        successTitle: 'Anfrage erfolgreich gesendet!',
+        successSub: 'Vielen Dank! Wir melden uns innerhalb von 24 Stunden mit einem kostenlosen Prototyp Ihrer Website.',
+        backHome: '← Zurück zur Startseite',
+        submitting: 'Wird gesendet…',
+        submitError: 'Es ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut.',
+        spHeading: '🔐 Konto erstellen',
+        spDesc: 'Erstellen Sie jetzt ein Konto, um den Status Ihrer Anfrage zu verfolgen und später einfach auf Ihr Kundenportal zuzugreifen.',
+        spPasswordPh: 'Passwort wählen (min. 8 Zeichen)',
+        spBtn: 'Konto erstellen',
+        spErrShort: 'Passwort muss mindestens 8 Zeichen haben.',
+        spErrExists: 'Diese E-Mail ist bereits registriert. Bitte melden Sie sich an.',
+        spDone: '✅ Bestätigungs-E-Mail gesendet! Bitte prüfen Sie Ihr Postfach.',
+        spSkip: 'Später einrichten',
+      },
+      en: {
+        langBtn: 'DE',
+        secureLabel: '🔒 Secure & encrypted',
+        introTitle: 'Request your free prototype',
+        introSub: 'Fill in the form — we\'ll send you a free prototype of your website within 24 hours.',
+        lblStep1: 'Business', lblStep2: 'Details', lblStep3: 'Files',
+        tag1: 'Step 1 / 3', tag2: 'Step 2 / 3', tag3: 'Step 3 / 3',
+        title1: 'Your business details',
+        sub1: 'Please enter the basic information about your business.',
+        title2: 'Details & preferences',
+        sub2: 'These details help us design your prototype as closely to your vision as possible.',
+        title3: 'Upload files',
+        sub3: 'Logo and photos are optional — you can also send them later by email.',
+        lbl_business_name: 'Business name',
+        lbl_business_type: 'Business type',
+        lbl_address: 'Address',
+        lbl_phone: 'Phone number',
+        lbl_email: 'Email address',
+        lbl_contact_name: 'Your name',
+        lbl_description: 'Short description of your business',
+        lbl_instagram: 'Instagram',
+        lbl_website: 'Existing website',
+        lbl_hours: 'Opening hours',
+        lbl_notes: 'Special requests',
+        lbl_logo: 'Logo',
+        lbl_photos: 'Photos of your business',
+        optional: 'optional',
+        ph_business_name: 'e.g. Café Central',
+        ph_address: 'Mariahilfer Str. 1, 1060 Vienna',
+        ph_phone: '+43 660 000 00 00',
+        ph_email: 'info@mybusiness.at',
+        ph_contact_name: 'Maria Sample',
+        ph_description: 'e.g. Cosy Korean restaurant in the heart of Vienna',
+        ph_instagram: '@mybusiness',
+        ph_website: 'www.mybusiness.at',
+        ph_hours: 'e.g.\nMon–Fri: 09:00–18:00\nSat: 10:00–16:00\nSun: Closed',
+        ph_notes: 'e.g. Include menu, specific colours, review section, etc.',
+        opt_placeholder: '— Please select —',
+        opt_cafe: 'Café', opt_restaurant: 'Restaurant', opt_asian: 'Asian restaurant',
+        opt_bakery: 'Bakery', opt_bar: 'Bar / Pub', opt_nail: 'Nail studio / Beauty',
+        opt_hair: 'Hair salon', opt_retail: 'Retail shop',
+        opt_fastfood: 'Fast food', opt_other: 'Other',
+        err_business_name: 'Please enter the business name.',
+        err_business_type: 'Please select your business type.',
+        err_address: 'Please enter the address.',
+        err_phone: 'Please enter the phone number.',
+        err_email: 'Please enter a valid email address.',
+        err_contact_name: 'Please enter your name.',
+        btn1Next: 'Next →', btn2Back: '← Back', btn2Next: 'Next →',
+        btn3Back: '← Back', btnSubmit: 'Submit request →',
+        logoUploadText: 'Select logo file',
+        photoUploadText: 'Select photos (multiple allowed)',
+        photoUploadHint: 'PNG, JPG · max. 10 MB per image · max. 5 images',
+        menuNoteTitle: '📋 Need a digital menu?',
+        menuNoteText: 'Upload photos of your menu here or send them later by email to',
+        noticeText: 'After submitting you\'ll receive a free prototype within 24 hours. No payment required — see it first, then decide.',
+        successTitle: 'Request sent successfully!',
+        successSub: 'Thank you! We\'ll get back to you within 24 hours with a free prototype of your website.',
+        backHome: '← Back to homepage',
+        submitting: 'Sending…',
+        submitError: 'An error occurred. Please try again.',
+        spHeading: '🔐 Create an account',
+        spDesc: 'Create an account to track the status of your request and easily access your customer portal later.',
+        spPasswordPh: 'Choose a password (min. 8 characters)',
+        spBtn: 'Create account',
+        spErrShort: 'Password must be at least 8 characters.',
+        spErrExists: 'Email already registered. Please sign in.',
+        spDone: '✅ Confirmation email sent! Please check your inbox.',
+        spSkip: 'Set up later',
+      }
+    };
+
+    // ── Apply language ─────────────────────────────────────────────
+    function applyLang(lang) {
+      currentLang = lang;
+      localStorage.setItem('lang', lang);
+      document.documentElement.lang = lang;
+      var t = T[lang];
+
+      document.getElementById('langToggle').textContent = t.langBtn;
+      document.getElementById('secureLabel').innerHTML = t.secureLabel;
+      document.getElementById('introTitle').textContent = t.introTitle;
+      document.getElementById('introSub').textContent = t.introSub;
+      document.getElementById('lblStep1').textContent = t.lblStep1;
+      document.getElementById('lblStep2').textContent = t.lblStep2;
+      document.getElementById('lblStep3').textContent = t.lblStep3;
+
+      ['1','2','3'].forEach(function(n) {
+        document.getElementById('tag'+n).textContent = t['tag'+n];
+        document.getElementById('title'+n).innerHTML = t['title'+n];
+        document.getElementById('sub'+n).textContent = t['sub'+n];
+      });
+
+      // Labels
+      ['business_name','business_type','address','phone','email','contact_name',
+       'description','instagram','website','hours','notes','logo','photos'].forEach(function(k) {
+        var el = document.getElementById('lbl_' + k);
+        if (!el) return;
+        var req = el.querySelector('.req');
+        var badge = el.querySelector('.optional-badge');
+        el.childNodes[0].textContent = t['lbl_' + k] + ' ';
+        if (req) req.textContent = '*';
+        if (badge) badge.textContent = t.optional;
+      });
+
+      // Optional badges (standalone)
+      ['1','2','3','4','5'].forEach(function(n) {
+        var el = document.getElementById('badge_opt'+n);
+        if (el) el.textContent = t.optional;
+      });
+      ['logo','photos'].forEach(function(k) {
+        var el = document.getElementById('badge_'+k);
+        if (el) el.textContent = t.optional;
+      });
+
+      // Placeholders
+      document.getElementById('f_business_name').placeholder = t.ph_business_name;
+      document.getElementById('f_address').placeholder = t.ph_address;
+      document.getElementById('f_phone').placeholder = t.ph_phone;
+      document.getElementById('f_email').placeholder = t.ph_email;
+      document.getElementById('f_contact_name').placeholder = t.ph_contact_name;
+      document.getElementById('f_description').placeholder = t.ph_description;
+      document.getElementById('f_instagram').placeholder = t.ph_instagram;
+      document.getElementById('f_website').placeholder = t.ph_website;
+      document.getElementById('f_hours').placeholder = t.ph_hours;
+      document.getElementById('f_notes').placeholder = t.ph_notes;
+
+      // Select options
+      ['placeholder','cafe','restaurant','asian','bakery','bar','nail','hair','retail','fastfood','other'].forEach(function(k) {
+        var el = document.getElementById('opt_'+k);
+        if (el) el.textContent = t['opt_'+k];
+      });
+
+      // Errors
+      ['business_name','business_type','address','phone','email','contact_name'].forEach(function(k) {
+        var el = document.getElementById('err_'+k);
+        if (el) el.textContent = t['err_'+k];
+      });
+
+      // Buttons
+      ['btn1Next','btn2Back','btn2Next','btn3Back','btnSubmit'].forEach(function(id) {
+        var el = document.getElementById(id);
+        if (el && !el.disabled) el.textContent = t[id];
+      });
+
+      // Upload labels
+      document.getElementById('logoUploadText').textContent = t.logoUploadText;
+      document.getElementById('photoUploadText').textContent = t.photoUploadText;
+      document.getElementById('photoUploadHint').textContent = t.photoUploadHint;
+
+      // Notes
+      document.getElementById('menuNoteTitle').textContent = t.menuNoteTitle;
+      document.getElementById('menuNoteText').innerHTML = t.menuNoteText + ' <a href="mailto:hallo@lokalonline.at" style="color:#92400e">hallo@lokalonline.at</a>.';
+      document.getElementById('noticeText').innerHTML = t.noticeText.replace('24 Stunden', '<strong>24 Stunden</strong>').replace('24 hours', '<strong>24 hours</strong>');
+
+      // Success
+      document.getElementById('successTitle').textContent = t.successTitle;
+      document.getElementById('successSub').innerHTML = t.successSub + '<br><br><a href="/" style="color:var(--orange);font-weight:600">' + t.backHome + '</a>';
+
+      // Signup prompt
+      var spHeadingEl = document.getElementById('spHeading');
+      var spDescEl = document.getElementById('spDesc');
+      var spPwEl = document.getElementById('spPassword');
+      var spBtnEl = document.getElementById('spBtn');
+      if (spHeadingEl) spHeadingEl.textContent = t.spHeading;
+      if (spDescEl) spDescEl.textContent = t.spDesc;
+      if (spPwEl) spPwEl.placeholder = t.spPasswordPh;
+      if (spBtnEl && !spBtnEl.dataset.done) spBtnEl.textContent = t.spBtn;
+    }
+
+    document.getElementById('langToggle').addEventListener('click', function () {
+      applyLang(currentLang === 'de' ? 'en' : 'de');
+    });
+
+    applyLang(currentLang);
 
     // ── Navigation ─────────────────────────────────────────────────
     function goTo(step) {
       document.querySelectorAll('.step-panel').forEach(function (p) { p.classList.remove('active'); });
       document.getElementById('panelStep' + step).classList.add('active');
-
       for (var i = 1; i <= 3; i++) {
         var el = document.getElementById('pStep' + i);
         el.classList.remove('active', 'done');
@@ -575,31 +869,28 @@
         { id: 'f_business_type', err: 'err_business_type', check: function (v) { return v !== ''; } },
         { id: 'f_address', err: 'err_address', check: function (v) { return v.trim().length > 0; } },
         { id: 'f_phone', err: 'err_phone', check: function (v) { return v.trim().length > 0; } },
-        { id: 'f_email', err: 'err_email', check: function (v) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v); } }
+        { id: 'f_email', err: 'err_email', check: function (v) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v); } },
+        { id: 'f_contact_name', err: 'err_contact_name', check: function (v) { return v.trim().length > 0; } }
       ];
       fields.forEach(function (f) {
         var el = document.getElementById(f.id);
         var errEl = document.getElementById(f.err);
         if (!f.check(el.value)) {
-          el.classList.add('invalid');
-          errEl.classList.add('show');
-          ok = false;
+          el.classList.add('invalid'); errEl.classList.add('show'); ok = false;
         } else {
-          el.classList.remove('invalid');
-          errEl.classList.remove('show');
+          el.classList.remove('invalid'); errEl.classList.remove('show');
         }
       });
       return ok;
     }
 
-    // ── Logo file input ────────────────────────────────────────────
+    // ── Logo file ──────────────────────────────────────────────────
     (function () {
       var input = document.getElementById('f_logo');
       var preview = document.getElementById('logoPreview');
       var thumb = document.getElementById('logoThumb');
       var nameEl = document.getElementById('logoFileName');
       var removeBtn = document.getElementById('logoRemove');
-
       input.addEventListener('change', function () {
         var file = input.files[0];
         if (!file) return;
@@ -622,52 +913,32 @@
       });
     })();
 
-    // ── Multi photo input ──────────────────────────────────────────
+    // ── Multi photo ────────────────────────────────────────────────
     (function () {
       var input = document.getElementById('f_photos');
       var grid = document.getElementById('photoGrid');
-
       function renderGrid() {
         grid.innerHTML = '';
         photoFiles.forEach(function (file, idx) {
-          var wrap = document.createElement('div');
-          wrap.className = 'photo-thumb-wrap';
-          var img = document.createElement('img');
-          img.src = URL.createObjectURL(file);
-          var rm = document.createElement('div');
-          rm.className = 'photo-thumb-remove';
-          rm.textContent = '✕';
-          rm.addEventListener('click', function () {
-            photoFiles.splice(idx, 1);
-            renderGrid();
-            updateUploadLabel();
-          });
-          wrap.appendChild(img);
-          wrap.appendChild(rm);
-          grid.appendChild(wrap);
+          var wrap = document.createElement('div'); wrap.className = 'photo-thumb-wrap';
+          var img = document.createElement('img'); img.src = URL.createObjectURL(file);
+          var rm = document.createElement('div'); rm.className = 'photo-thumb-remove'; rm.textContent = '✕';
+          rm.addEventListener('click', function () { photoFiles.splice(idx, 1); renderGrid(); updateLabel(); });
+          wrap.appendChild(img); wrap.appendChild(rm); grid.appendChild(wrap);
         });
       }
-
-      function updateUploadLabel() {
-        var label = document.getElementById('photoUploadLabel');
-        label.style.display = photoFiles.length >= 5 ? 'none' : '';
+      function updateLabel() {
+        document.getElementById('photoUploadLabel').style.display = photoFiles.length >= 5 ? 'none' : '';
       }
-
       input.addEventListener('change', function () {
-        var newFiles = Array.from(input.files);
-        newFiles.forEach(function (f) {
-          if (photoFiles.length < 5) photoFiles.push(f);
-        });
+        Array.from(input.files).forEach(function (f) { if (photoFiles.length < 5) photoFiles.push(f); });
         input.value = '';
-        renderGrid();
-        updateUploadLabel();
+        renderGrid(); updateLabel();
       });
     })();
 
-    // ── Buttons ────────────────────────────────────────────────────
-    document.getElementById('btn1Next').addEventListener('click', function () {
-      if (validateStep1()) goTo(2);
-    });
+    // ── Button events ──────────────────────────────────────────────
+    document.getElementById('btn1Next').addEventListener('click', function () { if (validateStep1()) goTo(2); });
     document.getElementById('btn2Back').addEventListener('click', function () { goTo(1); });
     document.getElementById('btn2Next').addEventListener('click', function () { goTo(3); });
     document.getElementById('btn3Back').addEventListener('click', function () { goTo(2); });
@@ -678,35 +949,26 @@
       var errEl = document.getElementById('submitError');
       errEl.style.display = 'none';
       btn.disabled = true;
-      btn.innerHTML = '<span class="btn-spinner"></span> 처리 중…';
+      btn.innerHTML = '<span class="btn-spinner"></span>' + T[currentLang].submitting;
 
       try {
         var orderId = crypto.randomUUID ? crypto.randomUUID() : (Date.now().toString(36) + Math.random().toString(36).slice(2));
         var logoUrl = null;
         var uploadedPhotoUrls = [];
 
-        // Upload logo
         if (logoFile) {
           var logoExt = logoFile.name.split('.').pop();
-          var logoPath = orderId + '/logo.' + logoExt;
-          var logoRes = await sb.storage.from('uploads').upload(logoPath, logoFile, { upsert: true });
-          if (!logoRes.error) {
-            logoUrl = sb.storage.from('uploads').getPublicUrl(logoPath).data.publicUrl;
-          }
+          var logoRes = await sb.storage.from('uploads').upload(orderId + '/logo.' + logoExt, logoFile, { upsert: true });
+          if (!logoRes.error) logoUrl = sb.storage.from('uploads').getPublicUrl(orderId + '/logo.' + logoExt).data.publicUrl;
         }
 
-        // Upload photos
         for (var pi = 0; pi < photoFiles.length; pi++) {
           var pFile = photoFiles[pi];
-          var pExt = pFile.name.split('.').pop();
-          var pPath = orderId + '/photo_' + (pi + 1) + '.' + pExt;
+          var pPath = orderId + '/photo_' + (pi + 1) + '.' + pFile.name.split('.').pop();
           var pRes = await sb.storage.from('uploads').upload(pPath, pFile, { upsert: true });
-          if (!pRes.error) {
-            uploadedPhotoUrls.push(sb.storage.from('uploads').getPublicUrl(pPath).data.publicUrl);
-          }
+          if (!pRes.error) uploadedPhotoUrls.push(sb.storage.from('uploads').getPublicUrl(pPath).data.publicUrl);
         }
 
-        // Insert order
         var payload = {
           id: orderId,
           business_name: document.getElementById('f_business_name').value.trim(),
@@ -714,8 +976,10 @@
           address: document.getElementById('f_address').value.trim(),
           phone: document.getElementById('f_phone').value.trim(),
           email: document.getElementById('f_email').value.trim(),
+          contact_name: document.getElementById('f_contact_name').value.trim(),
           description: document.getElementById('f_description').value.trim() || null,
           instagram: document.getElementById('f_instagram').value.trim() || null,
+          website: document.getElementById('f_website').value.trim() || null,
           hours: document.getElementById('f_hours').value.trim() || null,
           notes: document.getElementById('f_notes').value.trim() || null,
           logo_url: logoUrl,
@@ -727,23 +991,55 @@
         var { error } = await sb.from('orders').insert([payload]);
         if (error) throw new Error(error.message);
 
-        // Show success & redirect
         document.getElementById('orderCard').style.display = 'none';
         document.getElementById('progressWrap').style.display = 'none';
         document.getElementById('successPanel').classList.add('show');
-        setTimeout(function () {
-          window.location.href = STRIPE_LINK;
-        }, 2000);
+        applyLang(currentLang);
+
+        // Show submitted email in signup prompt
+        var submittedEmail = payload.email;
+        var spEmailEl = document.getElementById('spEmail');
+        if (spEmailEl) spEmailEl.textContent = submittedEmail;
+
+        // Bind signup button
+        document.getElementById('spBtn').addEventListener('click', async function () {
+          var t = T[currentLang];
+          var password = document.getElementById('spPassword').value;
+          var msgEl = document.getElementById('spMsg');
+          var btn = document.getElementById('spBtn');
+
+          if (password.length < 8) {
+            msgEl.textContent = t.spErrShort;
+            msgEl.style.color = 'var(--error)';
+            return;
+          }
+
+          btn.disabled = true;
+          btn.textContent = '…';
+
+          var { error: signUpError } = await sb.auth.signUp({ email: submittedEmail, password: password });
+
+          if (signUpError) {
+            var msg = signUpError.message.toLowerCase();
+            msgEl.textContent = (msg.includes('already') || msg.includes('registered')) ? t.spErrExists : signUpError.message;
+            msgEl.style.color = 'var(--error)';
+            btn.disabled = false;
+            btn.textContent = t.spBtn;
+          } else {
+            btn.dataset.done = '1';
+            document.getElementById('signupPrompt').innerHTML = '<div style="color:var(--success);font-weight:600;font-size:14px;padding:4px 0">' + t.spDone + '</div>';
+          }
+        });
 
       } catch (e) {
-        errEl.textContent = '오류가 발생했습니다: ' + e.message;
+        errEl.textContent = T[currentLang].submitError + ' (' + e.message + ')';
         errEl.style.display = 'block';
         btn.disabled = false;
-        btn.innerHTML = '결제하기 →';
+        btn.textContent = T[currentLang].btnSubmit;
       }
     });
 
-    // ── Input clear on type ────────────────────────────────────────
+    // ── Clear invalid on input ─────────────────────────────────────
     document.querySelectorAll('input, select, textarea').forEach(function (el) {
       el.addEventListener('input', function () { el.classList.remove('invalid'); });
     });

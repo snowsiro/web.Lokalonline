@@ -1157,8 +1157,7 @@ function buildZone(zone, id){
         canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
         var b64 = canvas.toDataURL('image/jpeg', 0.82).split(',')[1];
         var path = IMG_DIR + id + '.jpg';
-        var existing = await ghGetFile(path);
-        var ok = await ghPutFile(path, b64, 'Add photo: ' + id, existing ? existing.sha : undefined);
+        var ok = await ghPutFile(path, b64, 'Add photo: ' + id);
         if(ok){
           var url = 'https://lokalonline.at/' + path + '?t=' + Date.now();
           photos[id] = 'https://lokalonline.at/' + path;

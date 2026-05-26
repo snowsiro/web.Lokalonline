@@ -7,6 +7,8 @@
   var sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
   var currentInquiryId = null;
+  var currentInquiryEmail = null;
+  var currentInquiryName = null;
   var currentOrderId = null;
   var inquiryFilter = 'all';
   var requestFilter = 'all';
@@ -129,6 +131,8 @@
     currentInquiryId = id;
     var { data } = await sb.from('inquiries').select('*').eq('id', id).single();
     if (!data) return;
+    currentInquiryEmail = data.email;
+    currentInquiryName = data.name;
 
     var infoGrid = document.getElementById('inquiryInfo');
     infoGrid.innerHTML =
@@ -154,6 +158,29 @@
   };
 
   function bindInquiryForm() {
+    document.getElementById('sendPaymentLinkBtn').addEventListener('click', function () {
+      if (!currentInquiryEmail) return;
+      var name = currentInquiryName || '';
+      var stripeLink = 'https://buy.stripe.com/00w3co2jBeC35iM1Agf3a00';
+      var subject = encodeURIComponent('lokalonline.at — Ihre Website ist fertig! 웹사이트 준비 완료');
+      var body = encodeURIComponent(
+        'Guten Tag' + (name ? ' ' + name : '') + ',\n\n' +
+        '안녕하세요' + (name ? ' ' + name : '') + '님,\n\n' +
+        '웹사이트 프로토타입이 완성되었습니다!\n' +
+        'Ihr Website-Prototyp ist fertig!\n\n' +
+        '마음에 드신다면 아래 링크에서 구독을 시작해주세요.\n' +
+        'Falls Sie zufrieden sind, starten Sie einfach Ihr Abonnement:\n\n' +
+        stripeLink + '\n\n' +
+        '✅ 첫 30일은 무료입니다 · Die ersten 30 Tage sind kostenlos.\n\n' +
+        '궁금한 점이 있으시면 언제든 연락해주세요.\n' +
+        'Bei Fragen stehen wir Ihnen gerne zur Verfügung.\n\n' +
+        'Beste Grüße / 감사합니다\n' +
+        'lokalonline.at\n' +
+        'hallo@lokalonline.at'
+      );
+      window.open('mailto:' + encodeURIComponent(currentInquiryEmail) + '?subject=' + subject + '&body=' + body);
+    });
+
     document.getElementById('saveInquiryBtn').addEventListener('click', async function () {
       if (!currentInquiryId) return;
       var { error } = await sb.from('inquiries').update({

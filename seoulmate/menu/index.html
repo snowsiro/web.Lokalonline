@@ -1025,8 +1025,8 @@ body:not(.admin-mode) .has-photo:hover{color:var(--accent);text-decoration-color
 
 <script>
 // ── CONFIG ──
-var SB_URL    = 'https://vhnourjddnlslgabrasb.supabase.co';
-var SB_ANON   = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZobm91cmpkZG5sc2xnYWJyYXNiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3NDI1MDcsImV4cCI6MjA5NTMxODUwN30.UQEpGFXm7L1RZPZwUDQGByTQinK1iX12fz6llSfuzMY';
+var EDGE_FN   = 'https://vhnourjddnlslgabrasb.supabase.co/functions/v1/github_upload';
+var SB_ANON   = 'sb_publishable_y5l1cAZXoAj8xaSVXUkBfw_Pk9pxb6H';
 var GH_REPO   = 'snowsiro/Lokalonline';
 var GH_BRANCH = 'main';
 var DATA_PATH = 'seoulmate/menu/data.json';
@@ -1100,42 +1100,15 @@ function markHasPhoto(id, url){
   }
 }
 
-// ── GITHUB API (direct, token from Supabase DB) ──
-async function fetchGhToken(){
-  try {
-    var r = await fetch(SB_URL + '/rest/v1/app_config?key=eq.github_token&select=value', {
-      headers: { 'apikey': SB_ANON, 'Authorization': 'Bearer ' + SB_ANON }
-    });
-    if(!r.ok) return '';
-    var d = await r.json();
-    return d[0] ? d[0].value : '';
-  } catch(e){ return ''; }
-}
-
+// ── GITHUB API (via Supabase Edge Function) ──
 async function ghPutFile(path, contentBase64, message){
-  if(!GH_TOKEN){ toast('⚠️ Token fehlt'); return false; }
-  try {
-    var apiUrl = 'https://api.github.com/repos/' + GH_REPO + '/contents/' + path;
-    // get current SHA
-    var shaRes = await fetch(apiUrl + '?ref=' + GH_BRANCH, {
-      headers: { 'Authorization': 'Bearer ' + GH_TOKEN, 'Accept': 'application/vnd.github+json' }
-    });
-    var sha = null;
-    if(shaRes.ok){ var sd = await shaRes.json(); sha = sd.sha || null; }
-
-    var body = { message: message, content: contentBase64, branch: GH_BRANCH };
-    if(sha) body.sha = sha;
-    var r = await fetch(apiUrl, {
-      method: 'PUT',
-      headers: { 'Authorization': 'Bearer ' + GH_TOKEN, 'Accept': 'application/vnd.github+json', 'Content-Type': 'application/json' },
-      body: JSON.stringify(body)
-    });
-    if(!r.ok){ var e = await r.json(); toast('❌ GitHub: ' + (e.message || r.status)); return false; }
-    return true;
-  } catch(e){
-    toast('❌ ' + e.message);
-    return false;
-  }
+  var r = await fetch(EDGE_FN, {
+    method: 'POST',
+    headers: { 'Authorization': 'Bearer ' + SB_ANON, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: 'put-file', path: path, content: contentBase64, message: message })
+  });
+  var d = await r.json();
+  return d.ok === true;
 }
 
 async function saveDataJson(){

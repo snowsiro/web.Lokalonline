@@ -70,7 +70,7 @@ nav.scrolled { border-color:var(--line); }
 
 /* ── HERO ── */
 .hero {
-  position:relative; height:100vh; min-height:600px;
+  position:relative; height:calc(100dvh - 96px); min-height:500px;
   margin-top:96px; overflow:hidden; cursor:grab;
 }
 .hero:active { cursor:grabbing; }
@@ -499,7 +499,7 @@ footer {
 @media (max-width:960px) {
   nav { padding:0 16px; }
   .nav-links { display:none; }
-  .hero { margin-top:96px; }
+  .hero { margin-top:96px; height:calc(100dvh - 96px); }
   .slide-content { left:32px; bottom:80px; }
   .hero-bottom { left:32px; right:24px; }
   .intro-strip { grid-template-columns:1fr; }
@@ -528,7 +528,10 @@ footer {
   .nav-logo { font-size:18px; }
   .nav-logo .sub { display:none; }
   .nav-reserve { font-size:9px; letter-spacing:0.1em; padding:9px 14px; }
-  .hero { margin-top:88px; }
+  .hero { margin-top:88px; height:calc(100dvh - 88px); }
+  .slide-overlay {
+    background:linear-gradient(to top, rgba(0,0,0,0.65) 0%, rgba(0,0,0,0.2) 60%, transparent 100%);
+  }
   .slide-content { left:20px; bottom:60px; max-width:calc(100% - 40px); }
   .res-text, .res-form { padding:36px 20px; }
   .form-row { grid-template-columns:1fr; }

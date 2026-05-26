@@ -7,10 +7,12 @@
   var sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
   var currentInquiryId = null;
+  var currentOrderId = null;
   var inquiryFilter = 'all';
   var requestFilter = 'all';
   var signupFilter = 'all';
   var reviewFilter = 'all';
+  var orderFilter = 'all';
 
   // ── Auth ─────────────────────────────────────────────────────────
   sb.auth.getSession().then(function (ref) {
@@ -41,29 +43,35 @@
     bindRequestFilters();
     bindSignupFilters();
     bindReviewFilters();
+    bindOrderFilters();
+    bindOrderForm();
   }
 
   // ── Stats ─────────────────────────────────────────────────────────
   async function loadStats() {
-    var [inqRes, clientRes, signupRes, reviewRes] = await Promise.all([
+    var [inqRes, clientRes, signupRes, reviewRes, orderRes] = await Promise.all([
       sb.from('inquiries').select('status'),
       sb.from('clients').select('status'),
       sb.from('signups').select('status'),
-      sb.from('reviews').select('approved')
+      sb.from('reviews').select('approved'),
+      sb.from('orders').select('payment_status')
     ]);
 
     var inquiries = inqRes.data || [];
     var clients = clientRes.data || [];
     var signups = signupRes.data || [];
     var reviews = reviewRes.data || [];
+    var orders = orderRes.data || [];
     var newCount = inquiries.filter(function (i) { return i.status === 'new'; }).length;
     var newSignups = signups.filter(function (s) { return s.status === 'new'; }).length;
     var pendingReviews = reviews.filter(function (r) { return !r.approved; }).length;
+    var pendingOrders = orders.filter(function (o) { return o.payment_status === 'pending'; }).length;
 
     setText('statNew', newCount);
     setText('statTotal', inquiries.length);
     setText('statClients', clients.filter(function (c) { return c.status === 'active'; }).length);
     setText('statSignups', signups.length);
+    setText('statOrders', orders.length);
 
     var badge = document.getElementById('newBadge');
     if (badge) {
@@ -81,6 +89,12 @@
     if (reviewBadge) {
       reviewBadge.textContent = pendingReviews;
       reviewBadge.style.display = pendingReviews > 0 ? 'inline-flex' : 'none';
+    }
+
+    var orderBadge = document.getElementById('orderBadge');
+    if (orderBadge) {
+      orderBadge.textContent = pendingOrders;
+      orderBadge.style.display = pendingOrders > 0 ? 'inline-flex' : 'none';
     }
   }
 
@@ -476,6 +490,116 @@
     });
   }
 
+  // ── Orders ────────────────────────────────────────────────────────
+  async function loadOrders() {
+    var query = sb.from('orders').select('*').order('created_at', { ascending: false });
+    if (orderFilter !== 'all') query = query.eq('payment_status', orderFilter);
+
+    var { data } = await query;
+    var tbody = document.getElementById('ordersBody');
+    if (!tbody) return;
+
+    if (!data || data.length === 0) {
+      tbody.innerHTML = '<tr class="empty-row"><td colspan="7">주문 없음</td></tr>';
+      return;
+    }
+
+    tbody.innerHTML = data.map(function (o) {
+      return '<tr>' +
+        '<td>' + formatDate(o.created_at) + '</td>' +
+        '<td><strong>' + esc(o.business_name) + '</strong></td>' +
+        '<td>' + (o.business_type ? esc(o.business_type) : '—') + '</td>' +
+        '<td><a href="mailto:' + esc(o.email) + '" style="color:var(--primary)">' + esc(o.email) + '</a></td>' +
+        '<td>' + (o.phone ? esc(o.phone) : '—') + '</td>' +
+        '<td>' + orderStatusBadge(o.payment_status) + '</td>' +
+        '<td><button class="btn btn-outline btn-sm" onclick="openOrder(\'' + o.id + '\')">상세</button></td>' +
+        '</tr>';
+    }).join('');
+  }
+
+  function orderStatusBadge(status) {
+    var map = { pending: 'badge-new', paid: 'badge-contacted', in_progress: 'badge-contacted', done: 'badge-active' };
+    var labels = { pending: '결제대기', paid: '결제완료', in_progress: '작업중', done: '완료' };
+    return '<span class="badge ' + (map[status] || 'badge-new') + '">' + (labels[status] || status) + '</span>';
+  }
+
+  window.openOrder = async function (id) {
+    currentOrderId = id;
+    var { data } = await sb.from('orders').select('*').eq('id', id).single();
+    if (!data) return;
+
+    var infoGrid = document.getElementById('orderInfo');
+    infoGrid.innerHTML =
+      infoItem('업장명', esc(data.business_name)) +
+      infoItem('업종', data.business_type || '—') +
+      infoItem('주소', data.address || '—') +
+      infoItem('전화', data.phone || '—') +
+      infoItem('이메일', '<a href="mailto:' + esc(data.email) + '" style="color:var(--primary)">' + esc(data.email) + '</a>') +
+      infoItem('인스타그램', data.instagram || '—') +
+      infoItem('영업시간', data.hours ? '<pre style="font-size:12px;white-space:pre-wrap">' + esc(data.hours) + '</pre>' : '—') +
+      infoItem('요청사항', data.notes || '—') +
+      infoItem('접수일', formatDate(data.created_at));
+
+    var filesWrap = document.getElementById('orderFilesWrap');
+    var filesEl = document.getElementById('orderFiles');
+    filesEl.innerHTML = '';
+    var hasFiles = false;
+    if (data.logo_url) {
+      hasFiles = true;
+      filesEl.innerHTML += '<a href="' + esc(data.logo_url) + '" target="_blank" style="display:flex;flex-direction:column;align-items:center;gap:4px;text-decoration:none">' +
+        '<img src="' + esc(data.logo_url) + '" style="width:80px;height:80px;object-fit:contain;border:1px solid var(--border);border-radius:8px;background:#f8fafc" />' +
+        '<span style="font-size:11px;color:var(--text-muted)">로고</span></a>';
+    }
+    if (data.photo_url) {
+      hasFiles = true;
+      filesEl.innerHTML += '<a href="' + esc(data.photo_url) + '" target="_blank" style="display:flex;flex-direction:column;align-items:center;gap:4px;text-decoration:none">' +
+        '<img src="' + esc(data.photo_url) + '" style="width:80px;height:80px;object-fit:cover;border:1px solid var(--border);border-radius:8px" />' +
+        '<span style="font-size:11px;color:var(--text-muted)">대표사진</span></a>';
+    }
+    filesWrap.style.display = hasFiles ? 'block' : 'none';
+
+    document.getElementById('orderStatus').value = data.payment_status || 'pending';
+    document.getElementById('orderNotes').value = data.admin_notes || '';
+    openModal('orderOverlay');
+  };
+
+  function bindOrderForm() {
+    document.getElementById('saveOrderBtn').addEventListener('click', async function () {
+      if (!currentOrderId) return;
+      var { error } = await sb.from('orders').update({
+        payment_status: document.getElementById('orderStatus').value,
+        admin_notes: document.getElementById('orderNotes').value
+      }).eq('id', currentOrderId);
+      if (!error) {
+        closeModal('orderOverlay');
+        showToast('저장되었습니다');
+        loadOrders();
+        loadStats();
+      }
+    });
+
+    document.getElementById('deleteOrderBtn').addEventListener('click', async function () {
+      if (!currentOrderId) return;
+      if (!confirm('주문을 삭제할까요?')) return;
+      await sb.from('orders').delete().eq('id', currentOrderId);
+      closeModal('orderOverlay');
+      showToast('삭제되었습니다');
+      loadOrders();
+      loadStats();
+    });
+  }
+
+  function bindOrderFilters() {
+    document.querySelectorAll('[data-order-status]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        document.querySelectorAll('[data-order-status]').forEach(function (b) { b.classList.remove('active'); });
+        btn.classList.add('active');
+        orderFilter = btn.getAttribute('data-order-status');
+        loadOrders();
+      });
+    });
+  }
+
   // ── Tabs ──────────────────────────────────────────────────────────
   function bindTabs() {
     document.querySelectorAll('.tab-btn').forEach(function (btn) {
@@ -490,6 +614,7 @@
         if (tab === 'requests') loadRequests();
         if (tab === 'signups') loadSignups();
         if (tab === 'reviews') loadReviews();
+        if (tab === 'orders') loadOrders();
       });
     });
   }

@@ -1024,8 +1024,9 @@ body:not(.admin-mode) .has-photo:hover{color:var(--accent);text-decoration-color
 
 <script>
 // ── CONFIG ──
-var GH_TOKEN = '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'; // User fills this in GitHub editor
-var GH_REPO  = 'snowsiro/Lokalonline';
+var EDGE_FN   = 'https://vhnourjddnlslgabrasb.supabase.co/functions/v1/github_upload';
+var SB_ANON   = 'sb_publishable_y5l1cAZXoAj8xaSVXUkBfw_Pk9pxb6H';
+var GH_REPO   = 'snowsiro/Lokalonline';
 var GH_BRANCH = 'main';
 var DATA_PATH = 'seoulmate/menu/data.json';
 var IMG_DIR   = 'seoulmate/menu/img/';
@@ -1097,33 +1098,21 @@ function markHasPhoto(id, url){
   }
 }
 
-// ── GITHUB API ──
-async function ghGetFile(path){
-  var r = await fetch('https://api.github.com/repos/' + GH_REPO + '/contents/' + path + '?ref=' + GH_BRANCH, {
-    headers: { 'Authorization': 'Bearer ' + GH_TOKEN, 'Accept': 'application/vnd.github+json' }
+// ── GITHUB API (via Supabase Edge Function) ──
+async function ghPutFile(path, contentBase64, message){
+  var r = await fetch(EDGE_FN, {
+    method: 'POST',
+    headers: { 'Authorization': 'Bearer ' + SB_ANON, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: 'put-file', path: path, content: contentBase64, message: message })
   });
-  if(r.status === 404) return null;
-  return r.ok ? await r.json() : null;
-}
-
-async function ghPutFile(path, contentBase64, message, sha){
-  var body = { message: message, content: contentBase64, branch: GH_BRANCH };
-  if(sha) body.sha = sha;
-  var r = await fetch('https://api.github.com/repos/' + GH_REPO + '/contents/' + path, {
-    method: 'PUT',
-    headers: { 'Authorization': 'Bearer ' + GH_TOKEN, 'Accept': 'application/vnd.github+json', 'Content-Type': 'application/json' },
-    body: JSON.stringify(body)
-  });
-  return r.ok;
+  var d = await r.json();
+  return d.ok === true;
 }
 
 async function saveDataJson(){
-  if(!GH_TOKEN){ toast('⚠️ GitHub Token nicht konfiguriert'); return false; }
   var content = JSON.stringify({ photos: photos, overrides: overrides }, null, 2);
   var b64 = btoa(unescape(encodeURIComponent(content)));
-  var existing = await ghGetFile(DATA_PATH);
-  var sha = existing ? existing.sha : undefined;
-  return await ghPutFile(DATA_PATH, b64, 'Update menu data', sha);
+  return await ghPutFile(DATA_PATH, b64, 'Update menu data');
 }
 
 // ── PHOTO UPLOAD ──
@@ -1140,7 +1129,7 @@ function buildZone(zone, id){
 
   wrap.querySelector('input').addEventListener('change', function(e){
     var file = e.target.files[0];
-    if(!file || !GH_TOKEN){ toast('⚠️ Token fehlt'); return; }
+    if(!file){ toast('⚠️ Keine Datei'); return; }
     toast('⏳ Hochladen...');
     var reader = new FileReader();
     reader.onload = async function(ev){

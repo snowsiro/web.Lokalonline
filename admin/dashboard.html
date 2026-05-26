@@ -52,6 +52,9 @@
       <button class="tab-btn" data-tab="signups">
         Registrierungen <span class="badge-count" id="signupBadge" style="display:none"></span>
       </button>
+      <button class="tab-btn" data-tab="reviews">
+        Bewertungen <span class="badge-count" id="reviewBadge" style="display:none"></span>
+      </button>
     </div>
 
     <!-- Anfragen Tab -->
@@ -158,6 +161,33 @@
             </tr>
           </thead>
           <tbody id="signupsBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Bewertungen Tab -->
+    <div class="tab-content" id="tab-reviews">
+      <div class="table-toolbar">
+        <div class="filter-group">
+          <button class="filter-btn active" data-review-status="all">Alle</button>
+          <button class="filter-btn" data-review-status="pending">Ausstehend</button>
+          <button class="filter-btn" data-review-status="approved">Freigegeben</button>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Datum</th>
+              <th>Kunde (Seite)</th>
+              <th>Name</th>
+              <th>Bewertung</th>
+              <th>Kommentar</th>
+              <th>Status</th>
+              <th>Aktionen</th>
+            </tr>
+          </thead>
+          <tbody id="reviewsBody"></tbody>
         </table>
       </div>
     </div>

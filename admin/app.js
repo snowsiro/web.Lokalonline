@@ -10,6 +10,7 @@
   var inquiryFilter = 'all';
   var requestFilter = 'all';
   var signupFilter = 'all';
+  var reviewFilter = 'all';
 
   // ── Auth ─────────────────────────────────────────────────────────
   sb.auth.getSession().then(function (ref) {
@@ -39,21 +40,25 @@
     bindInquiryForm();
     bindRequestFilters();
     bindSignupFilters();
+    bindReviewFilters();
   }
 
   // ── Stats ─────────────────────────────────────────────────────────
   async function loadStats() {
-    var [inqRes, clientRes, signupRes] = await Promise.all([
+    var [inqRes, clientRes, signupRes, reviewRes] = await Promise.all([
       sb.from('inquiries').select('status'),
       sb.from('clients').select('status'),
-      sb.from('signups').select('status')
+      sb.from('signups').select('status'),
+      sb.from('reviews').select('approved')
     ]);
 
     var inquiries = inqRes.data || [];
     var clients = clientRes.data || [];
     var signups = signupRes.data || [];
+    var reviews = reviewRes.data || [];
     var newCount = inquiries.filter(function (i) { return i.status === 'new'; }).length;
     var newSignups = signups.filter(function (s) { return s.status === 'new'; }).length;
+    var pendingReviews = reviews.filter(function (r) { return !r.approved; }).length;
 
     setText('statNew', newCount);
     setText('statTotal', inquiries.length);
@@ -70,6 +75,12 @@
     if (signupBadge) {
       signupBadge.textContent = newSignups;
       signupBadge.style.display = newSignups > 0 ? 'inline-flex' : 'none';
+    }
+
+    var reviewBadge = document.getElementById('reviewBadge');
+    if (reviewBadge) {
+      reviewBadge.textContent = pendingReviews;
+      reviewBadge.style.display = pendingReviews > 0 ? 'inline-flex' : 'none';
     }
   }
 
@@ -408,6 +419,63 @@
     });
   }
 
+  // ── Reviews ───────────────────────────────────────────────────────
+  async function loadReviews() {
+    var query = sb.from('reviews').select('*').order('created_at', { ascending: false });
+    if (reviewFilter === 'pending') query = query.eq('approved', false);
+    if (reviewFilter === 'approved') query = query.eq('approved', true);
+
+    var { data } = await query;
+    var tbody = document.getElementById('reviewsBody');
+    if (!tbody) return;
+
+    if (!data || data.length === 0) {
+      tbody.innerHTML = '<tr class="empty-row"><td colspan="7">Noch keine Bewertungen.</td></tr>';
+      return;
+    }
+
+    tbody.innerHTML = data.map(function (r) {
+      var stars = '★'.repeat(r.stars) + '☆'.repeat(5 - r.stars);
+      var approved = r.approved;
+      return '<tr>' +
+        '<td>' + formatDate(r.created_at) + '</td>' +
+        '<td><span class="plan-tag">' + esc(r.client_slug) + '</span></td>' +
+        '<td><strong>' + esc(r.name) + '</strong></td>' +
+        '<td style="color:#f59e0b;letter-spacing:2px">' + stars + '</td>' +
+        '<td style="max-width:260px;word-break:break-word;font-size:13px">"' + esc(r.text) + '"</td>' +
+        '<td>' + (approved
+          ? '<span class="badge badge-active">Freigegeben</span>'
+          : '<span class="badge badge-new">Ausstehend</span>') + '</td>' +
+        '<td style="display:flex;gap:6px">' +
+          (!approved ? '<button class="btn btn-primary btn-sm" onclick="approveReview(\'' + r.id + '\')">Freigeben</button>' : '') +
+          '<button class="btn btn-danger btn-sm" onclick="deleteReview(\'' + r.id + '\')">Löschen</button>' +
+        '</td>' +
+        '</tr>';
+    }).join('');
+  }
+
+  window.approveReview = async function (id) {
+    var { error } = await sb.from('reviews').update({ approved: true }).eq('id', id);
+    if (!error) { showToast('Freigegeben'); loadReviews(); loadStats(); }
+  };
+
+  window.deleteReview = async function (id) {
+    if (!confirm('Bewertung wirklich löschen?')) return;
+    var { error } = await sb.from('reviews').delete().eq('id', id);
+    if (!error) { showToast('Gelöscht'); loadReviews(); loadStats(); }
+  };
+
+  function bindReviewFilters() {
+    document.querySelectorAll('[data-review-status]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        document.querySelectorAll('[data-review-status]').forEach(function (b) { b.classList.remove('active'); });
+        btn.classList.add('active');
+        reviewFilter = btn.getAttribute('data-review-status');
+        loadReviews();
+      });
+    });
+  }
+
   // ── Tabs ──────────────────────────────────────────────────────────
   function bindTabs() {
     document.querySelectorAll('.tab-btn').forEach(function (btn) {
@@ -421,6 +489,7 @@
         if (tab === 'inquiries') loadInquiries();
         if (tab === 'requests') loadRequests();
         if (tab === 'signups') loadSignups();
+        if (tab === 'reviews') loadReviews();
       });
     });
   }

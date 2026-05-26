@@ -1033,3 +1033,97 @@ img { max-width: 100%; display: block; }
   .popup { padding: 28px 20px; }
   .popup-title { font-size: 1.4rem; }
 }
+
+/* ── PORTFOLIO ── */
+.portfolio-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 28px;
+  margin-top: 12px;
+}
+.portfolio-card {
+  display: block;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  text-decoration: none;
+  color: inherit;
+  transition: transform 0.22s, box-shadow 0.22s;
+  background: var(--bg);
+}
+.portfolio-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.10);
+}
+.portfolio-thumb {
+  position: relative;
+  height: 220px;
+  background-size: cover;
+  background-position: center;
+}
+.portfolio-overlay {
+  position: absolute; inset: 0;
+  background: rgba(0,0,0,0);
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.22s;
+}
+.portfolio-card:hover .portfolio-overlay {
+  background: rgba(0,0,0,0.42);
+}
+.portfolio-visit {
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 0.22s, transform 0.22s;
+}
+.portfolio-card:hover .portfolio-visit {
+  opacity: 1;
+  transform: translateY(0);
+}
+.portfolio-info {
+  padding: 20px 22px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.portfolio-logo-wrap {
+  width: 44px; height: 44px;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #000;
+  flex-shrink: 0;
+}
+.portfolio-logo { width: 100%; height: 100%; object-fit: cover; }
+.portfolio-logo-text {
+  display: flex; align-items: center; justify-content: center;
+  font-size: 15px; font-weight: 700; color: #fff;
+  background: #C8291F;
+}
+.portfolio-name {
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 2px;
+}
+.portfolio-type {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+.portfolio-tags {
+  display: flex; flex-wrap: wrap; gap: 6px;
+}
+.ptag {
+  font-size: 11px;
+  font-weight: 500;
+  padding: 3px 10px;
+  border-radius: 20px;
+  background: var(--bg-alt);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+}
+@media (max-width: 640px) {
+  .portfolio-grid { grid-template-columns: 1fr; }
+  .portfolio-thumb { height: 180px; }
+}

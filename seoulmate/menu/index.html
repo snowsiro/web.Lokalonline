@@ -1159,14 +1159,11 @@ function buildZone(zone, id){
         var path = IMG_DIR + id + '.jpg';
         var ok = await ghPutFile(path, b64, 'Add photo: ' + id);
         if(ok){
-          var url = 'https://lokalonline.at/' + path + '?t=' + Date.now();
           photos[id] = 'https://lokalonline.at/' + path;
           await saveDataJson();
           markHasPhoto(id, photos[id]);
           buildZone(zone, id);
           toast('✅ Foto gespeichert!');
-        } else {
-          toast('❌ Fehler beim Hochladen');
         }
       };
       img.src = ev.target.result;

@@ -532,6 +532,7 @@
     infoGrid.innerHTML =
       infoItem('업장명', esc(data.business_name)) +
       infoItem('업종', data.business_type || '—') +
+      infoItem('소개', data.description || '—') +
       infoItem('주소', data.address || '—') +
       infoItem('전화', data.phone || '—') +
       infoItem('이메일', '<a href="mailto:' + esc(data.email) + '" style="color:var(--primary)">' + esc(data.email) + '</a>') +
@@ -544,18 +545,27 @@
     var filesEl = document.getElementById('orderFiles');
     filesEl.innerHTML = '';
     var hasFiles = false;
+
     if (data.logo_url) {
       hasFiles = true;
       filesEl.innerHTML += '<a href="' + esc(data.logo_url) + '" target="_blank" style="display:flex;flex-direction:column;align-items:center;gap:4px;text-decoration:none">' +
         '<img src="' + esc(data.logo_url) + '" style="width:80px;height:80px;object-fit:contain;border:1px solid var(--border);border-radius:8px;background:#f8fafc" />' +
         '<span style="font-size:11px;color:var(--text-muted)">로고</span></a>';
     }
-    if (data.photo_url) {
-      hasFiles = true;
-      filesEl.innerHTML += '<a href="' + esc(data.photo_url) + '" target="_blank" style="display:flex;flex-direction:column;align-items:center;gap:4px;text-decoration:none">' +
-        '<img src="' + esc(data.photo_url) + '" style="width:80px;height:80px;object-fit:cover;border:1px solid var(--border);border-radius:8px" />' +
-        '<span style="font-size:11px;color:var(--text-muted)">대표사진</span></a>';
+
+    var photoUrls = [];
+    if (data.photo_urls) {
+      try { photoUrls = JSON.parse(data.photo_urls); } catch (e) {}
+    } else if (data.photo_url) {
+      photoUrls = [data.photo_url];
     }
+    photoUrls.forEach(function (url, i) {
+      hasFiles = true;
+      filesEl.innerHTML += '<a href="' + esc(url) + '" target="_blank" style="display:flex;flex-direction:column;align-items:center;gap:4px;text-decoration:none">' +
+        '<img src="' + esc(url) + '" style="width:80px;height:80px;object-fit:cover;border:1px solid var(--border);border-radius:8px" />' +
+        '<span style="font-size:11px;color:var(--text-muted)">사진 ' + (i + 1) + '</span></a>';
+    });
+
     filesWrap.style.display = hasFiles ? 'block' : 'none';
 
     document.getElementById('orderStatus').value = data.payment_status || 'pending';

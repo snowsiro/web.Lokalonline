@@ -315,19 +315,53 @@
       letter-spacing: .05em;
       text-transform: uppercase;
     }
-    .hours-grid {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-    .hours-row {
+    /* Multi photo grid */
+    .photo-grid {
       display: grid;
-      grid-template-columns: 80px 1fr;
-      align-items: center;
+      grid-template-columns: repeat(3, 1fr);
       gap: 8px;
-      font-size: 13px;
+      margin-top: 10px;
     }
-    .hours-row span { font-weight: 500; }
+    .photo-thumb-wrap {
+      position: relative;
+      aspect-ratio: 1;
+      border-radius: 8px;
+      overflow: hidden;
+      background: var(--bg);
+      border: 1px solid var(--border);
+    }
+    .photo-thumb-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .photo-thumb-remove {
+      position: absolute;
+      top: 4px;
+      right: 4px;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: rgba(0,0,0,.55);
+      color: #fff;
+      font-size: 11px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      line-height: 1;
+    }
+    .menu-note {
+      background: #fefce8;
+      border: 1px solid #fef08a;
+      border-radius: 8px;
+      padding: 12px 16px;
+      font-size: 13px;
+      color: #854d0e;
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+    .menu-note strong { display: block; margin-bottom: 4px; }
   </style>
 </head>
 <body>
@@ -419,6 +453,10 @@
         <div class="card-sub">SNS, 영업시간, 요청사항을 입력해주세요.</div>
 
         <div class="form-group">
+          <label>업장 한 줄 소개 (선택)</label>
+          <input type="text" id="f_description" placeholder="예: 비엔나 한복판의 아늑한 한식 카페" maxlength="80" />
+        </div>
+        <div class="form-group">
           <label>인스타그램 (선택)</label>
           <input type="text" id="f_instagram" placeholder="@cafewien" />
         </div>
@@ -462,18 +500,20 @@
         </div>
 
         <div class="form-group">
-          <label>대표 사진</label>
+          <label>업장 사진 (최대 5장)</label>
           <label class="file-upload-label" id="photoUploadLabel">
             <span class="upload-icon">📷</span>
-            <span class="upload-text">사진 파일 선택</span>
-            <span class="upload-hint">PNG, JPG · 최대 10MB</span>
-            <input type="file" id="f_photo" accept="image/*" />
+            <span class="upload-text">사진 파일 선택 (여러 장 동시 선택 가능)</span>
+            <span class="upload-hint">PNG, JPG · 장당 최대 10MB · 최대 5장</span>
+            <input type="file" id="f_photos" accept="image/*" multiple />
           </label>
-          <div class="file-preview" id="photoPreview">
-            <img id="photoThumb" src="" alt="photo" />
-            <span class="file-name" id="photoFileName"></span>
-            <span class="file-remove" id="photoRemove">✕</span>
-          </div>
+          <div class="photo-grid" id="photoGrid"></div>
+        </div>
+
+        <div class="menu-note">
+          <strong>📋 온라인 메뉴판이 필요하신가요?</strong>
+          메뉴판 사진을 위 사진란에 함께 업로드해 주시거나,<br>
+          나중에 이메일(<a href="mailto:hallo@lokalonline.at" style="color:#92400e">hallo@lokalonline.at</a>)로 보내주셔도 됩니다.
         </div>
 
         <div class="notice-box">
@@ -510,7 +550,7 @@
 
     var currentStep = 1;
     var logoFile = null;
-    var photoFile = null;
+    var photoFiles = [];
 
     // ── Navigation ─────────────────────────────────────────────────
     function goTo(step) {
@@ -552,13 +592,13 @@
       return ok;
     }
 
-    // ── File helpers ───────────────────────────────────────────────
-    function setupFileInput(inputId, previewId, thumbId, nameId, removeId, uploadLabelId, onSet, onRemove) {
-      var input = document.getElementById(inputId);
-      var preview = document.getElementById(previewId);
-      var thumb = document.getElementById(thumbId);
-      var nameEl = document.getElementById(nameId);
-      var removeBtn = document.getElementById(removeId);
+    // ── Logo file input ────────────────────────────────────────────
+    (function () {
+      var input = document.getElementById('f_logo');
+      var preview = document.getElementById('logoPreview');
+      var thumb = document.getElementById('logoThumb');
+      var nameEl = document.getElementById('logoFileName');
+      var removeBtn = document.getElementById('logoRemove');
 
       input.addEventListener('change', function () {
         var file = input.files[0];
@@ -568,25 +608,61 @@
           thumb.src = e.target.result;
           nameEl.textContent = file.name;
           preview.classList.add('show');
-          document.getElementById(uploadLabelId).style.display = 'none';
-          onSet(file);
+          document.getElementById('logoUploadLabel').style.display = 'none';
+          logoFile = file;
         };
         reader.readAsDataURL(file);
       });
-
       removeBtn.addEventListener('click', function (e) {
         e.preventDefault();
         input.value = '';
         preview.classList.remove('show');
-        document.getElementById(uploadLabelId).style.display = '';
-        onRemove();
+        document.getElementById('logoUploadLabel').style.display = '';
+        logoFile = null;
       });
-    }
+    })();
 
-    setupFileInput('f_logo', 'logoPreview', 'logoThumb', 'logoFileName', 'logoRemove', 'logoUploadLabel',
-      function (f) { logoFile = f; }, function () { logoFile = null; });
-    setupFileInput('f_photo', 'photoPreview', 'photoThumb', 'photoFileName', 'photoRemove', 'photoUploadLabel',
-      function (f) { photoFile = f; }, function () { photoFile = null; });
+    // ── Multi photo input ──────────────────────────────────────────
+    (function () {
+      var input = document.getElementById('f_photos');
+      var grid = document.getElementById('photoGrid');
+
+      function renderGrid() {
+        grid.innerHTML = '';
+        photoFiles.forEach(function (file, idx) {
+          var wrap = document.createElement('div');
+          wrap.className = 'photo-thumb-wrap';
+          var img = document.createElement('img');
+          img.src = URL.createObjectURL(file);
+          var rm = document.createElement('div');
+          rm.className = 'photo-thumb-remove';
+          rm.textContent = '✕';
+          rm.addEventListener('click', function () {
+            photoFiles.splice(idx, 1);
+            renderGrid();
+            updateUploadLabel();
+          });
+          wrap.appendChild(img);
+          wrap.appendChild(rm);
+          grid.appendChild(wrap);
+        });
+      }
+
+      function updateUploadLabel() {
+        var label = document.getElementById('photoUploadLabel');
+        label.style.display = photoFiles.length >= 5 ? 'none' : '';
+      }
+
+      input.addEventListener('change', function () {
+        var newFiles = Array.from(input.files);
+        newFiles.forEach(function (f) {
+          if (photoFiles.length < 5) photoFiles.push(f);
+        });
+        input.value = '';
+        renderGrid();
+        updateUploadLabel();
+      });
+    })();
 
     // ── Buttons ────────────────────────────────────────────────────
     document.getElementById('btn1Next').addEventListener('click', function () {
@@ -607,7 +683,7 @@
       try {
         var orderId = crypto.randomUUID ? crypto.randomUUID() : (Date.now().toString(36) + Math.random().toString(36).slice(2));
         var logoUrl = null;
-        var photoUrl = null;
+        var uploadedPhotoUrls = [];
 
         // Upload logo
         if (logoFile) {
@@ -615,19 +691,18 @@
           var logoPath = orderId + '/logo.' + logoExt;
           var logoRes = await sb.storage.from('uploads').upload(logoPath, logoFile, { upsert: true });
           if (!logoRes.error) {
-            var logoData = sb.storage.from('uploads').getPublicUrl(logoPath);
-            logoUrl = logoData.data.publicUrl;
+            logoUrl = sb.storage.from('uploads').getPublicUrl(logoPath).data.publicUrl;
           }
         }
 
-        // Upload photo
-        if (photoFile) {
-          var photoExt = photoFile.name.split('.').pop();
-          var photoPath = orderId + '/photo.' + photoExt;
-          var photoRes = await sb.storage.from('uploads').upload(photoPath, photoFile, { upsert: true });
-          if (!photoRes.error) {
-            var photoData = sb.storage.from('uploads').getPublicUrl(photoPath);
-            photoUrl = photoData.data.publicUrl;
+        // Upload photos
+        for (var pi = 0; pi < photoFiles.length; pi++) {
+          var pFile = photoFiles[pi];
+          var pExt = pFile.name.split('.').pop();
+          var pPath = orderId + '/photo_' + (pi + 1) + '.' + pExt;
+          var pRes = await sb.storage.from('uploads').upload(pPath, pFile, { upsert: true });
+          if (!pRes.error) {
+            uploadedPhotoUrls.push(sb.storage.from('uploads').getPublicUrl(pPath).data.publicUrl);
           }
         }
 
@@ -639,11 +714,13 @@
           address: document.getElementById('f_address').value.trim(),
           phone: document.getElementById('f_phone').value.trim(),
           email: document.getElementById('f_email').value.trim(),
+          description: document.getElementById('f_description').value.trim() || null,
           instagram: document.getElementById('f_instagram').value.trim() || null,
           hours: document.getElementById('f_hours').value.trim() || null,
           notes: document.getElementById('f_notes').value.trim() || null,
           logo_url: logoUrl,
-          photo_url: photoUrl,
+          photo_url: uploadedPhotoUrls[0] || null,
+          photo_urls: uploadedPhotoUrls.length > 0 ? JSON.stringify(uploadedPhotoUrls) : null,
           payment_status: 'pending'
         };
 

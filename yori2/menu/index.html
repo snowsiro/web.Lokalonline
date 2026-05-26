@@ -171,13 +171,16 @@ body.admin-mode .admin-sec-btn{display:inline-block}
 body.admin-mode .menu-item{position:relative;border:1px dashed rgba(212,43,43,0.2);border-radius:4px;padding:12px!important}
 @media(max-width:700px){
   .site-header,.section-nav,.page-wrap{padding-left:16px;padding-right:16px}
+  .site-header{padding:0 16px;height:56px}
   .items-grid{grid-template-columns:1fr}
   .items-grid .menu-item:nth-child(even){border-left:none;padding-left:0}
   .items-grid .menu-item:nth-child(odd){padding-right:0}
   .special-grid,.extras-grid{grid-template-columns:1fr}
-  .brand{font-size:1.1rem}
+  .brand{font-size:1.05rem}
   .admin-banner{padding:0 16px}
   .admin-sub{display:none}
+  .admin-toggle-btn{display:none}
+  .lang-btn{padding:5px 8px;font-size:0.65rem}
 }
 </style>
 
@@ -681,6 +684,19 @@ function markHasPhoto(id){
 // ── ADMIN ──
 // ══════════════════════════════════════════════════════
 const ADMIN_PW = 'yorikochen2';
+
+// 모바일: 브랜드명 5번 탭으로 어드민 접근
+(function(){
+  var taps = 0, timer;
+  var brand = document.querySelector('.brand');
+  if(!brand) return;
+  brand.addEventListener('click', function(){
+    taps++;
+    clearTimeout(timer);
+    if(taps >= 5){ taps = 0; toggleAdminMode(); return; }
+    timer = setTimeout(function(){ taps = 0; }, 1500);
+  });
+})();
 
 function toggleAdminMode(){
   if(document.body.classList.contains('admin-mode')) setAdminMode(false);

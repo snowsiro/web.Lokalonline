@@ -629,22 +629,41 @@
     var newInput = msgInput.cloneNode(true);
     msgInput.parentNode.replaceChild(newInput, msgInput);
 
-    async function sendAdminMsg() {
+    async function sendAdminMsg(attachmentUrl, attachmentName) {
       var text = document.getElementById('orderMsgInput').value.trim();
-      if (!text) return;
+      if (!text && !attachmentUrl) return;
       document.getElementById('orderMsgInput').value = '';
       await sb.from('messages').insert([{
         order_id: id,
         sender_type: 'admin',
         sender_name: 'lokalonline.at',
-        content: text
+        content: text || '',
+        attachment_url: attachmentUrl || null,
+        attachment_name: attachmentName || null
       }]);
       loadOrderMessages(id);
     }
 
-    document.getElementById('orderMsgSend').addEventListener('click', sendAdminMsg);
+    document.getElementById('orderMsgSend').addEventListener('click', function() { sendAdminMsg(); });
     document.getElementById('orderMsgInput').addEventListener('keydown', function(e) {
       if (e.key === 'Enter') sendAdminMsg();
+    });
+
+    document.getElementById('orderMsgFile').addEventListener('change', async function() {
+      var file = this.files[0];
+      if (!file) return;
+      var btn = document.getElementById('orderMsgSend');
+      btn.disabled = true; btn.textContent = '⏳';
+      try {
+        var ext = file.name.split('.').pop();
+        var path = 'chat/' + id + '/' + Date.now() + '.' + ext;
+        var { error } = await sb.storage.from('uploads').upload(path, file, { upsert: true });
+        if (error) throw error;
+        var { data: urlData } = sb.storage.from('uploads').getPublicUrl(path);
+        await sendAdminMsg(urlData.publicUrl, file.name);
+      } catch(e) { showToast('Upload fehlgeschlagen: ' + e.message); }
+      btn.disabled = false; btn.textContent = 'Senden';
+      this.value = '';
     });
   };
 
@@ -676,8 +695,16 @@
     container.innerHTML = msgs.map(function(m) {
       var isOwn = m.sender_type === viewerType;
       var time = new Date(m.created_at).toLocaleString('de-AT', { day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit' });
+      var bubbleStyle = 'max-width:80%;background:' + (isOwn ? 'var(--primary)' : 'var(--surface)') + ';color:' + (isOwn ? '#fff' : 'var(--text)') + ';border:' + (isOwn ? 'none' : '1px solid var(--border)') + ';border-radius:12px;padding:8px 12px;font-size:13px;line-height:1.5';
+      var attachHtml = '';
+      if (m.attachment_url) {
+        var isImg = /\.(jpg|jpeg|png|gif|webp)$/i.test(m.attachment_name || m.attachment_url);
+        attachHtml = isImg
+          ? '<a href="' + m.attachment_url + '" target="_blank"><img src="' + m.attachment_url + '" style="max-width:220px;max-height:200px;border-radius:8px;display:block;margin-top:' + (m.content ? '6px' : '0') + '" /></a>'
+          : '<a href="' + m.attachment_url + '" target="_blank" style="display:inline-flex;align-items:center;gap:6px;color:inherit;font-size:12px;opacity:.85;text-decoration:underline;margin-top:' + (m.content ? '4px' : '0') + '">📎 ' + esc(m.attachment_name || 'Datei') + '</a>';
+      }
       return '<div style="display:flex;flex-direction:column;align-items:' + (isOwn ? 'flex-end' : 'flex-start') + '">' +
-        '<div style="max-width:80%;background:' + (isOwn ? 'var(--primary)' : 'var(--surface)') + ';color:' + (isOwn ? '#fff' : 'var(--text)') + ';border:' + (isOwn ? 'none' : '1px solid var(--border)') + ';border-radius:12px;padding:8px 12px;font-size:13px;line-height:1.5">' + esc(m.content) + '</div>' +
+        '<div style="' + bubbleStyle + '">' + (m.content ? esc(m.content) : '') + attachHtml + '</div>' +
         '<span style="font-size:10px;color:var(--text-muted);margin-top:2px">' + time + '</span>' +
         '</div>';
     }).join('');

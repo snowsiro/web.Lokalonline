@@ -154,7 +154,9 @@
       '<div class="info-card" id="msgCard">' +
       '<h2>💬 Nachrichten</h2>' +
       '<div id="portalMsgThread" style="max-height:300px;overflow-y:auto;display:flex;flex-direction:column;gap:8px;margin-bottom:12px;padding:4px 0"></div>' +
-      '<div style="display:flex;gap:8px">' +
+      '<div style="display:flex;gap:8px;align-items:center">' +
+      '<label for="portalMsgFile" style="cursor:pointer;width:38px;height:38px;display:flex;align-items:center;justify-content:center;border:1.5px solid var(--border);border-radius:8px;font-size:18px;flex-shrink:0;color:var(--text-muted)">+</label>' +
+      '<input type="file" id="portalMsgFile" accept="image/*,application/pdf" style="display:none" />' +
       '<input type="text" id="portalMsgInput" placeholder="Nachricht schreiben…" style="flex:1;padding:10px 14px;border:1.5px solid var(--border);border-radius:8px;font-size:14px;font-family:inherit;outline:none" />' +
       '<button class="btn btn-primary" id="portalMsgSend">Senden</button>' +
       '</div></div>';
@@ -238,7 +240,9 @@
       '<div class="info-card" id="msgCard">' +
       '<h2>💬 Nachrichten</h2>' +
       '<div id="portalMsgThread" style="max-height:300px;overflow-y:auto;display:flex;flex-direction:column;gap:8px;margin-bottom:12px;padding:4px 0"></div>' +
-      '<div style="display:flex;gap:8px">' +
+      '<div style="display:flex;gap:8px;align-items:center">' +
+      '<label for="portalMsgFile" style="cursor:pointer;width:38px;height:38px;display:flex;align-items:center;justify-content:center;border:1.5px solid var(--border);border-radius:8px;font-size:18px;flex-shrink:0;color:var(--text-muted)">+</label>' +
+      '<input type="file" id="portalMsgFile" accept="image/*,application/pdf" style="display:none" />' +
       '<input type="text" id="portalMsgInput" placeholder="Nachricht schreiben…" style="flex:1;padding:10px 14px;border:1.5px solid var(--border);border-radius:8px;font-size:14px;font-family:inherit;outline:none" />' +
       '<button class="btn btn-primary" id="portalMsgSend">Senden</button>' +
       '</div></div>';
@@ -256,23 +260,44 @@
     var msgInput = document.getElementById('portalMsgInput');
     if (!sendBtn || !msgInput) return;
 
-    async function sendPortalMsg() {
+    async function sendPortalMsg(attachmentUrl, attachmentName) {
       var text = msgInput.value.trim();
-      if (!text) return;
+      if (!text && !attachmentUrl) return;
       msgInput.value = '';
       await sb.from('messages').insert([{
         order_id: orderId,
         sender_type: senderType,
         sender_name: userEmail,
-        content: text
+        content: text || '',
+        attachment_url: attachmentUrl || null,
+        attachment_name: attachmentName || null
       }]);
       loadPortalMessages(orderId, senderType);
     }
 
-    sendBtn.addEventListener('click', sendPortalMsg);
+    sendBtn.addEventListener('click', function() { sendPortalMsg(); });
     msgInput.addEventListener('keydown', function(e) {
       if (e.key === 'Enter') sendPortalMsg();
     });
+
+    var fileInput = document.getElementById('portalMsgFile');
+    if (fileInput) {
+      fileInput.addEventListener('change', async function() {
+        var file = this.files[0];
+        if (!file) return;
+        sendBtn.disabled = true; sendBtn.textContent = '⏳';
+        try {
+          var ext = file.name.split('.').pop();
+          var path = 'chat/' + orderId + '/' + Date.now() + '.' + ext;
+          var { error } = await sb.storage.from('uploads').upload(path, file, { upsert: true });
+          if (error) throw error;
+          var { data: urlData } = sb.storage.from('uploads').getPublicUrl(path);
+          await sendPortalMsg(urlData.publicUrl, file.name);
+        } catch(e) { alert('Upload fehlgeschlagen: ' + e.message); }
+        sendBtn.disabled = false; sendBtn.textContent = 'Senden';
+        this.value = '';
+      });
+    }
 
     // Realtime subscription
     if (portalMsgChannel) {
@@ -318,8 +343,16 @@
     container.innerHTML = msgs.map(function(m) {
       var isOwn = m.sender_type === viewerType;
       var time = new Date(m.created_at).toLocaleString('de-AT', { day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit' });
+      var bubbleStyle = 'max-width:80%;background:' + (isOwn ? 'var(--primary)' : 'var(--surface)') + ';color:' + (isOwn ? '#fff' : 'var(--text)') + ';border:' + (isOwn ? 'none' : '1px solid var(--border)') + ';border-radius:12px;padding:8px 12px;font-size:13px;line-height:1.5';
+      var attachHtml = '';
+      if (m.attachment_url) {
+        var isImg = /\.(jpg|jpeg|png|gif|webp)$/i.test(m.attachment_name || m.attachment_url);
+        attachHtml = isImg
+          ? '<a href="' + m.attachment_url + '" target="_blank"><img src="' + m.attachment_url + '" style="max-width:220px;max-height:200px;border-radius:8px;display:block;margin-top:' + (m.content ? '6px' : '0') + '" /></a>'
+          : '<a href="' + m.attachment_url + '" target="_blank" style="display:inline-flex;align-items:center;gap:6px;color:inherit;font-size:12px;opacity:.85;text-decoration:underline;margin-top:' + (m.content ? '4px' : '0') + '">📎 ' + esc(m.attachment_name || 'Datei') + '</a>';
+      }
       return '<div style="display:flex;flex-direction:column;align-items:' + (isOwn ? 'flex-end' : 'flex-start') + '">' +
-        '<div style="max-width:80%;background:' + (isOwn ? 'var(--primary)' : 'var(--surface)') + ';color:' + (isOwn ? '#fff' : 'var(--text)') + ';border:' + (isOwn ? 'none' : '1px solid var(--border)') + ';border-radius:12px;padding:8px 12px;font-size:13px;line-height:1.5">' + esc(m.content) + '</div>' +
+        '<div style="' + bubbleStyle + '">' + (m.content ? esc(m.content) : '') + attachHtml + '</div>' +
         '<span style="font-size:10px;color:var(--text-muted);margin-top:2px">' + time + '</span>' +
         '</div>';
     }).join('');

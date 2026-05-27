@@ -47,6 +47,7 @@
     bindReviewFilters();
     bindOrderFilters();
     bindOrderForm();
+    bindSiteGenerator();
   }
 
   // ── Stats ─────────────────────────────────────────────────────────
@@ -567,6 +568,7 @@
     currentOrderId = id;
     var { data } = await sb.from('orders').select('*').eq('id', id).single();
     if (!data) return;
+    currentOrderData = data;
 
     var infoGrid = document.getElementById('orderInfo');
     infoGrid.innerHTML =
@@ -679,6 +681,11 @@
   }
 
   function bindOrderForm() {
+    document.getElementById('generateSiteBtn').addEventListener('click', function () {
+      if (!currentOrderId || !currentOrderData) return;
+      openSiteGenerator(currentOrderData);
+    });
+
     document.getElementById('saveOrderBtn').addEventListener('click', async function () {
       if (!currentOrderId) return;
       var { error } = await sb.from('orders').update({
@@ -781,6 +788,193 @@
   }
 
   function setText(id, val) { var el = document.getElementById(id); if (el) el.textContent = val; }
+
+  // ── Site Generator ────────────────────────────────────────────────
+  var selectedTemplate = 'restaurant';
+  var currentOrderData = null;
+
+  var EDGE_FN = 'https://vhnourjddnlslgabrasb.supabase.co/functions/v1/github_upload';
+
+  function bindSiteGenerator() {
+    // Template card selection
+    document.getElementById('templateGrid').addEventListener('click', function (e) {
+      var card = e.target.closest('.template-card');
+      if (!card) return;
+      document.querySelectorAll('.template-card').forEach(function (c) { c.classList.remove('active'); });
+      card.classList.add('active');
+      selectedTemplate = card.getAttribute('data-tpl');
+      updateSiteGenPreview();
+    });
+
+    // Slug input live preview
+    document.getElementById('siteSlug').addEventListener('input', updateSiteGenPreview);
+
+    // Generate button
+    document.getElementById('siteGenSubmit').addEventListener('click', doGenerateSite);
+  }
+
+  function slugify(str) {
+    return (str || '')
+      .toLowerCase()
+      .replace(/[äöüÄÖÜ]/g, function (c) { return { ä:'ae', ö:'oe', ü:'ue', Ä:'ae', Ö:'oe', Ü:'ue' }[c] || c; })
+      .replace(/ß/g, 'ss')
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-|-$/g, '');
+  }
+
+  function updateSiteGenPreview() {
+    var slug = document.getElementById('siteSlug').value.trim();
+    var preview = document.getElementById('siteGenPreview');
+    var content = document.getElementById('siteGenPreviewContent');
+    if (!slug) { preview.style.display = 'none'; return; }
+    preview.style.display = 'block';
+    content.innerHTML =
+      '<div style="margin-bottom:4px">📄 <code>' + slug + '/index.html</code> ← templates/' + selectedTemplate + '</div>' +
+      '<div style="margin-bottom:4px">📄 <code>' + slug + '/data.js</code> ← Bestelldaten</div>' +
+      '<div style="margin-top:8px;color:#16a34a;font-weight:600">🔗 lokalonline.at/' + slug + '/</div>';
+  }
+
+  window.openSiteGenerator = function (order) {
+    currentOrderData = order;
+    var autoSlug = slugify(order.business_name);
+    document.getElementById('siteSlug').value = autoSlug;
+    document.getElementById('siteGenError').style.display = 'none';
+    // Reset template selection
+    document.querySelectorAll('.template-card').forEach(function (c) { c.classList.remove('active'); });
+    var defaultTpl = 'restaurant';
+    var typeMap = { 'café': 'cafe', 'cafe': 'cafe', 'coffee': 'cafe', 'nagelstudio': 'beauty', 'nail': 'beauty', 'friseur': 'beauty', 'hairstudio': 'beauty', 'beauty': 'beauty', 'einzelhandel': 'retail', 'retail': 'retail', 'boutique': 'retail' };
+    if (order.business_type) {
+      var bt = order.business_type.toLowerCase();
+      for (var key in typeMap) {
+        if (bt.indexOf(key) !== -1) { defaultTpl = typeMap[key]; break; }
+      }
+    }
+    selectedTemplate = defaultTpl;
+    var activeCard = document.querySelector('.template-card[data-tpl="' + defaultTpl + '"]');
+    if (activeCard) activeCard.classList.add('active');
+    updateSiteGenPreview();
+    openModal('siteGenOverlay');
+  };
+
+  function generateDataJs(type, slug, order) {
+    var photoUrls = [];
+    if (order.photo_urls) { try { photoUrls = JSON.parse(order.photo_urls); } catch (e) {} }
+    else if (order.photo_url) { photoUrls = [order.photo_url]; }
+
+    var colorDefaults = {
+      restaurant: { primary:'#C8302A', accent:'#C8302A', bg:'#F8F7F4', dark:'#111110', mid:'#9B9893', dim:'#5C5A57', line:'#DDDAD4' },
+      cafe:        { primary:'#B8763A', accent:'#B8763A', bg:'#FAF7F2', dark:'#1C1208', mid:'#8C7B6B', dim:'#6B5C4E', line:'#E8DDD0' },
+      beauty:      { primary:'#C9A96E', accent:'#C9A96E', bg:'#FAF9F7', dark:'#1A1A1A', mid:'#8A8480', dim:'#6B6865', line:'#E8E4DF' },
+      retail:      { primary:'#E85D26', accent:'#E85D26', bg:'#FFFFFF', dark:'#0A0A0A', mid:'#6B6B6B', dim:'#9A9A9A', line:'#E8E8E8' }
+    };
+    var fontDefaults = {
+      restaurant: { heading:'DM Serif Display', body:'DM Sans' },
+      cafe:        { heading:'Playfair Display',  body:'Inter' },
+      beauty:      { heading:'Cormorant Garamond', body:'DM Sans' },
+      retail:      { heading:'Space Grotesk',      body:'Inter' }
+    };
+
+    var D = {
+      template: type,
+      slug: slug,
+      name: order.business_name || '',
+      tagline: { de: order.description || '', en: '' },
+      type:    { de: order.business_type || '', en: '' },
+      colors:  colorDefaults[type] || colorDefaults.restaurant,
+      fonts:   fontDefaults[type]  || fontDefaults.restaurant,
+      address: order.address || '',
+      phone:   order.phone   || '',
+      email:   order.email   || '',
+      instagram: order.instagram ? order.instagram.replace(/^@/, '') : '',
+      googleMapsUrl:   'https://maps.google.com/?q=' + encodeURIComponent(order.address || ''),
+      googleMapsEmbed: '',
+      hours: [
+        { day: { de: 'Mo–Fr', en: 'Mon–Fri' }, time: '11:00–22:00' },
+        { day: { de: 'Sa–So', en: 'Sat–Sun' }, time: '12:00–22:00' }
+      ],
+      slides: [
+        { img: 'img/slide1.jpg', eyebrow: { de: 'Herzlich Willkommen', en: 'Welcome' }, title: { de: (order.business_name || '') + '<br><em>Wien</em>', en: (order.business_name || '') + '<br><em>Vienna</em>' }, desc: { de: order.description || '', en: '' } }
+      ],
+      about: {
+        img: photoUrls[0] || 'img/iroom.jpg',
+        text: { de: order.description || '', en: '' },
+        highlights: [
+          { de: 'Täglich frisch', en: 'Daily fresh' },
+          { de: 'Persönlicher Service', en: 'Personal service' },
+          { de: 'Im Herzen Wiens', en: 'In the heart of Vienna' }
+        ]
+      },
+      menuUrl: 'menu/',
+      menuBand: { headline: { de: 'Unsere<br><em>Speisekarte</em>', en: 'Our<br><em>Menu</em>' }, sub: { de: '', en: '' }, cta: { de: 'Speisekarte ansehen →', en: 'View menu →' } },
+      services: [],
+      categories: [],
+      highlights: [
+        { icon: '✦', title: { de: 'Qualität', en: 'Quality' }, desc: { de: 'Höchste Qualität', en: 'Highest quality' } },
+        { icon: '✦', title: { de: 'Service', en: 'Service' }, desc: { de: 'Persönlicher Service', en: 'Personal service' } },
+        { icon: '✦', title: { de: 'Wien', en: 'Vienna' }, desc: { de: 'Im Herzen der Stadt', en: 'In the heart of the city' } }
+      ],
+      announcementBar: { de: 'Jetzt Termin buchen — schnell & einfach online', en: 'Book your appointment online' },
+      photos: photoUrls.length > 0 ? photoUrls : ['img/slide1.jpg', 'img/slide2.jpg', 'img/iroom.jpg'],
+      supabase: { url: SUPABASE_URL, key: SUPABASE_KEY },
+      reviewSlug: slug,
+      instagramPhotos: photoUrls.slice(0, 6).concat(['img/slide1.jpg','img/slide2.jpg','img/iroom.jpg','img/food.jpg','img/slide1.jpg','img/slide2.jpg']).slice(0, 6),
+      seo: { title: (order.business_name || '') + ' — Wien', description: { de: order.description || '', en: '' }, ogImage: photoUrls[0] || 'img/og-image.jpg' }
+    };
+
+    return 'window.SITE_DATA = ' + JSON.stringify(D, null, 2) + ';\n';
+  }
+
+  async function uploadFile(path, content) {
+    var session = (await sb.auth.getSession()).data.session;
+    var token = session ? session.access_token : '';
+    var res = await fetch(EDGE_FN, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+      body: JSON.stringify({ action: 'put-file', path: path, content: btoa(unescape(encodeURIComponent(content))), message: 'Generate site: ' + path })
+    });
+    var data = await res.json();
+    if (!res.ok || data.error) throw new Error(data.error || 'Upload failed');
+  }
+
+  async function doGenerateSite() {
+    var slug = document.getElementById('siteSlug').value.trim();
+    var errEl = document.getElementById('siteGenError');
+    var btn = document.getElementById('siteGenSubmit');
+    errEl.style.display = 'none';
+
+    if (!slug) { errEl.textContent = 'Bitte einen URL Slug eingeben.'; errEl.style.display = 'block'; return; }
+    if (!/^[a-z0-9-]+$/.test(slug)) { errEl.textContent = 'Nur Kleinbuchstaben, Zahlen und Bindestriche erlaubt.'; errEl.style.display = 'block'; return; }
+
+    btn.disabled = true;
+    btn.textContent = '⏳ Wird generiert…';
+
+    try {
+      // 1. Fetch template HTML
+      var tplRes = await fetch('/templates/' + selectedTemplate + '/index.html');
+      if (!tplRes.ok) throw new Error('Template nicht gefunden.');
+      var tplHtml = await tplRes.text();
+
+      // 2. Generate data.js
+      var dataJs = generateDataJs(selectedTemplate, slug, currentOrderData);
+
+      // 3. Upload both files
+      await uploadFile(slug + '/index.html', tplHtml);
+      await uploadFile(slug + '/data.js', dataJs);
+
+      // 4. Update order with site URL
+      await sb.from('orders').update({ admin_notes: (currentOrderData.admin_notes ? currentOrderData.admin_notes + '\n' : '') + 'Site: lokalonline.at/' + slug + '/' }).eq('id', currentOrderData.id);
+
+      closeModal('siteGenOverlay');
+      showToast('✅ Website erstellt: lokalonline.at/' + slug + '/');
+
+    } catch (e) {
+      errEl.textContent = 'Fehler: ' + e.message;
+      errEl.style.display = 'block';
+    }
+
+    btn.disabled = false;
+    btn.textContent = '🚀 Website generieren';
+  }
 
   function esc(str) {
     if (!str) return '';

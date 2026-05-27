@@ -365,3 +365,20 @@ input, select, textarea { font-family: inherit; }
   .admin-stats { grid-template-columns: 1fr; }
   .modal { max-height: 95vh; }
 }
+
+/* ── Site Generator ── */
+.template-card {
+  border: 2px solid var(--border);
+  border-radius: 10px;
+  padding: 14px;
+  background: var(--surface);
+  cursor: pointer;
+  text-align: left;
+  transition: border-color .15s, background .15s;
+  font-family: inherit;
+}
+.template-card:hover { border-color: var(--primary); }
+.template-card.active { border-color: var(--primary); background: #eef3fa; }
+.tpl-icon { font-size: 22px; margin-bottom: 6px; }
+.tpl-name { font-size: 14px; font-weight: 700; color: var(--text); }
+.tpl-desc { font-size: 11px; color: var(--text-muted); margin-top: 2px; }

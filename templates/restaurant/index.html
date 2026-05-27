@@ -1,0 +1,1617 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title id="seo-title">Restaurant — Wien</title>
+  <meta name="description" id="seo-desc" content="">
+  <meta property="og:image" id="seo-og" content="">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --primary: #C8302A;
+      --accent:  #C8302A;
+      --bg:      #F8F7F4;
+      --dark:    #111110;
+      --mid:     #9B9893;
+      --dim:     #5C5A57;
+      --line:    #DDDAD4;
+      --font-heading: 'DM Serif Display', Georgia, serif;
+      --font-body:    'DM Sans', system-ui, sans-serif;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--dark);
+      font-family: var(--font-body);
+      font-size: 16px;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* ── LANG BAR ───────────────────────────────────────── */
+    #lang-bar {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 1000;
+      background: var(--dark);
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      padding: 0 32px;
+      gap: 4px;
+    }
+
+    .lang-btn {
+      background: none;
+      border: none;
+      color: var(--mid);
+      font-family: var(--font-body);
+      font-size: 11px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      cursor: pointer;
+      padding: 4px 8px;
+      transition: color .2s;
+    }
+    .lang-btn.active { color: var(--bg); }
+    .lang-btn:hover  { color: var(--bg); }
+    .lang-sep { color: #444; font-size: 11px; }
+
+    /* ── NAV ────────────────────────────────────────────── */
+    #main-nav {
+      position: fixed;
+      top: 36px; left: 0; right: 0;
+      z-index: 999;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 40px;
+      height: 70px;
+      transition: background .35s, backdrop-filter .35s, box-shadow .35s;
+    }
+
+    #main-nav.scrolled {
+      background: rgba(17,17,16,.92);
+      backdrop-filter: blur(12px);
+      box-shadow: 0 1px 0 rgba(255,255,255,.06);
+    }
+
+    .nav-logo {
+      font-family: var(--font-heading);
+      font-size: 22px;
+      color: #fff;
+      text-decoration: none;
+      letter-spacing: .01em;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: rgba(255,255,255,.75);
+      text-decoration: none;
+      font-size: 13px;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      transition: color .2s;
+    }
+    .nav-links a:hover { color: #fff; }
+
+    .nav-cta {
+      background: var(--primary);
+      color: #fff !important;
+      padding: 10px 22px;
+      border-radius: 2px;
+      font-size: 12px !important;
+      letter-spacing: .1em !important;
+    }
+    .nav-cta:hover { background: #a82521; }
+
+    /* Hamburger */
+    .nav-hamburger {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 4px;
+    }
+    .nav-hamburger span {
+      display: block;
+      width: 24px;
+      height: 2px;
+      background: #fff;
+      transition: transform .3s, opacity .3s;
+    }
+    .nav-hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .nav-hamburger.open span:nth-child(2) { opacity: 0; }
+    .nav-hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+    .nav-mobile {
+      display: none;
+      position: fixed;
+      top: 106px; left: 0; right: 0;
+      background: rgba(17,17,16,.97);
+      padding: 24px 32px 32px;
+      z-index: 998;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .nav-mobile.open { display: flex; }
+    .nav-mobile a {
+      color: rgba(255,255,255,.8);
+      text-decoration: none;
+      font-size: 18px;
+      padding: 12px 0;
+      border-bottom: 1px solid rgba(255,255,255,.08);
+      font-family: var(--font-heading);
+    }
+
+    @media (max-width: 768px) {
+      .nav-links { display: none; }
+      .nav-hamburger { display: flex; }
+      #main-nav { padding: 0 24px; }
+    }
+
+    /* ── HERO SLIDER ────────────────────────────────────── */
+    #hero {
+      position: relative;
+      height: 100vh;
+      overflow: hidden;
+      background: var(--dark);
+    }
+
+    .slide {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      transition: opacity .9s ease;
+    }
+    .slide.active { opacity: 1; }
+
+    .slide-img {
+      position: absolute;
+      inset: -8%;
+      background-size: cover;
+      background-position: center;
+      animation: none;
+    }
+    .slide.active .slide-img {
+      animation: panZoom 9s ease-in-out forwards;
+    }
+
+    @keyframes panZoom {
+      from { transform: scale(1.08) translate(2%, 1%); }
+      to   { transform: scale(1)    translate(-1%, -1%); }
+    }
+
+    .slide-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        to bottom,
+        rgba(0,0,0,.15) 0%,
+        rgba(0,0,0,.0)  40%,
+        rgba(0,0,0,.55) 75%,
+        rgba(0,0,0,.75) 100%
+      );
+    }
+
+    .slide-content {
+      position: absolute;
+      bottom: 13vh;
+      left: 10vw;
+      right: 10vw;
+      color: #fff;
+    }
+
+    .slide-eyebrow {
+      font-size: 11px;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      color: var(--primary);
+      margin-bottom: 16px;
+    }
+
+    .slide-title {
+      font-family: var(--font-heading);
+      font-size: clamp(48px, 7vw, 96px);
+      line-height: 1.05;
+      margin-bottom: 20px;
+      color: #fff;
+    }
+    .slide-title em {
+      font-style: italic;
+      color: var(--primary);
+    }
+
+    .slide-desc {
+      font-size: 16px;
+      color: rgba(255,255,255,.7);
+      max-width: 480px;
+      font-weight: 300;
+    }
+
+    /* Slider controls */
+    .slider-dots {
+      position: absolute;
+      bottom: 32px;
+      left: 10vw;
+      display: flex;
+      gap: 10px;
+      z-index: 10;
+    }
+    .dot {
+      width: 28px;
+      height: 2px;
+      background: rgba(255,255,255,.35);
+      cursor: pointer;
+      transition: background .3s, width .3s;
+    }
+    .dot.active {
+      background: var(--primary);
+      width: 48px;
+    }
+
+    .slider-arrows {
+      position: absolute;
+      bottom: 20px;
+      right: 10vw;
+      display: flex;
+      gap: 12px;
+      z-index: 10;
+    }
+    .slider-arrow {
+      width: 44px;
+      height: 44px;
+      border: 1px solid rgba(255,255,255,.3);
+      background: none;
+      color: #fff;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      transition: background .2s, border-color .2s;
+    }
+    .slider-arrow:hover { background: var(--primary); border-color: var(--primary); }
+
+    /* Scroll indicator */
+    .scroll-hint {
+      position: absolute;
+      bottom: 32px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      color: rgba(255,255,255,.4);
+      font-size: 10px;
+      letter-spacing: .15em;
+      text-transform: uppercase;
+      animation: fadeInUp 2s 1.5s both;
+    }
+    .scroll-hint::after {
+      content: '';
+      display: block;
+      width: 1px;
+      height: 40px;
+      background: linear-gradient(to bottom, rgba(255,255,255,.4), transparent);
+      animation: scrollPulse 2s infinite;
+    }
+    @keyframes scrollPulse {
+      0%,100% { opacity: .4; transform: scaleY(1); }
+      50%      { opacity: 1;  transform: scaleY(1.2); }
+    }
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateX(-50%) translateY(16px); }
+      to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+    }
+
+    /* ── INTRO STRIP ────────────────────────────────────── */
+    #intro {
+      padding: 80px 10vw;
+      text-align: center;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .intro-text {
+      font-family: var(--font-heading);
+      font-size: clamp(20px, 2.5vw, 32px);
+      line-height: 1.4;
+      color: var(--dim);
+      max-width: 760px;
+      margin: 0 auto;
+      font-style: italic;
+    }
+
+    /* ── ABOUT ──────────────────────────────────────────── */
+    #about {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      min-height: 580px;
+    }
+
+    .about-img {
+      position: relative;
+      overflow: hidden;
+    }
+    .about-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 6s ease;
+    }
+    .about-img:hover img { transform: scale(1.04); }
+
+    .about-content {
+      padding: 72px 64px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .section-eyebrow {
+      font-size: 11px;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      color: var(--primary);
+      margin-bottom: 16px;
+    }
+
+    .section-title {
+      font-family: var(--font-heading);
+      font-size: clamp(32px, 3.5vw, 52px);
+      line-height: 1.1;
+      margin-bottom: 24px;
+    }
+    .section-title em { font-style: italic; color: var(--primary); }
+
+    .about-text {
+      color: var(--dim);
+      line-height: 1.8;
+      margin-bottom: 32px;
+      white-space: pre-line;
+    }
+
+    .about-highlights {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .about-highlights li {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 14px;
+      color: var(--dim);
+    }
+    .about-highlights li::before {
+      content: '';
+      width: 20px;
+      height: 1px;
+      background: var(--primary);
+      flex-shrink: 0;
+    }
+
+    @media (max-width: 768px) {
+      #about { grid-template-columns: 1fr; }
+      .about-img { height: 300px; }
+      .about-content { padding: 48px 24px; }
+    }
+
+    /* ── MENU BAND ──────────────────────────────────────── */
+    #menu-band {
+      background: var(--dark);
+      padding: 96px 10vw;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 40px;
+    }
+
+    .menu-band-text .band-headline {
+      font-family: var(--font-heading);
+      font-size: clamp(36px, 4vw, 60px);
+      line-height: 1.1;
+      color: var(--bg);
+    }
+    .menu-band-text .band-headline em { font-style: italic; color: var(--primary); }
+
+    .menu-band-text .band-sub {
+      margin-top: 16px;
+      color: rgba(248,247,244,.45);
+      font-size: 15px;
+      max-width: 400px;
+    }
+
+    .btn-primary {
+      display: inline-block;
+      background: var(--primary);
+      color: #fff;
+      text-decoration: none;
+      padding: 16px 36px;
+      font-size: 13px;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      transition: background .2s, transform .2s;
+      white-space: nowrap;
+    }
+    .btn-primary:hover { background: #a82521; transform: translateY(-2px); }
+
+    @media (max-width: 640px) {
+      #menu-band { flex-direction: column; align-items: flex-start; }
+    }
+
+    /* ── PHOTO GRID ─────────────────────────────────────── */
+    #photos {
+      padding: 80px 10vw;
+    }
+
+    .photos-header {
+      margin-bottom: 40px;
+    }
+
+    .photo-grid {
+      columns: 3;
+      column-gap: 16px;
+    }
+
+    .photo-grid-item {
+      break-inside: avoid;
+      margin-bottom: 16px;
+      overflow: hidden;
+      position: relative;
+      cursor: pointer;
+    }
+
+    .photo-grid-item img {
+      width: 100%;
+      display: block;
+      transition: transform .5s ease;
+    }
+    .photo-grid-item:hover img { transform: scale(1.04); }
+
+    .photo-grid-item:nth-child(3n+2) { margin-top: 32px; }
+
+    @media (max-width: 768px) {
+      .photo-grid { columns: 2; }
+    }
+    @media (max-width: 480px) {
+      .photo-grid { columns: 1; }
+    }
+
+    /* ── HOURS ──────────────────────────────────────────── */
+    #hours {
+      padding: 80px 10vw;
+      background: var(--dark);
+      color: var(--bg);
+    }
+
+    .hours-inner {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      align-items: start;
+    }
+
+    .hours-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 32px;
+    }
+
+    .hours-table tr {
+      border-bottom: 1px solid rgba(248,247,244,.1);
+    }
+    .hours-table tr:last-child { border-bottom: none; }
+
+    .hours-table td {
+      padding: 16px 0;
+      font-size: 15px;
+    }
+
+    .hours-table td:first-child { color: rgba(248,247,244,.5); }
+    .hours-table td:nth-child(2) { font-weight: 500; }
+    .hours-table td:last-child {
+      font-size: 12px;
+      color: rgba(248,247,244,.35);
+      text-align: right;
+    }
+
+    .hours-contact {
+      margin-top: 40px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .contact-item {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+    }
+
+    .contact-icon {
+      width: 40px;
+      height: 40px;
+      border: 1px solid rgba(248,247,244,.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+
+    .contact-label {
+      font-size: 11px;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: rgba(248,247,244,.4);
+      margin-bottom: 2px;
+    }
+
+    .contact-value {
+      font-size: 15px;
+      color: var(--bg);
+    }
+
+    @media (max-width: 768px) {
+      .hours-inner { grid-template-columns: 1fr; gap: 40px; }
+    }
+
+    /* ── MAP ────────────────────────────────────────────── */
+    #map-section {
+      position: relative;
+      height: 540px;
+    }
+
+    #map-section iframe {
+      width: 100%;
+      height: 100%;
+      border: 0;
+      display: block;
+      filter: grayscale(20%) contrast(1.05);
+    }
+
+    .map-card {
+      position: absolute;
+      top: 50%;
+      right: 10vw;
+      transform: translateY(-50%);
+      background: var(--dark);
+      color: var(--bg);
+      padding: 36px 40px;
+      min-width: 280px;
+      box-shadow: 0 24px 64px rgba(0,0,0,.4);
+    }
+
+    .map-card-name {
+      font-family: var(--font-heading);
+      font-size: 24px;
+      margin-bottom: 16px;
+    }
+
+    .map-card-addr {
+      font-size: 14px;
+      color: rgba(248,247,244,.55);
+      line-height: 1.7;
+      margin-bottom: 20px;
+    }
+
+    .map-card-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--primary);
+      text-decoration: none;
+      font-size: 13px;
+      letter-spacing: .06em;
+    }
+    .map-card-link:hover { text-decoration: underline; }
+
+    @media (max-width: 768px) {
+      #map-section { height: auto; }
+      #map-section iframe { height: 300px; }
+      .map-card {
+        position: static;
+        transform: none;
+        margin: 0;
+      }
+    }
+
+    /* ── RESERVATION ────────────────────────────────────── */
+    #reservation {
+      padding: 80px 10vw;
+      background: var(--bg);
+    }
+
+    .reservation-inner {
+      display: grid;
+      grid-template-columns: 1fr 1.4fr;
+      gap: 80px;
+      align-items: start;
+    }
+
+    .reservation-lead {
+      position: sticky;
+      top: 140px;
+    }
+
+    .reservation-note {
+      margin-top: 24px;
+      font-size: 13px;
+      color: var(--mid);
+      line-height: 1.7;
+    }
+
+    #res-form {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .form-group.full { grid-column: 1 / -1; }
+
+    .form-group label {
+      font-size: 11px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--dim);
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      background: #fff;
+      border: 1px solid var(--line);
+      padding: 14px 16px;
+      font-family: var(--font-body);
+      font-size: 15px;
+      color: var(--dark);
+      outline: none;
+      transition: border-color .2s;
+      border-radius: 0;
+      appearance: none;
+      -webkit-appearance: none;
+    }
+
+    .form-group select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%239B9893' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 16px center;
+      padding-right: 40px;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus { border-color: var(--primary); }
+
+    .form-group textarea { resize: vertical; min-height: 100px; }
+
+    .form-submit {
+      grid-column: 1 / -1;
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      padding: 18px 32px;
+      font-family: var(--font-body);
+      font-size: 13px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: background .2s;
+    }
+    .form-submit:hover { background: #a82521; }
+
+    .form-message {
+      grid-column: 1 / -1;
+      padding: 16px;
+      font-size: 14px;
+      display: none;
+    }
+    .form-message.success { background: #f0faf0; color: #2d6a2d; border: 1px solid #c3e6c3; }
+    .form-message.error   { background: #fdf0f0; color: #7a2020; border: 1px solid #e6c3c3; }
+
+    @media (max-width: 900px) {
+      .reservation-inner { grid-template-columns: 1fr; gap: 40px; }
+      .reservation-lead  { position: static; }
+    }
+    @media (max-width: 480px) {
+      #res-form { grid-template-columns: 1fr; }
+    }
+
+    /* ── REVIEWS ────────────────────────────────────────── */
+    #reviews {
+      padding: 80px 10vw;
+      background: #17161A;
+      color: var(--bg);
+    }
+
+    .reviews-header { margin-bottom: 48px; }
+
+    .reviews-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 24px;
+    }
+
+    .review-card {
+      background: rgba(248,247,244,.05);
+      padding: 32px;
+      border: 1px solid rgba(248,247,244,.08);
+      transition: border-color .3s;
+    }
+    .review-card:hover { border-color: rgba(248,247,244,.18); }
+
+    .review-stars {
+      display: flex;
+      gap: 3px;
+      margin-bottom: 16px;
+    }
+    .star { color: var(--primary); font-size: 14px; }
+    .star.empty { color: rgba(248,247,244,.2); }
+
+    .review-text {
+      font-size: 14px;
+      color: rgba(248,247,244,.65);
+      line-height: 1.75;
+      margin-bottom: 20px;
+      font-style: italic;
+    }
+
+    .review-author {
+      font-size: 12px;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: rgba(248,247,244,.35);
+    }
+
+    .reviews-empty {
+      color: rgba(248,247,244,.3);
+      font-style: italic;
+    }
+
+    /* ── INSTAGRAM ──────────────────────────────────────── */
+    #instagram {
+      padding: 60px 0 0;
+    }
+
+    .instagram-header {
+      padding: 0 10vw 32px;
+    }
+
+    .instagram-strip {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+    }
+
+    .insta-item {
+      aspect-ratio: 1;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .insta-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform .5s ease, filter .5s;
+    }
+    .insta-item:hover img { transform: scale(1.06); filter: brightness(1.1); }
+
+    .insta-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(200,48,42,.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity .3s;
+    }
+    .insta-item:hover .insta-overlay { opacity: 1; }
+    .insta-overlay svg { width: 28px; height: 28px; fill: #fff; }
+
+    @media (max-width: 768px) {
+      .instagram-strip { grid-template-columns: repeat(3, 1fr); }
+    }
+    @media (max-width: 480px) {
+      .instagram-strip { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    /* ── FOOTER ─────────────────────────────────────────── */
+    #footer {
+      background: var(--dark);
+      color: rgba(248,247,244,.5);
+      padding: 60px 10vw 32px;
+    }
+
+    .footer-inner {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr;
+      gap: 48px;
+      margin-bottom: 48px;
+    }
+
+    .footer-brand-name {
+      font-family: var(--font-heading);
+      font-size: 26px;
+      color: var(--bg);
+      margin-bottom: 12px;
+    }
+
+    .footer-tagline {
+      font-size: 13px;
+      line-height: 1.6;
+      max-width: 280px;
+    }
+
+    .footer-col-title {
+      font-size: 11px;
+      letter-spacing: .15em;
+      text-transform: uppercase;
+      color: rgba(248,247,244,.3);
+      margin-bottom: 20px;
+    }
+
+    .footer-links {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .footer-links a {
+      color: rgba(248,247,244,.5);
+      text-decoration: none;
+      font-size: 14px;
+      transition: color .2s;
+    }
+    .footer-links a:hover { color: var(--bg); }
+
+    .footer-bottom {
+      border-top: 1px solid rgba(248,247,244,.08);
+      padding-top: 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .footer-bottom a {
+      color: rgba(248,247,244,.35);
+      text-decoration: none;
+    }
+    .footer-bottom a:hover { color: rgba(248,247,244,.7); }
+
+    @media (max-width: 768px) {
+      .footer-inner { grid-template-columns: 1fr; gap: 32px; }
+      .footer-bottom { flex-direction: column; align-items: flex-start; }
+    }
+
+    /* ── SECTION UTILITY ────────────────────────────────── */
+    .section-header {
+      margin-bottom: 48px;
+    }
+
+    /* ── ANIMATIONS ─────────────────────────────────────── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(28px);
+      transition: opacity .7s ease, transform .7s ease;
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- LANG BAR -->
+  <div id="lang-bar">
+    <button class="lang-btn" data-lang="de" onclick="setLang('de')">DE</button>
+    <span class="lang-sep">/</span>
+    <button class="lang-btn" data-lang="en" onclick="setLang('en')">EN</button>
+  </div>
+
+  <!-- NAV -->
+  <nav id="main-nav">
+    <a href="#" class="nav-logo" id="nav-logo">Restaurant</a>
+    <ul class="nav-links" id="nav-links"></ul>
+    <button class="nav-hamburger" id="hamburger" aria-label="Menu" onclick="toggleMenu()">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+  <div class="nav-mobile" id="nav-mobile"></div>
+
+  <!-- HERO -->
+  <section id="hero">
+    <div id="slider-track"></div>
+    <div class="slider-dots" id="slider-dots"></div>
+    <div class="slider-arrows">
+      <button class="slider-arrow" onclick="prevSlide()">&#8592;</button>
+      <button class="slider-arrow" onclick="nextSlide()">&#8594;</button>
+    </div>
+    <div class="scroll-hint">Scroll</div>
+  </section>
+
+  <!-- INTRO -->
+  <section id="intro" class="reveal">
+    <p class="intro-text" id="intro-text"></p>
+  </section>
+
+  <!-- ABOUT -->
+  <section id="about">
+    <div class="about-img reveal">
+      <img id="about-img" src="" alt="">
+    </div>
+    <div class="about-content reveal">
+      <p class="section-eyebrow" id="about-eyebrow"></p>
+      <h2 class="section-title" id="about-title"></h2>
+      <p class="about-text" id="about-text"></p>
+      <ul class="about-highlights" id="about-highlights"></ul>
+    </div>
+  </section>
+
+  <!-- MENU BAND -->
+  <section id="menu-band" class="reveal">
+    <div class="menu-band-text">
+      <h2 class="band-headline" id="band-headline"></h2>
+      <p class="band-sub" id="band-sub"></p>
+    </div>
+    <a id="band-cta" href="#" class="btn-primary"></a>
+  </section>
+
+  <!-- PHOTOS -->
+  <section id="photos">
+    <div class="section-header reveal">
+      <p class="section-eyebrow" id="photos-eyebrow"></p>
+      <h2 class="section-title" id="photos-title"></h2>
+    </div>
+    <div class="photo-grid reveal" id="photo-grid"></div>
+  </section>
+
+  <!-- HOURS -->
+  <section id="hours">
+    <div class="hours-inner">
+      <div class="reveal">
+        <p class="section-eyebrow" id="hours-eyebrow"></p>
+        <h2 class="section-title" id="hours-title"></h2>
+        <table class="hours-table" id="hours-table"></table>
+      </div>
+      <div class="reveal">
+        <p class="section-eyebrow" id="contact-eyebrow"></p>
+        <h2 class="section-title" id="contact-title"></h2>
+        <div class="hours-contact" id="hours-contact"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MAP -->
+  <section id="map-section">
+    <iframe id="map-iframe" src="" allowfullscreen="" loading="lazy" title="Map"></iframe>
+    <div class="map-card reveal">
+      <div class="map-card-name" id="map-name"></div>
+      <div class="map-card-addr" id="map-addr"></div>
+      <a id="map-link" href="#" target="_blank" rel="noopener" class="map-card-link">
+        <span id="map-link-text"></span> ↗
+      </a>
+    </div>
+  </section>
+
+  <!-- RESERVATION -->
+  <section id="reservation">
+    <div class="reservation-inner">
+      <div class="reservation-lead reveal">
+        <p class="section-eyebrow" id="res-eyebrow"></p>
+        <h2 class="section-title" id="res-title"></h2>
+        <p class="reservation-note" id="res-note"></p>
+      </div>
+      <form id="res-form" novalidate>
+        <div class="form-group">
+          <label id="lbl-name"></label>
+          <input type="text" id="f-name" autocomplete="name" required>
+        </div>
+        <div class="form-group">
+          <label id="lbl-date"></label>
+          <input type="date" id="f-date" required>
+        </div>
+        <div class="form-group">
+          <label id="lbl-time"></label>
+          <input type="time" id="f-time" required>
+        </div>
+        <div class="form-group">
+          <label id="lbl-guests"></label>
+          <select id="f-guests">
+            <option value="1">1</option>
+            <option value="2" selected>2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+            <option value="6">6</option>
+            <option value="7">7</option>
+            <option value="8">8+</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label id="lbl-phone"></label>
+          <input type="tel" id="f-phone" autocomplete="tel">
+        </div>
+        <div class="form-group full">
+          <label id="lbl-notes"></label>
+          <textarea id="f-notes" rows="3"></textarea>
+        </div>
+        <div class="form-message" id="form-message"></div>
+        <button type="submit" class="form-submit" id="form-submit"></button>
+      </form>
+    </div>
+  </section>
+
+  <!-- REVIEWS -->
+  <section id="reviews">
+    <div class="reviews-header section-header reveal">
+      <p class="section-eyebrow" id="rev-eyebrow"></p>
+      <h2 class="section-title" id="rev-title"></h2>
+    </div>
+    <div class="reviews-grid" id="reviews-grid">
+      <p class="reviews-empty" id="reviews-loading"></p>
+    </div>
+  </section>
+
+  <!-- INSTAGRAM -->
+  <section id="instagram">
+    <div class="instagram-header reveal">
+      <p class="section-eyebrow" id="insta-eyebrow"></p>
+      <h2 class="section-title" id="insta-title"></h2>
+    </div>
+    <div class="instagram-strip" id="instagram-strip"></div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer id="footer">
+    <div class="footer-inner">
+      <div>
+        <div class="footer-brand-name" id="footer-name"></div>
+        <div class="footer-tagline" id="footer-tagline"></div>
+      </div>
+      <div>
+        <div class="footer-col-title" id="footer-nav-title"></div>
+        <ul class="footer-links" id="footer-nav-links"></ul>
+      </div>
+      <div>
+        <div class="footer-col-title" id="footer-contact-title"></div>
+        <ul class="footer-links" id="footer-contact-links"></ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span id="footer-copy"></span>
+      <div style="display:flex;gap:24px;">
+        <a href="/impressum.html" id="lnk-impressum">Impressum</a>
+        <a href="/datenschutz.html" id="lnk-datenschutz">Datenschutz</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="data.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script>
+  (function () {
+    'use strict';
+
+    const D = window.SITE_DATA;
+    let lang = localStorage.getItem('lang') || 'de';
+    let slideIndex = 0;
+    let slideTimer = null;
+    let supabase = null;
+
+    /* ── UTILS ── */
+    function t(obj) {
+      if (!obj) return '';
+      return obj[lang] || obj.de || '';
+    }
+
+    function setLang(l) {
+      lang = l;
+      localStorage.setItem('lang', l);
+      document.querySelectorAll('.lang-btn').forEach(b => {
+        b.classList.toggle('active', b.dataset.lang === l);
+      });
+      renderAll();
+    }
+    window.setLang = setLang;
+
+    /* ── CSS VARS ── */
+    function applyCSSVars() {
+      const r = document.documentElement;
+      const c = D.colors;
+      r.style.setProperty('--primary', c.primary);
+      r.style.setProperty('--accent',  c.accent);
+      r.style.setProperty('--bg',      c.bg);
+      r.style.setProperty('--dark',    c.dark);
+      r.style.setProperty('--mid',     c.mid);
+      r.style.setProperty('--dim',     c.dim);
+      r.style.setProperty('--line',    c.line);
+      r.style.setProperty('--font-heading', `'${D.fonts.heading}', Georgia, serif`);
+      r.style.setProperty('--font-body',    `'${D.fonts.body}', system-ui, sans-serif`);
+    }
+
+    /* ── SEO ── */
+    function applySEO() {
+      document.getElementById('seo-title').textContent = D.seo.title;
+      document.getElementById('seo-desc').content = t(D.seo.description);
+      document.getElementById('seo-og').content = D.seo.ogImage;
+      document.documentElement.lang = lang;
+    }
+
+    /* ── LANG BAR ── */
+    function renderLangBar() {
+      document.querySelectorAll('.lang-btn').forEach(b => {
+        b.classList.toggle('active', b.dataset.lang === lang);
+      });
+    }
+
+    /* ── NAV ── */
+    function renderNav() {
+      document.getElementById('nav-logo').textContent = D.name;
+
+      const links = D.nav ? D.nav.links : [];
+      const lastIdx = links.length - 1;
+
+      const desktopHtml = links.map((l, i) =>
+        `<li><a href="${l.href}" class="${i === lastIdx ? 'nav-cta' : ''}">${t(l)}</a></li>`
+      ).join('');
+      document.getElementById('nav-links').innerHTML = desktopHtml;
+
+      const mobileHtml = links.map(l =>
+        `<a href="${l.href}" onclick="closeMobileMenu()">${t(l)}</a>`
+      ).join('');
+      document.getElementById('nav-mobile').innerHTML = mobileHtml;
+    }
+
+    function toggleMenu() {
+      const hb = document.getElementById('hamburger');
+      const mn = document.getElementById('nav-mobile');
+      hb.classList.toggle('open');
+      mn.classList.toggle('open');
+    }
+    window.toggleMenu = toggleMenu;
+
+    function closeMobileMenu() {
+      document.getElementById('hamburger').classList.remove('open');
+      document.getElementById('nav-mobile').classList.remove('open');
+    }
+    window.closeMobileMenu = closeMobileMenu;
+
+    /* ── SLIDER ── */
+    function renderSlider() {
+      const track = document.getElementById('slider-track');
+      const dots  = document.getElementById('slider-dots');
+      track.innerHTML = '';
+      dots.innerHTML  = '';
+
+      D.slides.forEach((s, i) => {
+        const slide = document.createElement('div');
+        slide.className = 'slide' + (i === 0 ? ' active' : '');
+        slide.innerHTML = `
+          <div class="slide-img" style="background-image:url('${s.img}')"></div>
+          <div class="slide-overlay"></div>
+          <div class="slide-content">
+            <div class="slide-eyebrow">${t(s.eyebrow)}</div>
+            <h1 class="slide-title">${t(s.title)}</h1>
+            <p class="slide-desc">${t(s.desc)}</p>
+          </div>`;
+        track.appendChild(slide);
+
+        const dot = document.createElement('div');
+        dot.className = 'dot' + (i === 0 ? ' active' : '');
+        dot.onclick = () => goToSlide(i);
+        dots.appendChild(dot);
+      });
+    }
+
+    function updateSliderContent() {
+      const slides = document.querySelectorAll('.slide');
+      slides.forEach((slide, i) => {
+        const s = D.slides[i];
+        if (!s) return;
+        const c = slide.querySelector('.slide-content');
+        c.querySelector('.slide-eyebrow').textContent = t(s.eyebrow);
+        c.querySelector('.slide-title').innerHTML = t(s.title);
+        c.querySelector('.slide-desc').textContent = t(s.desc);
+      });
+    }
+
+    function goToSlide(n) {
+      const slides = document.querySelectorAll('.slide');
+      const dotEls = document.querySelectorAll('.dot');
+      slides[slideIndex].classList.remove('active');
+      dotEls[slideIndex].classList.remove('active');
+      slideIndex = (n + slides.length) % slides.length;
+      slides[slideIndex].classList.add('active');
+      dotEls[slideIndex].classList.add('active');
+      resetSlideTimer();
+    }
+
+    function nextSlide() { goToSlide(slideIndex + 1); }
+    function prevSlide() { goToSlide(slideIndex - 1); }
+    window.nextSlide = nextSlide;
+    window.prevSlide = prevSlide;
+
+    function resetSlideTimer() {
+      if (slideTimer) clearInterval(slideTimer);
+      slideTimer = setInterval(nextSlide, 6000);
+    }
+
+    /* ── INTRO ── */
+    function renderIntro() {
+      const el = document.getElementById('intro-text');
+      if (el) el.textContent = D.introText ? t(D.introText) : t(D.tagline);
+    }
+
+    /* ── ABOUT ── */
+    function renderAbout() {
+      const img = document.getElementById('about-img');
+      if (img && D.about.img) { img.src = D.about.img; img.alt = D.name; }
+
+      setText('about-eyebrow', lang === 'de' ? 'Über uns' : 'About Us');
+      setHTML('about-title', lang === 'de'
+        ? 'Unsere<br><em>Geschichte</em>'
+        : 'Our<br><em>Story</em>');
+      setText('about-text', t(D.about.text));
+
+      const hl = document.getElementById('about-highlights');
+      if (hl) {
+        hl.innerHTML = D.about.highlights
+          .map(h => `<li>${t(h)}</li>`).join('');
+      }
+    }
+
+    /* ── MENU BAND ── */
+    function renderMenuBand() {
+      setHTML('band-headline', t(D.menuBand.headline));
+      setText('band-sub', t(D.menuBand.sub));
+      const cta = document.getElementById('band-cta');
+      if (cta) { cta.textContent = t(D.menuBand.cta); cta.href = D.menuUrl; }
+    }
+
+    /* ── PHOTOS ── */
+    function renderPhotos() {
+      setText('photos-eyebrow', lang === 'de' ? 'Fotogalerie' : 'Gallery');
+      setHTML('photos-title', lang === 'de' ? 'Einblicke in<br><em>unser Haus</em>' : 'A glimpse into<br><em>our world</em>');
+      const grid = document.getElementById('photo-grid');
+      if (grid) {
+        grid.innerHTML = D.photos.map(p =>
+          `<div class="photo-grid-item"><img src="${p}" alt="" loading="lazy"></div>`
+        ).join('');
+      }
+    }
+
+    /* ── HOURS ── */
+    function renderHours() {
+      setText('hours-eyebrow', lang === 'de' ? 'Öffnungszeiten' : 'Opening Hours');
+      setHTML('hours-title', lang === 'de' ? 'Wann wir<br><em>für Sie da sind</em>' : 'When we are<br><em>here for you</em>');
+
+      const table = document.getElementById('hours-table');
+      if (table) {
+        table.innerHTML = D.hours.map(h =>
+          `<tr>
+            <td>${t(h.day)}</td>
+            <td>${h.time}</td>
+            <td>${h.note ? t(h.note) : ''}</td>
+          </tr>`
+        ).join('');
+      }
+
+      setText('contact-eyebrow', lang === 'de' ? 'Kontakt' : 'Contact');
+      setHTML('contact-title', lang === 'de' ? 'Erreichen<br><em>Sie uns</em>' : 'Get in<br><em>touch</em>');
+
+      const contact = document.getElementById('hours-contact');
+      if (contact) {
+        contact.innerHTML = `
+          <div class="contact-item">
+            <div class="contact-icon">📍</div>
+            <div>
+              <div class="contact-label">${lang === 'de' ? 'Adresse' : 'Address'}</div>
+              <div class="contact-value">${D.address}</div>
+            </div>
+          </div>
+          <div class="contact-item">
+            <div class="contact-icon">📞</div>
+            <div>
+              <div class="contact-label">${lang === 'de' ? 'Telefon' : 'Phone'}</div>
+              <div class="contact-value"><a href="tel:${D.phone}" style="color:inherit;text-decoration:none;">${D.phone}</a></div>
+            </div>
+          </div>
+          <div class="contact-item">
+            <div class="contact-icon">✉️</div>
+            <div>
+              <div class="contact-label">E-Mail</div>
+              <div class="contact-value"><a href="mailto:${D.email}" style="color:inherit;text-decoration:none;">${D.email}</a></div>
+            </div>
+          </div>`;
+      }
+    }
+
+    /* ── MAP ── */
+    function renderMap() {
+      const iframe = document.getElementById('map-iframe');
+      if (iframe && D.googleMapsEmbed) iframe.src = D.googleMapsEmbed;
+      setText('map-name', D.name);
+      setText('map-addr', D.address + '\n' + D.phone);
+      setText('map-link-text', lang === 'de' ? 'Route planen' : 'Get directions');
+      const link = document.getElementById('map-link');
+      if (link) link.href = D.googleMapsUrl;
+    }
+
+    /* ── RESERVATION ── */
+    function renderReservation() {
+      setText('res-eyebrow', lang === 'de' ? 'Reservierung' : 'Reservation');
+      setHTML('res-title', lang === 'de' ? 'Tisch<br><em>reservieren</em>' : 'Book a<br><em>table</em>');
+      setText('res-note', lang === 'de'
+        ? 'Wir freuen uns auf Ihren Besuch. Für Gruppen über 8 Personen oder besondere Anlässe bitten wir um telefonische Reservierung.'
+        : 'We look forward to welcoming you. For groups of more than 8 or special occasions, please call us directly.');
+      setText('lbl-name',   lang === 'de' ? 'Name' : 'Name');
+      setText('lbl-date',   lang === 'de' ? 'Datum' : 'Date');
+      setText('lbl-time',   lang === 'de' ? 'Uhrzeit' : 'Time');
+      setText('lbl-guests', lang === 'de' ? 'Personen' : 'Guests');
+      setText('lbl-phone',  lang === 'de' ? 'Telefon' : 'Phone');
+      setText('lbl-notes',  lang === 'de' ? 'Anmerkungen' : 'Notes');
+      setText('form-submit', lang === 'de' ? 'Reservierung senden' : 'Send reservation');
+    }
+
+    /* ── REVIEWS ── */
+    async function loadReviews() {
+      setText('rev-eyebrow', lang === 'de' ? 'Bewertungen' : 'Reviews');
+      setHTML('rev-title', lang === 'de' ? 'Was unsere Gäste<br><em>sagen</em>' : 'What our guests<br><em>say</em>');
+
+      const loading = document.getElementById('reviews-loading');
+      if (loading) loading.textContent = lang === 'de' ? 'Lade Bewertungen…' : 'Loading reviews…';
+
+      if (!supabase) return;
+
+      try {
+        const { data, error } = await supabase
+          .from('reviews')
+          .select('*')
+          .eq('client_slug', D.reviewSlug)
+          .order('created_at', { ascending: false })
+          .limit(9);
+
+        const grid = document.getElementById('reviews-grid');
+        if (!grid) return;
+
+        if (error || !data || data.length === 0) {
+          grid.innerHTML = `<p class="reviews-empty">${lang === 'de' ? 'Noch keine Bewertungen vorhanden.' : 'No reviews yet.'}</p>`;
+          return;
+        }
+
+        grid.innerHTML = data.map(r => {
+          const stars = Array.from({length: 5}, (_, i) =>
+            `<span class="star${i < (r.rating || 5) ? '' : ' empty'}">★</span>`
+          ).join('');
+          return `
+            <div class="review-card">
+              <div class="review-stars">${stars}</div>
+              <p class="review-text">"${r.text || r.content || ''}"</p>
+              <div class="review-author">— ${r.author || r.name || 'Gast'}</div>
+            </div>`;
+        }).join('');
+      } catch (e) {
+        console.warn('Reviews load error', e);
+        const grid = document.getElementById('reviews-grid');
+        if (grid) grid.innerHTML = `<p class="reviews-empty">${lang === 'de' ? 'Bewertungen konnten nicht geladen werden.' : 'Could not load reviews.'}</p>`;
+      }
+    }
+
+    /* ── INSTAGRAM ── */
+    function renderInstagram() {
+      setText('insta-eyebrow', 'Instagram');
+      setHTML('insta-title', `<a href="https://instagram.com/${D.instagram.replace('@','')}" target="_blank" rel="noopener" style="color:inherit;text-decoration:none;">${D.instagram}</a>`);
+
+      const strip = document.getElementById('instagram-strip');
+      if (strip) {
+        strip.innerHTML = D.instagramPhotos.slice(0, 6).map(p => `
+          <a class="insta-item" href="https://instagram.com/${D.instagram.replace('@','')}" target="_blank" rel="noopener">
+            <img src="${p}" alt="Instagram" loading="lazy">
+            <div class="insta-overlay">
+              <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+            </div>
+          </a>`).join('');
+      }
+    }
+
+    /* ── FOOTER ── */
+    function renderFooter() {
+      setText('footer-name', D.name);
+      setText('footer-tagline', t(D.tagline));
+      setText('footer-nav-title', lang === 'de' ? 'Navigation' : 'Navigation');
+      setText('footer-contact-title', lang === 'de' ? 'Kontakt' : 'Contact');
+
+      const navLinks = document.getElementById('footer-nav-links');
+      if (navLinks && D.nav) {
+        navLinks.innerHTML = D.nav.links.map(l =>
+          `<li><a href="${l.href}">${t(l)}</a></li>`
+        ).join('');
+      }
+
+      const contactLinks = document.getElementById('footer-contact-links');
+      if (contactLinks) {
+        contactLinks.innerHTML = `
+          <li><a href="tel:${D.phone}">${D.phone}</a></li>
+          <li><a href="mailto:${D.email}">${D.email}</a></li>
+          <li>${D.address}</li>`;
+      }
+
+      setText('footer-copy', `© ${new Date().getFullYear()} ${D.name}`);
+      setText('lnk-impressum', 'Impressum');
+      setText('lnk-datenschutz', 'Datenschutz');
+    }
+
+    /* ── HELPERS ── */
+    function setText(id, val) {
+      const el = document.getElementById(id);
+      if (el) el.textContent = val;
+    }
+    function setHTML(id, val) {
+      const el = document.getElementById(id);
+      if (el) el.innerHTML = val;
+    }
+
+    /* ── SCROLL REVEAL ── */
+    function initReveal() {
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(e => {
+          if (e.isIntersecting) { e.target.classList.add('visible'); }
+        });
+      }, { threshold: 0.1 });
+      document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+    }
+
+    /* ── NAV SCROLL ── */
+    function initNavScroll() {
+      const nav = document.getElementById('main-nav');
+      window.addEventListener('scroll', () => {
+        nav.classList.toggle('scrolled', window.scrollY > 80);
+      }, { passive: true });
+    }
+
+    /* ── SUPABASE INIT ── */
+    function initSupabase() {
+      if (window.supabase && D.supabase) {
+        supabase = window.supabase.createClient(D.supabase.url, D.supabase.key);
+      }
+    }
+
+    /* ── RESERVATION FORM ── */
+    function initForm() {
+      const form = document.getElementById('res-form');
+      if (!form) return;
+
+      // Set min date to today
+      const dateInput = document.getElementById('f-date');
+      if (dateInput) {
+        const today = new Date().toISOString().split('T')[0];
+        dateInput.min = today;
+        dateInput.value = today;
+      }
+
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const btn = document.getElementById('form-submit');
+        const msg = document.getElementById('form-message');
+
+        btn.disabled = true;
+        btn.textContent = lang === 'de' ? 'Wird gesendet…' : 'Sending…';
+
+        const payload = {
+          client_slug: D.slug,
+          name:    document.getElementById('f-name').value.trim(),
+          date:    document.getElementById('f-date').value,
+          time:    document.getElementById('f-time').value,
+          guests:  parseInt(document.getElementById('f-guests').value, 10),
+          phone:   document.getElementById('f-phone').value.trim(),
+          notes:   document.getElementById('f-notes').value.trim(),
+          lang:    lang
+        };
+
+        if (!payload.name || !payload.date || !payload.time) {
+          msg.className = 'form-message error';
+          msg.style.display = 'block';
+          msg.textContent = lang === 'de'
+            ? 'Bitte füllen Sie alle Pflichtfelder aus.'
+            : 'Please fill in all required fields.';
+          btn.disabled = false;
+          renderReservation();
+          return;
+        }
+
+        try {
+          if (!supabase) throw new Error('Supabase not initialised');
+          const { error } = await supabase.from('reservations').insert([payload]);
+          if (error) throw error;
+
+          msg.className = 'form-message success';
+          msg.style.display = 'block';
+          msg.textContent = lang === 'de'
+            ? '✓ Ihre Reservierung wurde erfolgreich übermittelt. Wir melden uns in Kürze bei Ihnen.'
+            : '✓ Your reservation has been submitted. We will be in touch shortly.';
+          form.reset();
+        } catch (err) {
+          console.error(err);
+          msg.className = 'form-message error';
+          msg.style.display = 'block';
+          msg.textContent = lang === 'de'
+            ? 'Es ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut oder rufen Sie uns an.'
+            : 'An error occurred. Please try again or call us directly.';
+        }
+
+        btn.disabled = false;
+        renderReservation();
+      });
+    }
+
+    /* ── RENDER ALL ── */
+    function renderAll() {
+      applySEO();
+      renderLangBar();
+      renderNav();
+      updateSliderContent();
+      renderIntro();
+      renderAbout();
+      renderMenuBand();
+      renderPhotos();
+      renderHours();
+      renderMap();
+      renderReservation();
+      renderInstagram();
+      renderFooter();
+      loadReviews();
+    }
+
+    /* ── INIT ── */
+    function init() {
+      applyCSSVars();
+      initSupabase();
+      renderSlider();
+      resetSlideTimer();
+      renderAll();
+      initNavScroll();
+      // Reveal runs after a short delay to allow layout
+      setTimeout(initReveal, 100);
+      initForm();
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', init);
+    } else {
+      init();
+    }
+  })();
+  </script>
+</body>
+</html>

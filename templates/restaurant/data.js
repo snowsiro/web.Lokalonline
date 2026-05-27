@@ -34,6 +34,11 @@ window.SITE_DATA = {
     { day: { de: 'So', en: 'Sun' }, time: '12:00–21:00', note: { de: 'Sonntagsbrunch bis 15:00', en: 'Sunday brunch until 15:00' } }
   ],
 
+  introText: {
+    de: 'Seit über drei Jahrzehnten verwöhnen wir unsere Gäste mit authentischer Wiener Küche — zubereitet aus frischen, saisonalen Zutaten und serviert in einer Atmosphäre, die Tradition und Herzlichkeit vereint.',
+    en: 'For over three decades we have been delighting our guests with authentic Viennese cuisine — prepared from fresh, seasonal ingredients and served in an atmosphere that unites tradition and warm hospitality.'
+  },
+
   slides: [
     {
       img:    'img/slide1.jpg',

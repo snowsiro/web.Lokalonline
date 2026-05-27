@@ -1,0 +1,1555 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title id="seo-title">Café — Wien</title>
+  <meta name="description" id="seo-desc" content="">
+  <meta property="og:image" id="seo-og" content="">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400;1,600&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --primary: #B8763A;
+      --accent:  #B8763A;
+      --bg:      #FAF7F2;
+      --dark:    #1C1208;
+      --mid:     #8C7B6B;
+      --dim:     #5A4A3A;
+      --line:    #E8E0D4;
+      --font-heading: 'Playfair Display', Georgia, serif;
+      --font-body:    'Inter', system-ui, sans-serif;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--dark);
+      font-family: var(--font-body);
+      font-size: 16px;
+      line-height: 1.65;
+      overflow-x: hidden;
+    }
+
+    /* ── NAV ────────────────────────────────────────────── */
+    #main-nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 999;
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      padding: 0 40px;
+      height: 72px;
+      transition: background .35s, box-shadow .35s;
+    }
+
+    #main-nav.scrolled {
+      background: rgba(250,247,242,.95);
+      backdrop-filter: blur(12px);
+      box-shadow: 0 1px 0 var(--line);
+    }
+
+    .nav-left,
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 28px;
+      list-style: none;
+    }
+    .nav-right { justify-content: flex-end; }
+
+    .nav-left a,
+    .nav-right a {
+      color: rgba(28,18,8,.65);
+      text-decoration: none;
+      font-size: 13px;
+      letter-spacing: .06em;
+      transition: color .2s;
+      white-space: nowrap;
+    }
+    #main-nav.scrolled .nav-left a,
+    #main-nav.scrolled .nav-right a { color: var(--dim); }
+
+    .nav-left a:hover,
+    .nav-right a:hover { color: var(--primary); }
+
+    .nav-logo-center {
+      display: flex;
+      justify-content: center;
+    }
+    .nav-logo {
+      font-family: var(--font-heading);
+      font-size: 24px;
+      color: var(--dark);
+      text-decoration: none;
+      letter-spacing: .02em;
+    }
+    #main-nav:not(.scrolled) .nav-logo { color: #fff; }
+
+    .nav-cta-link {
+      background: var(--primary);
+      color: #fff !important;
+      padding: 9px 20px;
+      border-radius: 40px;
+      font-size: 12px !important;
+      letter-spacing: .08em !important;
+    }
+    .nav-cta-link:hover { background: #9a6130 !important; }
+
+    /* Hamburger */
+    .nav-hamburger {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 4px;
+    }
+    .nav-hamburger span {
+      display: block;
+      width: 24px;
+      height: 2px;
+      background: var(--dark);
+      transition: transform .3s, opacity .3s;
+    }
+    #main-nav:not(.scrolled) .nav-hamburger span { background: #fff; }
+    .nav-hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .nav-hamburger.open span:nth-child(2) { opacity: 0; }
+    .nav-hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+    .nav-mobile {
+      display: none;
+      position: fixed;
+      top: 72px; left: 0; right: 0;
+      background: var(--bg);
+      padding: 20px 32px 32px;
+      z-index: 998;
+      flex-direction: column;
+      gap: 2px;
+      border-bottom: 1px solid var(--line);
+      box-shadow: 0 8px 24px rgba(28,18,8,.08);
+    }
+    .nav-mobile.open { display: flex; }
+    .nav-mobile a {
+      color: var(--dim);
+      text-decoration: none;
+      font-size: 17px;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--line);
+      font-family: var(--font-heading);
+    }
+    .nav-mobile a:last-child { border-bottom: none; }
+
+    @media (max-width: 768px) {
+      .nav-left, .nav-right { display: none; }
+      #main-nav { grid-template-columns: 1fr auto 1fr; }
+      .nav-logo-center { grid-column: 2; }
+      .nav-hamburger {
+        display: flex;
+        grid-column: 3;
+        justify-self: end;
+      }
+    }
+
+    /* ── HERO ───────────────────────────────────────────── */
+    #hero {
+      position: relative;
+      height: 100vh;
+      min-height: 600px;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      background-size: cover;
+      background-position: center;
+      transform: scale(1.05);
+      transition: transform 8s ease;
+    }
+    .hero-bg.loaded { transform: scale(1); }
+
+    .hero-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        135deg,
+        rgba(28,18,8,.72) 0%,
+        rgba(28,18,8,.45) 50%,
+        rgba(184,118,58,.3) 100%
+      );
+    }
+
+    .hero-content {
+      position: relative;
+      text-align: center;
+      color: #fff;
+      padding: 0 24px;
+      max-width: 800px;
+    }
+
+    .hero-eyebrow {
+      font-size: 11px;
+      letter-spacing: .25em;
+      text-transform: uppercase;
+      color: var(--primary);
+      margin-bottom: 20px;
+    }
+
+    .hero-headline {
+      font-family: var(--font-heading);
+      font-size: clamp(44px, 7vw, 88px);
+      line-height: 1.08;
+      margin-bottom: 24px;
+      color: #fff;
+    }
+    .hero-headline em {
+      font-style: italic;
+      color: #f5c98a;
+    }
+
+    .hero-sub {
+      font-size: 16px;
+      color: rgba(255,255,255,.7);
+      max-width: 480px;
+      margin: 0 auto 40px;
+      font-weight: 300;
+      line-height: 1.7;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn-caramel {
+      display: inline-block;
+      background: var(--primary);
+      color: #fff;
+      text-decoration: none;
+      padding: 15px 36px;
+      border-radius: 40px;
+      font-size: 13px;
+      letter-spacing: .08em;
+      transition: background .2s, transform .2s;
+    }
+    .btn-caramel:hover { background: #9a6130; transform: translateY(-2px); }
+
+    .btn-ghost {
+      display: inline-block;
+      background: rgba(255,255,255,.1);
+      color: #fff;
+      text-decoration: none;
+      padding: 15px 36px;
+      border-radius: 40px;
+      border: 1px solid rgba(255,255,255,.35);
+      font-size: 13px;
+      letter-spacing: .08em;
+      transition: background .2s;
+    }
+    .btn-ghost:hover { background: rgba(255,255,255,.2); }
+
+    /* Scroll indicator */
+    .hero-scroll {
+      position: absolute;
+      bottom: 36px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      color: rgba(255,255,255,.4);
+      font-size: 10px;
+      letter-spacing: .15em;
+      text-transform: uppercase;
+    }
+    .hero-scroll::after {
+      content: '';
+      width: 1px;
+      height: 36px;
+      background: linear-gradient(to bottom, rgba(255,255,255,.4), transparent);
+      animation: scrollFade 2s infinite;
+    }
+    @keyframes scrollFade {
+      0%,100% { opacity: .4; }
+      50%      { opacity: 1; }
+    }
+
+    /* ── SPECIALS ───────────────────────────────────────── */
+    #specials {
+      padding: 96px 10vw;
+    }
+
+    .specials-header {
+      text-align: center;
+      margin-bottom: 56px;
+    }
+
+    .specials-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 28px;
+    }
+
+    .special-card {
+      background: #fff;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 4px 24px rgba(28,18,8,.06);
+      transition: transform .3s, box-shadow .3s;
+    }
+    .special-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 12px 40px rgba(28,18,8,.12);
+    }
+
+    .special-img {
+      height: 220px;
+      overflow: hidden;
+      position: relative;
+    }
+    .special-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform .5s;
+    }
+    .special-card:hover .special-img img { transform: scale(1.06); }
+
+    .special-icon {
+      position: absolute;
+      bottom: -18px;
+      left: 24px;
+      width: 40px;
+      height: 40px;
+      background: var(--primary);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      box-shadow: 0 4px 12px rgba(184,118,58,.35);
+    }
+
+    .special-body {
+      padding: 32px 24px 28px;
+    }
+
+    .special-name {
+      font-family: var(--font-heading);
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 10px;
+      color: var(--dark);
+    }
+
+    .special-desc {
+      font-size: 14px;
+      color: var(--mid);
+      line-height: 1.7;
+    }
+
+    @media (max-width: 900px) {
+      .specials-grid { grid-template-columns: 1fr; gap: 20px; }
+    }
+
+    /* ── ABOUT ──────────────────────────────────────────── */
+    #about {
+      padding: 80px 10vw;
+      background: #fff;
+    }
+
+    .about-layout {
+      display: grid;
+      grid-template-columns: 1fr 1.4fr 1fr;
+      gap: 40px;
+      align-items: center;
+    }
+
+    .about-side-img {
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 8px 32px rgba(28,18,8,.1);
+    }
+    .about-side-img img {
+      width: 100%;
+      display: block;
+      object-fit: cover;
+    }
+    .about-side-img:first-child { margin-top: 60px; }
+    .about-side-img:last-child  { margin-bottom: 60px; }
+
+    .about-center {
+      text-align: center;
+    }
+
+    .about-center .section-eyebrow { justify-content: center; }
+
+    .about-body {
+      font-size: 15px;
+      color: var(--dim);
+      line-height: 1.85;
+      margin-top: 20px;
+      white-space: pre-line;
+    }
+
+    @media (max-width: 900px) {
+      .about-layout {
+        grid-template-columns: 1fr;
+      }
+      .about-side-img:first-child { margin-top: 0; }
+      .about-side-img:last-child  { margin-bottom: 0; order: 3; }
+      .about-center { order: 2; }
+    }
+
+    /* ── SECTION SHARED ─────────────────────────────────── */
+    .section-eyebrow {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 11px;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      color: var(--primary);
+      margin-bottom: 14px;
+    }
+    .section-eyebrow::before,
+    .section-eyebrow::after {
+      content: '';
+      height: 1px;
+      background: var(--primary);
+      width: 24px;
+      opacity: .5;
+    }
+
+    .section-title {
+      font-family: var(--font-heading);
+      font-size: clamp(28px, 3.5vw, 48px);
+      line-height: 1.15;
+      color: var(--dark);
+    }
+    .section-title em { font-style: italic; color: var(--primary); }
+
+    /* Centered variants */
+    .text-center { text-align: center; }
+    .text-center .section-eyebrow { justify-content: center; }
+
+    /* ── DRINKS MENU ────────────────────────────────────── */
+    #drinks {
+      padding: 80px 10vw;
+    }
+
+    .drinks-header {
+      margin-bottom: 48px;
+    }
+
+    .drinks-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+
+    .drink-card {
+      background: #fff;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 2px 16px rgba(28,18,8,.05);
+      transition: box-shadow .3s, transform .3s;
+      display: flex;
+      flex-direction: column;
+    }
+    .drink-card:hover {
+      box-shadow: 0 8px 32px rgba(28,18,8,.1);
+      transform: translateY(-4px);
+    }
+
+    .drink-img {
+      height: 180px;
+      overflow: hidden;
+    }
+    .drink-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform .4s;
+    }
+    .drink-card:hover .drink-img img { transform: scale(1.06); }
+
+    .drink-body {
+      padding: 20px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .drink-name {
+      font-family: var(--font-heading);
+      font-size: 17px;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: var(--dark);
+    }
+
+    .drink-desc {
+      font-size: 13px;
+      color: var(--mid);
+      line-height: 1.6;
+      flex: 1;
+    }
+
+    .drink-price {
+      margin-top: 14px;
+      font-weight: 500;
+      font-size: 15px;
+      color: var(--primary);
+      letter-spacing: .02em;
+    }
+
+    @media (max-width: 900px) {
+      .drinks-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 540px) {
+      .drinks-grid { grid-template-columns: 1fr; }
+    }
+
+    /* ── PHOTOS ─────────────────────────────────────────── */
+    #photos {
+      padding: 80px 10vw;
+      background: #fff;
+    }
+
+    .photo-masonry {
+      columns: 3;
+      column-gap: 16px;
+      margin-top: 40px;
+    }
+
+    .photo-item {
+      break-inside: avoid;
+      margin-bottom: 16px;
+      border-radius: 10px;
+      overflow: hidden;
+      cursor: pointer;
+    }
+    .photo-item img {
+      width: 100%;
+      display: block;
+      transition: transform .5s;
+    }
+    .photo-item:hover img { transform: scale(1.04); }
+    .photo-item:nth-child(3n+2) { margin-top: 28px; }
+
+    @media (max-width: 768px) {
+      .photo-masonry { columns: 2; }
+      .photo-item:nth-child(3n+2) { margin-top: 0; }
+    }
+    @media (max-width: 480px) {
+      .photo-masonry { columns: 1; }
+    }
+
+    /* ── HOURS + LOCATION ───────────────────────────────── */
+    #hours {
+      padding: 80px 10vw;
+      background: var(--dark);
+      color: #fff;
+    }
+
+    .hours-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 64px;
+      align-items: start;
+    }
+
+    .hours-block .section-eyebrow { color: var(--primary); }
+    .hours-block .section-eyebrow::before,
+    .hours-block .section-eyebrow::after { background: var(--primary); }
+    .hours-block .section-title { color: #fff; }
+
+    .hours-list {
+      margin-top: 28px;
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .hours-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 0;
+      border-bottom: 1px solid rgba(255,255,255,.08);
+      font-size: 15px;
+    }
+    .hours-row:last-child { border-bottom: none; }
+
+    .hours-day { color: rgba(255,255,255,.5); }
+    .hours-time { font-weight: 500; }
+
+    .location-block .section-eyebrow { color: var(--primary); }
+    .location-block .section-eyebrow::before,
+    .location-block .section-eyebrow::after { background: var(--primary); }
+    .location-block .section-title { color: #fff; }
+
+    .location-details {
+      margin-top: 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .loc-row {
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+    }
+
+    .loc-icon {
+      width: 42px;
+      height: 42px;
+      background: rgba(184,118,58,.15);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+
+    .loc-label {
+      font-size: 11px;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,.35);
+      margin-bottom: 3px;
+    }
+
+    .loc-value {
+      font-size: 15px;
+      color: rgba(255,255,255,.85);
+    }
+    .loc-value a {
+      color: inherit;
+      text-decoration: none;
+    }
+    .loc-value a:hover { color: var(--primary); }
+
+    @media (max-width: 768px) {
+      .hours-grid { grid-template-columns: 1fr; gap: 40px; }
+    }
+
+    /* ── MAP ────────────────────────────────────────────── */
+    #map-section {
+      height: 420px;
+    }
+    #map-section iframe {
+      width: 100%;
+      height: 100%;
+      border: 0;
+      display: block;
+      filter: sepia(15%) saturate(.9);
+    }
+
+    /* ── RESERVATION ────────────────────────────────────── */
+    #reservation {
+      padding: 80px 10vw;
+    }
+
+    .res-wrap {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .res-header {
+      text-align: center;
+      margin-bottom: 48px;
+    }
+    .res-header .section-eyebrow { justify-content: center; }
+
+    .res-note {
+      font-size: 14px;
+      color: var(--mid);
+      text-align: center;
+      margin-top: 12px;
+      margin-bottom: 40px;
+    }
+
+    #res-form {
+      background: #fff;
+      border-radius: 16px;
+      padding: 40px;
+      box-shadow: 0 4px 32px rgba(28,18,8,.07);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .form-group.full { grid-column: 1 / -1; }
+
+    .form-group label {
+      font-size: 11px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--mid);
+      font-weight: 500;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      background: var(--bg);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 13px 16px;
+      font-family: var(--font-body);
+      font-size: 15px;
+      color: var(--dark);
+      outline: none;
+      transition: border-color .2s, box-shadow .2s;
+      appearance: none;
+      -webkit-appearance: none;
+    }
+
+    .form-group select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238C7B6B' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 16px center;
+      padding-right: 40px;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(184,118,58,.12);
+    }
+
+    .form-group textarea { resize: vertical; min-height: 90px; }
+
+    .form-submit {
+      grid-column: 1 / -1;
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      border-radius: 40px;
+      padding: 17px 32px;
+      font-family: var(--font-body);
+      font-size: 14px;
+      letter-spacing: .1em;
+      cursor: pointer;
+      transition: background .2s, transform .2s;
+    }
+    .form-submit:hover { background: #9a6130; transform: translateY(-2px); }
+    .form-submit:disabled { opacity: .6; transform: none; cursor: not-allowed; }
+
+    .form-message {
+      grid-column: 1 / -1;
+      padding: 14px 18px;
+      border-radius: 8px;
+      font-size: 14px;
+      display: none;
+    }
+    .form-message.success { background: #f0faf4; color: #2d6a45; border: 1px solid #c3e6d4; }
+    .form-message.error   { background: #fdf0f0; color: #7a2020; border: 1px solid #e6c3c3; }
+
+    @media (max-width: 640px) {
+      #res-form { grid-template-columns: 1fr; padding: 28px 20px; }
+    }
+
+    /* ── REVIEWS ────────────────────────────────────────── */
+    #reviews {
+      padding: 80px 10vw;
+      background: #fff;
+    }
+
+    .reviews-header {
+      text-align: center;
+      margin-bottom: 48px;
+    }
+    .reviews-header .section-eyebrow { justify-content: center; }
+
+    .reviews-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 24px;
+    }
+
+    .review-card {
+      background: var(--bg);
+      border-radius: 14px;
+      padding: 28px;
+      border: 1px solid var(--line);
+      transition: box-shadow .3s, transform .3s;
+    }
+    .review-card:hover {
+      box-shadow: 0 8px 28px rgba(28,18,8,.08);
+      transform: translateY(-3px);
+    }
+
+    .review-stars {
+      display: flex;
+      gap: 3px;
+      margin-bottom: 14px;
+    }
+    .star { color: var(--primary); font-size: 15px; }
+    .star.empty { color: var(--line); }
+
+    .review-text {
+      font-size: 14px;
+      color: var(--dim);
+      line-height: 1.75;
+      font-style: italic;
+      margin-bottom: 18px;
+    }
+
+    .review-author {
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      color: var(--mid);
+    }
+
+    .reviews-empty {
+      color: var(--mid);
+      font-style: italic;
+    }
+
+    /* ── FOOTER ─────────────────────────────────────────── */
+    #footer {
+      background: var(--dark);
+      color: rgba(250,247,242,.5);
+      padding: 64px 10vw 32px;
+    }
+
+    .footer-top {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr;
+      gap: 48px;
+      margin-bottom: 48px;
+    }
+
+    .footer-brand {
+      font-family: var(--font-heading);
+      font-size: 28px;
+      color: var(--bg);
+      margin-bottom: 12px;
+    }
+
+    .footer-tagline {
+      font-size: 14px;
+      line-height: 1.7;
+      max-width: 280px;
+    }
+
+    .footer-col-title {
+      font-size: 11px;
+      letter-spacing: .15em;
+      text-transform: uppercase;
+      color: rgba(250,247,242,.3);
+      margin-bottom: 20px;
+    }
+
+    .footer-links {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .footer-links a {
+      color: rgba(250,247,242,.5);
+      text-decoration: none;
+      font-size: 14px;
+      transition: color .2s;
+    }
+    .footer-links a:hover { color: var(--bg); }
+
+    .footer-bottom {
+      border-top: 1px solid rgba(250,247,242,.08);
+      padding-top: 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .footer-bottom a {
+      color: rgba(250,247,242,.35);
+      text-decoration: none;
+    }
+    .footer-bottom a:hover { color: rgba(250,247,242,.7); }
+
+    @media (max-width: 768px) {
+      .footer-top { grid-template-columns: 1fr; gap: 32px; }
+    }
+
+    /* ── REVEAL ─────────────────────────────────────────── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity .65s ease, transform .65s ease;
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .reveal-up {
+      opacity: 0;
+      transform: translateY(40px);
+      transition: opacity .8s ease, transform .8s ease;
+    }
+    .reveal-up.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav id="main-nav">
+    <ul class="nav-left" id="nav-left"></ul>
+    <div class="nav-logo-center">
+      <a href="#" class="nav-logo" id="nav-logo">Café</a>
+    </div>
+    <ul class="nav-right" id="nav-right">
+      <li><a href="#reservation" class="nav-cta-link" id="nav-cta"></a></li>
+    </ul>
+    <button class="nav-hamburger" id="hamburger" aria-label="Menu" onclick="toggleMobileMenu()">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+  <div class="nav-mobile" id="nav-mobile"></div>
+
+  <!-- HERO -->
+  <section id="hero">
+    <div class="hero-bg" id="hero-bg"></div>
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+      <div class="hero-eyebrow" id="hero-eyebrow"></div>
+      <h1 class="hero-headline" id="hero-headline"></h1>
+      <p class="hero-sub" id="hero-sub"></p>
+      <div class="hero-actions">
+        <a href="#drinks" class="btn-caramel" id="hero-cta1"></a>
+        <a href="#reservation" class="btn-ghost" id="hero-cta2"></a>
+      </div>
+    </div>
+    <div class="hero-scroll">Scroll</div>
+  </section>
+
+  <!-- SPECIALS -->
+  <section id="specials">
+    <div class="specials-header text-center reveal">
+      <div class="section-eyebrow" id="spec-eyebrow" style="justify-content:center"></div>
+      <h2 class="section-title" id="spec-title"></h2>
+    </div>
+    <div class="specials-grid" id="specials-grid"></div>
+  </section>
+
+  <!-- ABOUT -->
+  <section id="about">
+    <div class="about-layout">
+      <div class="about-side-img reveal">
+        <img id="about-img1" src="" alt="" loading="lazy">
+      </div>
+      <div class="about-center reveal">
+        <div class="section-eyebrow text-center" id="about-eyebrow" style="justify-content:center"></div>
+        <h2 class="section-title text-center" id="about-title"></h2>
+        <p class="about-body" id="about-body"></p>
+      </div>
+      <div class="about-side-img reveal">
+        <img id="about-img2" src="" alt="" loading="lazy">
+      </div>
+    </div>
+  </section>
+
+  <!-- DRINKS -->
+  <section id="drinks">
+    <div class="drinks-header reveal">
+      <div class="section-eyebrow" id="drinks-eyebrow"></div>
+      <h2 class="section-title" id="drinks-title"></h2>
+    </div>
+    <div class="drinks-grid" id="drinks-grid"></div>
+  </section>
+
+  <!-- PHOTOS -->
+  <section id="photos">
+    <div class="text-center reveal">
+      <div class="section-eyebrow" id="photos-eyebrow" style="justify-content:center"></div>
+      <h2 class="section-title" id="photos-title"></h2>
+    </div>
+    <div class="photo-masonry reveal" id="photo-masonry"></div>
+  </section>
+
+  <!-- HOURS + LOCATION -->
+  <section id="hours">
+    <div class="hours-grid">
+      <div class="hours-block reveal">
+        <div class="section-eyebrow" id="hours-eyebrow"></div>
+        <h2 class="section-title" id="hours-title"></h2>
+        <ul class="hours-list" id="hours-list"></ul>
+      </div>
+      <div class="location-block reveal">
+        <div class="section-eyebrow" id="loc-eyebrow"></div>
+        <h2 class="section-title" id="loc-title"></h2>
+        <div class="location-details" id="location-details"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MAP -->
+  <section id="map-section">
+    <iframe id="map-iframe" src="" allowfullscreen loading="lazy" title="Karte"></iframe>
+  </section>
+
+  <!-- RESERVATION -->
+  <section id="reservation">
+    <div class="res-wrap">
+      <div class="res-header reveal">
+        <div class="section-eyebrow" id="res-eyebrow" style="justify-content:center"></div>
+        <h2 class="section-title" id="res-title"></h2>
+        <p class="res-note" id="res-note"></p>
+      </div>
+      <form id="res-form" novalidate>
+        <div class="form-group">
+          <label id="lbl-name"></label>
+          <input type="text" id="f-name" autocomplete="name" required>
+        </div>
+        <div class="form-group">
+          <label id="lbl-date"></label>
+          <input type="date" id="f-date" required>
+        </div>
+        <div class="form-group">
+          <label id="lbl-time"></label>
+          <input type="time" id="f-time" required>
+        </div>
+        <div class="form-group">
+          <label id="lbl-guests"></label>
+          <select id="f-guests">
+            <option value="1">1</option>
+            <option value="2" selected>2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+            <option value="6">6</option>
+            <option value="7">7</option>
+            <option value="8">8+</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label id="lbl-phone"></label>
+          <input type="tel" id="f-phone" autocomplete="tel">
+        </div>
+        <div class="form-group full">
+          <label id="lbl-notes"></label>
+          <textarea id="f-notes" rows="3"></textarea>
+        </div>
+        <div class="form-message" id="form-message"></div>
+        <button type="submit" class="form-submit" id="form-submit"></button>
+      </form>
+    </div>
+  </section>
+
+  <!-- REVIEWS -->
+  <section id="reviews">
+    <div class="reviews-header reveal">
+      <div class="section-eyebrow" id="rev-eyebrow" style="justify-content:center"></div>
+      <h2 class="section-title" id="rev-title"></h2>
+    </div>
+    <div class="reviews-grid" id="reviews-grid">
+      <p class="reviews-empty" id="reviews-loading"></p>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer id="footer">
+    <div class="footer-top">
+      <div>
+        <div class="footer-brand" id="footer-name"></div>
+        <div class="footer-tagline" id="footer-tagline"></div>
+      </div>
+      <div>
+        <div class="footer-col-title" id="footer-nav-label"></div>
+        <ul class="footer-links" id="footer-nav"></ul>
+      </div>
+      <div>
+        <div class="footer-col-title" id="footer-contact-label"></div>
+        <ul class="footer-links" id="footer-contact"></ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span id="footer-copy"></span>
+      <div style="display:flex;gap:20px;">
+        <a href="/impressum.html" id="lnk-impressum">Impressum</a>
+        <a href="/datenschutz.html" id="lnk-datenschutz">Datenschutz</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="data.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script>
+  (function () {
+    'use strict';
+
+    const D = window.SITE_DATA;
+    let lang = localStorage.getItem('lang') || 'de';
+    let supabase = null;
+
+    /* ── UTILS ── */
+    function t(obj) {
+      if (!obj) return '';
+      return obj[lang] || obj.de || '';
+    }
+
+    window.setLang = function(l) {
+      lang = l;
+      localStorage.setItem('lang', l);
+      renderAll();
+    };
+
+    /* ── CSS VARS ── */
+    function applyCSSVars() {
+      const r = document.documentElement;
+      const c = D.colors;
+      r.style.setProperty('--primary', c.primary);
+      r.style.setProperty('--accent',  c.accent);
+      r.style.setProperty('--bg',      c.bg);
+      r.style.setProperty('--dark',    c.dark);
+      r.style.setProperty('--mid',     c.mid);
+      r.style.setProperty('--dim',     c.dim);
+      r.style.setProperty('--line',    c.line);
+      r.style.setProperty('--font-heading', `'${D.fonts.heading}', Georgia, serif`);
+      r.style.setProperty('--font-body',    `'${D.fonts.body}', system-ui, sans-serif`);
+    }
+
+    /* ── SEO ── */
+    function applySEO() {
+      document.getElementById('seo-title').textContent = D.seo.title;
+      document.getElementById('seo-desc').content = t(D.seo.description);
+      document.getElementById('seo-og').content = D.seo.ogImage;
+      document.documentElement.lang = lang;
+    }
+
+    /* ── NAV ── */
+    function renderNav() {
+      document.getElementById('nav-logo').textContent = D.name;
+
+      const links = D.nav || [];
+      // Left: first half (excluding last which is CTA), Right: second half
+      const mainLinks = links.slice(0, -1);
+      const mid = Math.ceil(mainLinks.length / 2);
+      const leftLinks  = mainLinks.slice(0, mid);
+      const rightLinks = mainLinks.slice(mid);
+
+      document.getElementById('nav-left').innerHTML =
+        leftLinks.map(l => `<li><a href="${l.href}">${t(l.label)}</a></li>`).join('');
+
+      const rightEl = document.getElementById('nav-right');
+      rightEl.innerHTML =
+        rightLinks.map(l => `<li><a href="${l.href}">${t(l.label)}</a></li>`).join('');
+      // Re-add CTA
+      const lastLink = links[links.length - 1];
+      rightEl.innerHTML += `<li><a href="${lastLink.href}" class="nav-cta-link">${t(lastLink.label)}</a></li>`;
+
+      // Mobile nav
+      document.getElementById('nav-mobile').innerHTML =
+        links.map(l => `<a href="${l.href}" onclick="closeMobileMenu()">${t(l.label)}</a>`).join('');
+    }
+
+    window.toggleMobileMenu = function() {
+      document.getElementById('hamburger').classList.toggle('open');
+      document.getElementById('nav-mobile').classList.toggle('open');
+    };
+    window.closeMobileMenu = function() {
+      document.getElementById('hamburger').classList.remove('open');
+      document.getElementById('nav-mobile').classList.remove('open');
+    };
+
+    /* ── HERO ── */
+    function renderHero() {
+      const bg = document.getElementById('hero-bg');
+      if (bg && D.hero.img) {
+        bg.style.backgroundImage = `url('${D.hero.img}')`;
+        setTimeout(() => bg.classList.add('loaded'), 100);
+      }
+
+      setText('hero-eyebrow', t(D.type));
+      setHTML('hero-headline', t(D.hero.headline));
+      setText('hero-sub', t(D.hero.sub));
+      setText('hero-cta1', lang === 'de' ? 'Unsere Karte' : 'Our Menu');
+      setText('hero-cta2', lang === 'de' ? 'Tisch reservieren' : 'Book a table');
+    }
+
+    /* ── SPECIALS ── */
+    function renderSpecials() {
+      setText('spec-eyebrow', lang === 'de' ? 'Highlights' : 'Highlights');
+      setHTML('spec-title', lang === 'de' ? 'Was uns <em>besonders macht</em>' : 'What makes us <em>special</em>');
+
+      const grid = document.getElementById('specials-grid');
+      if (grid && D.specials) {
+        grid.innerHTML = D.specials.map(s => `
+          <div class="special-card reveal">
+            <div class="special-img">
+              <img src="${s.img}" alt="${t(s.name)}" loading="lazy">
+              <div class="special-icon">${s.icon || '☕'}</div>
+            </div>
+            <div class="special-body">
+              <div class="special-name">${t(s.name)}</div>
+              <p class="special-desc">${t(s.desc)}</p>
+            </div>
+          </div>`
+        ).join('');
+      }
+    }
+
+    /* ── ABOUT ── */
+    function renderAbout() {
+      const img1 = document.getElementById('about-img1');
+      const img2 = document.getElementById('about-img2');
+      if (img1 && D.about.img1) { img1.src = D.about.img1; img1.alt = D.name; }
+      if (img2 && D.about.img2) { img2.src = D.about.img2; img2.alt = D.name; }
+
+      setText('about-eyebrow', lang === 'de' ? 'Unsere Geschichte' : 'Our Story');
+      setHTML('about-title', lang === 'de' ? 'Mit Liebe <em>gemacht</em>' : 'Made with <em>love</em>');
+      setText('about-body', t(D.about.text));
+    }
+
+    /* ── DRINKS ── */
+    function renderDrinks() {
+      setText('drinks-eyebrow', lang === 'de' ? 'Unsere Karte' : 'Our Menu');
+      setHTML('drinks-title', lang === 'de' ? 'Getränke & <em>Mehlspeisen</em>' : 'Drinks & <em>Pastries</em>');
+
+      const grid = document.getElementById('drinks-grid');
+      if (grid && D.drinks) {
+        grid.innerHTML = D.drinks.map(d => `
+          <div class="drink-card reveal">
+            <div class="drink-img">
+              <img src="${d.img}" alt="${t(d.name)}" loading="lazy">
+            </div>
+            <div class="drink-body">
+              <div class="drink-name">${t(d.name)}</div>
+              <p class="drink-desc">${t(d.desc)}</p>
+              <div class="drink-price">${d.price}</div>
+            </div>
+          </div>`
+        ).join('');
+      }
+    }
+
+    /* ── PHOTOS ── */
+    function renderPhotos() {
+      setText('photos-eyebrow', lang === 'de' ? 'Galerie' : 'Gallery');
+      setHTML('photos-title', lang === 'de' ? 'Einblicke in unser <em>Café</em>' : 'A glimpse into our <em>Café</em>');
+
+      const masonry = document.getElementById('photo-masonry');
+      if (masonry && D.photos) {
+        masonry.innerHTML = D.photos.map(p =>
+          `<div class="photo-item"><img src="${p}" alt="" loading="lazy"></div>`
+        ).join('');
+      }
+    }
+
+    /* ── HOURS ── */
+    function renderHours() {
+      setText('hours-eyebrow', lang === 'de' ? 'Öffnungszeiten' : 'Opening Hours');
+      setHTML('hours-title', lang === 'de' ? 'Wann wir <em>für Sie da sind</em>' : 'When we are <em>open</em>');
+
+      const list = document.getElementById('hours-list');
+      if (list) {
+        list.innerHTML = D.hours.map(h =>
+          `<li class="hours-row">
+            <span class="hours-day">${t(h.day)}</span>
+            <span class="hours-time">${h.time}</span>
+          </li>`
+        ).join('');
+      }
+
+      setText('loc-eyebrow', lang === 'de' ? 'Standort' : 'Location');
+      setHTML('loc-title', lang === 'de' ? 'So finden <em>Sie uns</em>' : 'How to <em>find us</em>');
+
+      const details = document.getElementById('location-details');
+      if (details) {
+        details.innerHTML = `
+          <div class="loc-row">
+            <div class="loc-icon">📍</div>
+            <div>
+              <div class="loc-label">${lang === 'de' ? 'Adresse' : 'Address'}</div>
+              <div class="loc-value">${D.address}</div>
+            </div>
+          </div>
+          <div class="loc-row">
+            <div class="loc-icon">📞</div>
+            <div>
+              <div class="loc-label">${lang === 'de' ? 'Telefon' : 'Phone'}</div>
+              <div class="loc-value"><a href="tel:${D.phone}">${D.phone}</a></div>
+            </div>
+          </div>
+          <div class="loc-row">
+            <div class="loc-icon">✉️</div>
+            <div>
+              <div class="loc-label">E-Mail</div>
+              <div class="loc-value"><a href="mailto:${D.email}">${D.email}</a></div>
+            </div>
+          </div>
+          <div class="loc-row">
+            <div class="loc-icon">📸</div>
+            <div>
+              <div class="loc-label">Instagram</div>
+              <div class="loc-value"><a href="https://instagram.com/${D.instagram.replace('@','')}" target="_blank" rel="noopener">${D.instagram}</a></div>
+            </div>
+          </div>`;
+      }
+    }
+
+    /* ── MAP ── */
+    function renderMap() {
+      const iframe = document.getElementById('map-iframe');
+      if (iframe && D.googleMapsEmbed) iframe.src = D.googleMapsEmbed;
+    }
+
+    /* ── RESERVATION ── */
+    function renderReservation() {
+      setText('res-eyebrow', lang === 'de' ? 'Reservierung' : 'Reservation');
+      setHTML('res-title', lang === 'de' ? 'Tisch <em>reservieren</em>' : 'Book a <em>table</em>');
+      setText('res-note', lang === 'de'
+        ? 'Wir freuen uns auf Ihren Besuch. Bei Fragen stehen wir gerne telefonisch zur Verfügung.'
+        : 'We look forward to your visit. Feel free to call us for any questions.');
+      setText('lbl-name',   lang === 'de' ? 'Name' : 'Name');
+      setText('lbl-date',   lang === 'de' ? 'Datum' : 'Date');
+      setText('lbl-time',   lang === 'de' ? 'Uhrzeit' : 'Time');
+      setText('lbl-guests', lang === 'de' ? 'Personen' : 'Guests');
+      setText('lbl-phone',  lang === 'de' ? 'Telefon' : 'Phone');
+      setText('lbl-notes',  lang === 'de' ? 'Anmerkungen' : 'Notes');
+      setText('form-submit', lang === 'de' ? 'Reservierung senden' : 'Send reservation');
+    }
+
+    /* ── REVIEWS ── */
+    async function loadReviews() {
+      setText('rev-eyebrow', lang === 'de' ? 'Gästestimmen' : 'Guest Reviews');
+      setHTML('rev-title', lang === 'de' ? 'Was unsere Gäste <em>sagen</em>' : 'What our guests <em>say</em>');
+
+      const loading = document.getElementById('reviews-loading');
+      if (loading) loading.textContent = lang === 'de' ? 'Lade Bewertungen…' : 'Loading reviews…';
+
+      if (!supabase) return;
+
+      try {
+        const { data, error } = await supabase
+          .from('reviews')
+          .select('*')
+          .eq('client_slug', D.reviewSlug)
+          .order('created_at', { ascending: false })
+          .limit(9);
+
+        const grid = document.getElementById('reviews-grid');
+        if (!grid) return;
+
+        if (error || !data || data.length === 0) {
+          grid.innerHTML = `<p class="reviews-empty">${lang === 'de' ? 'Noch keine Bewertungen vorhanden.' : 'No reviews yet.'}</p>`;
+          return;
+        }
+
+        grid.innerHTML = data.map(r => {
+          const stars = Array.from({length: 5}, (_, i) =>
+            `<span class="star${i < (r.rating || 5) ? '' : ' empty'}">★</span>`
+          ).join('');
+          return `
+            <div class="review-card">
+              <div class="review-stars">${stars}</div>
+              <p class="review-text">"${r.text || r.content || ''}"</p>
+              <div class="review-author">— ${r.author || r.name || 'Gast'}</div>
+            </div>`;
+        }).join('');
+      } catch (e) {
+        console.warn('Reviews error', e);
+        const grid = document.getElementById('reviews-grid');
+        if (grid) grid.innerHTML = `<p class="reviews-empty">${lang === 'de' ? 'Bewertungen konnten nicht geladen werden.' : 'Could not load reviews.'}</p>`;
+      }
+    }
+
+    /* ── FOOTER ── */
+    function renderFooter() {
+      setText('footer-name', D.name);
+      setText('footer-tagline', t(D.tagline));
+      setText('footer-nav-label',     lang === 'de' ? 'Navigation' : 'Navigation');
+      setText('footer-contact-label', lang === 'de' ? 'Kontakt' : 'Contact');
+
+      const navEl = document.getElementById('footer-nav');
+      if (navEl && D.nav) {
+        navEl.innerHTML = D.nav.map(l =>
+          `<li><a href="${l.href}">${t(l.label)}</a></li>`
+        ).join('');
+      }
+
+      const contactEl = document.getElementById('footer-contact');
+      if (contactEl) {
+        contactEl.innerHTML = `
+          <li><a href="tel:${D.phone}">${D.phone}</a></li>
+          <li><a href="mailto:${D.email}">${D.email}</a></li>
+          <li>${D.address}</li>`;
+      }
+
+      setText('footer-copy', `© ${new Date().getFullYear()} ${D.name}`);
+    }
+
+    /* ── HELPERS ── */
+    function setText(id, val) {
+      const el = document.getElementById(id);
+      if (el) el.textContent = val;
+    }
+    function setHTML(id, val) {
+      const el = document.getElementById(id);
+      if (el) el.innerHTML = val;
+    }
+
+    /* ── NAV SCROLL ── */
+    function initNavScroll() {
+      const nav = document.getElementById('main-nav');
+      window.addEventListener('scroll', () => {
+        nav.classList.toggle('scrolled', window.scrollY > 60);
+      }, { passive: true });
+    }
+
+    /* ── SCROLL REVEAL ── */
+    function initReveal() {
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(e => {
+          if (e.isIntersecting) e.target.classList.add('visible');
+        });
+      }, { threshold: 0.08 });
+      document.querySelectorAll('.reveal, .reveal-up').forEach(el => observer.observe(el));
+    }
+
+    /* ── SUPABASE ── */
+    function initSupabase() {
+      if (window.supabase && D.supabase) {
+        supabase = window.supabase.createClient(D.supabase.url, D.supabase.key);
+      }
+    }
+
+    /* ── FORM ── */
+    function initForm() {
+      const form = document.getElementById('res-form');
+      if (!form) return;
+
+      const dateInput = document.getElementById('f-date');
+      if (dateInput) {
+        const today = new Date().toISOString().split('T')[0];
+        dateInput.min = today;
+        dateInput.value = today;
+      }
+
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const btn = document.getElementById('form-submit');
+        const msg = document.getElementById('form-message');
+
+        btn.disabled = true;
+        btn.textContent = lang === 'de' ? 'Wird gesendet…' : 'Sending…';
+
+        const payload = {
+          client_slug: D.slug,
+          name:    document.getElementById('f-name').value.trim(),
+          date:    document.getElementById('f-date').value,
+          time:    document.getElementById('f-time').value,
+          guests:  parseInt(document.getElementById('f-guests').value, 10),
+          phone:   document.getElementById('f-phone').value.trim(),
+          notes:   document.getElementById('f-notes').value.trim(),
+          lang:    lang
+        };
+
+        if (!payload.name || !payload.date || !payload.time) {
+          msg.className = 'form-message error';
+          msg.style.display = 'block';
+          msg.textContent = lang === 'de'
+            ? 'Bitte füllen Sie alle Pflichtfelder aus.'
+            : 'Please fill in all required fields.';
+          btn.disabled = false;
+          renderReservation();
+          return;
+        }
+
+        try {
+          if (!supabase) throw new Error('Supabase not initialised');
+          const { error } = await supabase.from('reservations').insert([payload]);
+          if (error) throw error;
+
+          msg.className = 'form-message success';
+          msg.style.display = 'block';
+          msg.textContent = lang === 'de'
+            ? '✓ Ihre Reservierung wurde erfolgreich übermittelt. Wir freuen uns auf Sie!'
+            : '✓ Your reservation was submitted successfully. We look forward to seeing you!';
+          form.reset();
+        } catch (err) {
+          console.error(err);
+          msg.className = 'form-message error';
+          msg.style.display = 'block';
+          msg.textContent = lang === 'de'
+            ? 'Es ist ein Fehler aufgetreten. Bitte rufen Sie uns direkt an.'
+            : 'An error occurred. Please call us directly.';
+        }
+
+        btn.disabled = false;
+        renderReservation();
+      });
+    }
+
+    /* ── RENDER ALL ── */
+    function renderAll() {
+      applySEO();
+      renderNav();
+      renderHero();
+      renderSpecials();
+      renderAbout();
+      renderDrinks();
+      renderPhotos();
+      renderHours();
+      renderMap();
+      renderReservation();
+      renderFooter();
+      loadReviews();
+      // Re-observe dynamically added .reveal elements
+      setTimeout(initReveal, 50);
+    }
+
+    /* ── INIT ── */
+    function init() {
+      applyCSSVars();
+      initSupabase();
+      renderAll();
+      initNavScroll();
+      setTimeout(initReveal, 150);
+      initForm();
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', init);
+    } else {
+      init();
+    }
+  })();
+  </script>
+</body>
+</html>

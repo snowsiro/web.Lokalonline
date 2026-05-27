@@ -349,6 +349,17 @@
     .success-icon { font-size: 56px; margin-bottom: 16px; }
     .success-title { font-size: 22px; font-weight: 700; margin-bottom: 8px; }
     .success-sub { font-size: 14px; color: var(--text-muted); line-height: 1.6; }
+    /* Signup prompt */
+    .signup-prompt { margin-top: 28px; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px 20px; text-align: left; }
+    .signup-prompt-heading { font-size: 15px; font-weight: 700; margin-bottom: 6px; }
+    .signup-prompt-desc { font-size: 13px; color: var(--text-muted); line-height: 1.5; margin-bottom: 16px; }
+    .signup-email-display { font-size: 13px; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 9px 12px; margin-bottom: 10px; color: var(--text-muted); }
+    .signup-input { width: 100%; padding: 10px 14px; border: 1.5px solid var(--border); border-radius: 8px; font-size: 14px; font-family: inherit; outline: none; transition: border-color .15s; }
+    .signup-input:focus { border-color: var(--orange); }
+    .signup-btn { margin-top: 10px; width: 100%; padding: 11px; background: var(--orange); color: #fff; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; transition: background .15s; }
+    .signup-btn:hover { background: var(--orange-dark); }
+    .signup-btn:disabled { opacity: .6; cursor: default; }
+    .signup-msg { margin-top: 10px; font-size: 13px; }
     /* Optional badge */
     .optional-badge {
       display: inline-block;
@@ -562,6 +573,16 @@ So: Ruhetag"></textarea>
       <div class="success-icon">✅</div>
       <div class="success-title" id="successTitle">Anfrage erfolgreich gesendet!</div>
       <div class="success-sub" id="successSub">Vielen Dank! Wir melden uns innerhalb von 24 Stunden mit einem kostenlosen Prototyp Ihrer Website.<br><br><a href="/" style="color:var(--orange);font-weight:600">← Zurück zur Startseite</a></div>
+
+      <!-- Account creation prompt -->
+      <div class="signup-prompt" id="signupPrompt">
+        <div class="signup-prompt-heading" id="spHeading">🔐 Konto erstellen</div>
+        <div class="signup-prompt-desc" id="spDesc">Erstellen Sie jetzt ein Konto, um den Status Ihrer Anfrage zu verfolgen und später einfach auf Ihr Kundenportal zuzugreifen.</div>
+        <div class="signup-email-display" id="spEmail"></div>
+        <input type="password" id="spPassword" class="signup-input" placeholder="Passwort wählen (min. 8 Zeichen)" autocomplete="new-password" />
+        <button id="spBtn" class="signup-btn">Konto erstellen</button>
+        <div id="spMsg" class="signup-msg"></div>
+      </div>
     </div>
 
   </div><!-- /order-wrap -->
@@ -641,6 +662,14 @@ So: Ruhetag"></textarea>
         backHome: '← Zurück zur Startseite',
         submitting: 'Wird gesendet…',
         submitError: 'Es ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut.',
+        spHeading: '🔐 Konto erstellen',
+        spDesc: 'Erstellen Sie jetzt ein Konto, um den Status Ihrer Anfrage zu verfolgen und später einfach auf Ihr Kundenportal zuzugreifen.',
+        spPasswordPh: 'Passwort wählen (min. 8 Zeichen)',
+        spBtn: 'Konto erstellen',
+        spErrShort: 'Passwort muss mindestens 8 Zeichen haben.',
+        spErrExists: 'Diese E-Mail ist bereits registriert. Bitte melden Sie sich an.',
+        spDone: '✅ Bestätigungs-E-Mail gesendet! Bitte prüfen Sie Ihr Postfach.',
+        spSkip: 'Später einrichten',
       },
       en: {
         langBtn: 'DE',
@@ -703,6 +732,14 @@ So: Ruhetag"></textarea>
         backHome: '← Back to homepage',
         submitting: 'Sending…',
         submitError: 'An error occurred. Please try again.',
+        spHeading: '🔐 Create an account',
+        spDesc: 'Create an account to track the status of your request and easily access your customer portal later.',
+        spPasswordPh: 'Choose a password (min. 8 characters)',
+        spBtn: 'Create account',
+        spErrShort: 'Password must be at least 8 characters.',
+        spErrExists: 'Email already registered. Please sign in.',
+        spDone: '✅ Confirmation email sent! Please check your inbox.',
+        spSkip: 'Set up later',
       }
     };
 
@@ -792,6 +829,16 @@ So: Ruhetag"></textarea>
       // Success
       document.getElementById('successTitle').textContent = t.successTitle;
       document.getElementById('successSub').innerHTML = t.successSub + '<br><br><a href="/" style="color:var(--orange);font-weight:600">' + t.backHome + '</a>';
+
+      // Signup prompt
+      var spHeadingEl = document.getElementById('spHeading');
+      var spDescEl = document.getElementById('spDesc');
+      var spPwEl = document.getElementById('spPassword');
+      var spBtnEl = document.getElementById('spBtn');
+      if (spHeadingEl) spHeadingEl.textContent = t.spHeading;
+      if (spDescEl) spDescEl.textContent = t.spDesc;
+      if (spPwEl) spPwEl.placeholder = t.spPasswordPh;
+      if (spBtnEl && !spBtnEl.dataset.done) spBtnEl.textContent = t.spBtn;
     }
 
     document.getElementById('langToggle').addEventListener('click', function () {
@@ -948,6 +995,41 @@ So: Ruhetag"></textarea>
         document.getElementById('progressWrap').style.display = 'none';
         document.getElementById('successPanel').classList.add('show');
         applyLang(currentLang);
+
+        // Show submitted email in signup prompt
+        var submittedEmail = payload.email;
+        var spEmailEl = document.getElementById('spEmail');
+        if (spEmailEl) spEmailEl.textContent = submittedEmail;
+
+        // Bind signup button
+        document.getElementById('spBtn').addEventListener('click', async function () {
+          var t = T[currentLang];
+          var password = document.getElementById('spPassword').value;
+          var msgEl = document.getElementById('spMsg');
+          var btn = document.getElementById('spBtn');
+
+          if (password.length < 8) {
+            msgEl.textContent = t.spErrShort;
+            msgEl.style.color = 'var(--error)';
+            return;
+          }
+
+          btn.disabled = true;
+          btn.textContent = '…';
+
+          var { error: signUpError } = await sb.auth.signUp({ email: submittedEmail, password: password });
+
+          if (signUpError) {
+            var msg = signUpError.message.toLowerCase();
+            msgEl.textContent = (msg.includes('already') || msg.includes('registered')) ? t.spErrExists : signUpError.message;
+            msgEl.style.color = 'var(--error)';
+            btn.disabled = false;
+            btn.textContent = t.spBtn;
+          } else {
+            btn.dataset.done = '1';
+            document.getElementById('signupPrompt').innerHTML = '<div style="color:var(--success);font-weight:600;font-size:14px;padding:4px 0">' + t.spDone + '</div>';
+          }
+        });
 
       } catch (e) {
         errEl.textContent = T[currentLang].submitError + ' (' + e.message + ')';

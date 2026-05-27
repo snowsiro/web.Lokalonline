@@ -1072,22 +1072,34 @@
 
   async function generateQrCode(slug) {
     var menuUrl = 'https://lokalonline.at/' + slug + '/menu/';
-    var qrApiUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=' + encodeURIComponent(menuUrl) + '&bgcolor=ffffff&color=000000&margin=2&format=png';
-    var session = (await sb.auth.getSession()).data.session;
-    var token = session ? session.access_token : '';
-    try {
-      await fetch(EDGE_FN, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
-        body: JSON.stringify({ action: 'copy-from-url', source_url: qrApiUrl, dest_path: slug + '/img/qr-menu.png', message: 'Add QR code for menu' })
+    return new Promise(function(resolve) {
+      var canvas = document.createElement('canvas');
+      QRCode.toCanvas(canvas, menuUrl, { width: 400, margin: 2, color: { dark: '#000000', light: '#ffffff' } }, async function(err) {
+        if (!err) {
+          canvas.toBlob(async function(blob) {
+            var reader = new FileReader();
+            reader.onloadend = async function() {
+              var base64 = reader.result.split(',')[1];
+              try {
+                var session = (await sb.auth.getSession()).data.session;
+                var token = session ? session.access_token : '';
+                await fetch(EDGE_FN, {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+                  body: JSON.stringify({ action: 'put-file', path: slug + '/img/qr-menu.png', content: base64, message: 'Add QR code for menu' })
+                });
+              } catch(e) { /* non-fatal */ }
+              resolve();
+            };
+            reader.readAsDataURL(blob);
+          }, 'image/png');
+        } else { resolve(); }
       });
-    } catch(e) { /* non-fatal */ }
-    return menuUrl;
+    });
   }
 
   function showQrResult(slug) {
     var menuUrl = 'https://lokalonline.at/' + slug + '/menu/';
-    var qrImgUrl = 'https://lokalonline.at/' + slug + '/img/qr-menu.png';
 
     var linksEl = document.getElementById('qrResultLinks');
     linksEl.innerHTML = [
@@ -1098,10 +1110,18 @@
       return '<a href="' + l.url + '" target="_blank" class="btn btn-outline btn-sm">' + l.label + '</a>';
     }).join('');
 
-    document.getElementById('qrCodeImg').src = qrImgUrl + '?t=' + Date.now();
     document.getElementById('qrCodeUrl').textContent = menuUrl;
-    document.getElementById('qrDownloadBtn').href = qrImgUrl;
-    document.getElementById('qrPrintBtn').href = 'https://lokalonline.at/' + slug + '/img/qr-menu.png';
+
+    // Render QR directly into the img element via canvas
+    var canvas = document.createElement('canvas');
+    QRCode.toCanvas(canvas, menuUrl, { width: 200, margin: 2, color: { dark: '#000000', light: '#ffffff' } }, function(err) {
+      if (!err) {
+        var dataUrl = canvas.toDataURL('image/png');
+        document.getElementById('qrCodeImg').src = dataUrl;
+        document.getElementById('qrDownloadBtn').href = dataUrl;
+      }
+    });
+
     openModal('qrResultOverlay');
   }
 

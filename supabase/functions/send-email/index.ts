@@ -57,7 +57,12 @@ Deno.serve(async (req) => {
 
   try {
     const body = await req.json();
-    const { type, record } = body;
+
+    // Supabase Webhook sends: { type, table, record, old_record }
+    // type field can also be passed manually for direct calls
+    const record = body.record;
+    const table  = body.table;
+    const type   = body.type || (table === 'orders' ? 'new-order' : table === 'messages' ? 'new-message' : null);
 
     // ── New order → notify admin ─────────────────────────────────────
     if (type === "new-order") {

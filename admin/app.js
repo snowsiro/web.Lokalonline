@@ -557,16 +557,18 @@
 
     var infoGrid = document.getElementById('orderInfo');
     infoGrid.innerHTML =
-      infoItem('업장명', esc(data.business_name)) +
-      infoItem('업종', data.business_type || '—') +
-      infoItem('소개', data.description || '—') +
-      infoItem('주소', data.address || '—') +
-      infoItem('전화', data.phone || '—') +
-      infoItem('이메일', '<a href="mailto:' + esc(data.email) + '" style="color:var(--primary)">' + esc(data.email) + '</a>') +
-      infoItem('인스타그램', data.instagram || '—') +
-      infoItem('영업시간', data.hours ? '<pre style="font-size:12px;white-space:pre-wrap">' + esc(data.hours) + '</pre>' : '—') +
-      infoItem('요청사항', data.notes || '—') +
-      infoItem('접수일', formatDate(data.created_at));
+      infoItem('Betriebsname', esc(data.business_name)) +
+      infoItem('Ansprechperson', data.contact_name || '—') +
+      infoItem('Branche', data.business_type || '—') +
+      infoItem('Kurzbeschreibung', data.description || '—') +
+      infoItem('Adresse', data.address || '—') +
+      infoItem('Telefon', data.phone || '—') +
+      infoItem('E-Mail', '<a href="mailto:' + esc(data.email) + '" style="color:var(--primary)">' + esc(data.email) + '</a>') +
+      infoItem('Instagram', data.instagram || '—') +
+      infoItem('Website', data.website || '—') +
+      infoItem('Öffnungszeiten', data.hours ? '<pre style="font-size:12px;white-space:pre-wrap">' + esc(data.hours) + '</pre>' : '—') +
+      infoItem('Wünsche', data.notes || '—') +
+      infoItem('Eingegangen', formatDate(data.created_at));
 
     var filesWrap = document.getElementById('orderFilesWrap');
     var filesEl = document.getElementById('orderFiles');
@@ -577,7 +579,7 @@
       hasFiles = true;
       filesEl.innerHTML += '<a href="' + esc(data.logo_url) + '" target="_blank" style="display:flex;flex-direction:column;align-items:center;gap:4px;text-decoration:none">' +
         '<img src="' + esc(data.logo_url) + '" style="width:80px;height:80px;object-fit:contain;border:1px solid var(--border);border-radius:8px;background:#f8fafc" />' +
-        '<span style="font-size:11px;color:var(--text-muted)">로고</span></a>';
+        '<span style="font-size:11px;color:var(--text-muted)">Logo</span></a>';
     }
 
     var photoUrls = [];
@@ -590,7 +592,7 @@
       hasFiles = true;
       filesEl.innerHTML += '<a href="' + esc(url) + '" target="_blank" style="display:flex;flex-direction:column;align-items:center;gap:4px;text-decoration:none">' +
         '<img src="' + esc(url) + '" style="width:80px;height:80px;object-fit:cover;border:1px solid var(--border);border-radius:8px" />' +
-        '<span style="font-size:11px;color:var(--text-muted)">사진 ' + (i + 1) + '</span></a>';
+        '<span style="font-size:11px;color:var(--text-muted)">Foto ' + (i + 1) + '</span></a>';
     });
 
     filesWrap.style.display = hasFiles ? 'block' : 'none';

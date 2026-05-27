@@ -18,7 +18,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/style.css?v=4" />
   <link rel="icon" type="image/x-icon" href="/favicon.ico" />
   <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
   <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
@@ -147,9 +147,15 @@
       </p>
       <div class="hero-circles">
         <div class="hero-circle-row">
-          <div class="hero-circle" style="background-image:url('/seoulmate/img/slide1.jpg')"></div>
-          <div class="hero-circle" style="background-image:url('/yori2/img/slide1.jpg')"></div>
-          <div class="hero-circle" style="background-image:url('/seoulmate/img/iroom.jpg')"></div>
+          <a class="hero-circle hero-circle-link" href="/seoulmate/" target="_blank" aria-label="Seoulmate Korean Bistro" style="background-image:url('/seoulmate/img/slide1.jpg')">
+            <span class="hero-circle-label">Seoulmate</span>
+          </a>
+          <a class="hero-circle hero-circle-link" href="/yori2/" target="_blank" aria-label="Yori2 Korean Restaurant" style="background-image:url('/yori2/img/slide1.jpg')">
+            <span class="hero-circle-label">Yori2</span>
+          </a>
+          <a class="hero-circle hero-circle-link" href="/seoulmate/" target="_blank" aria-label="Seoulmate" style="background-image:url('/seoulmate/img/iroom.jpg')">
+            <span class="hero-circle-label">Seoulmate</span>
+          </a>
           <div class="hero-circle-placeholder" data-de="Ihr Lokal" data-en="Your place">Ihr Lokal</div>
         </div>
       </div>
@@ -207,8 +213,8 @@
         <div class="step">
           <div class="step-num">01</div>
           <h3 class="step-title" data-de="Gespräch" data-en="Consultation">Gespräch</h3>
-          <p class="step-text" data-de="Wir trinken einen Kaffee und besprechen Ihre Wünsche und das Corporate Design." data-en="We have a coffee and discuss your wishes and corporate design.">
-            Wir trinken einen Kaffee und besprechen Ihre Wünsche und das Corporate Design.
+          <p class="step-text" data-de="Sie füllen unser Formular aus — wir melden uns innerhalb von 24 Stunden. Alles läuft digital und unkompliziert, ohne unnötige Treffen." data-en="Fill in our form — we'll get back to you within 24 hours. Everything runs digitally and smoothly, without unnecessary meetings.">
+            Sie füllen unser Formular aus — wir melden uns innerhalb von 24 Stunden. Alles läuft digital und unkompliziert, ohne unnötige Treffen.
           </p>
         </div>
 
@@ -306,7 +312,7 @@
             <span class="pricing-check" data-de="Persönlicher Kontakt in Wien" data-en="Personal contact in Vienna">Persönlicher Kontakt in Wien</span>
           </div>
           <div style="margin-top:28px">
-            <a href="#contact" class="btn btn-primary btn-full" style="border-radius:100px;padding:14px 24px;font-size:16px" data-de="Jetzt kostenlos anfragen" data-en="Request for free">Jetzt kostenlos anfragen</a>
+            <a href="/order/" class="btn btn-primary btn-full" style="border-radius:100px;padding:14px 24px;font-size:16px" data-de="Jetzt kostenlos anfragen" data-en="Request for free">Jetzt kostenlos anfragen</a>
           </div>
         </div>
       </div>
@@ -390,11 +396,9 @@
       <p class="popup-text" data-de="Für die ersten 10 Kunden: starten Sie ohne Risiko — der erste Monat ist kostenlos. Danach nur €29/Monat." data-en="For the first 10 customers: start risk-free — your first month is on us. Then just €29/month.">
         Für die ersten 10 Kunden: starten Sie ohne Risiko — der erste Monat ist kostenlos. Danach nur <strong style="color:#fff">€29/Monat</strong>.
       </p>
-      <!-- kept for JS compatibility -->
-      <div class="popup-badge" style="display:none"></div>
-      <div class="popup-actions" style="display:none">
-        <a href="#contact" class="popup-cta"></a>
-        <button class="popup-dismiss" id="promoDismiss"></button>
+      <div class="popup-actions">
+        <a href="/order/" class="popup-cta btn" id="popupCtaBtn" data-de="Jetzt sichern" data-en="Claim now">Jetzt sichern</a>
+        <button class="popup-dismiss" id="promoDismiss" data-de="Nein danke" data-en="No thanks">Nein danke</button>
       </div>
     </div>
   </div>
@@ -422,7 +426,7 @@
   </footer>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-  <script src="js/stripe-config.js"></script>
-  <script src="js/main.js"></script>
+  <script src="js/stripe-config.js?v=3"></script>
+  <script src="js/main.js?v=3"></script>
 </body>
 </html>

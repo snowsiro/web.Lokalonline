@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>lokalonline — Websites für Wiener Kleinunternehmen</title>
+  <meta name="description" content="Professionelle Websites & digitale Speisekarten für Cafés, Restaurants und Geschäfte in Wien. Schnell, günstig, lokal." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://lokalonline.at/" />
+  <meta property="og:title" content="lokalonline.at — Websites für Wiener Kleinunternehmen" />
+  <meta property="og:description" content="Professionelle Websites & digitale Speisekarten für Cafés, Restaurants und Geschäfte in Wien. Schnell, günstig, lokal." />
+  <meta property="og:image" content="https://lokalonline.at/og-image.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:locale" content="de_AT" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="https://lokalonline.at/og-image.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+</head>
+<body>
+
+  <!-- ░░ NAV ░░ -->
+  <header class="nav-wrapper">
+    <nav class="nav container">
+      <a href="#" class="nav-logo">lokalonline<span class="dot">.</span>at</a>
+      <ul class="nav-links">
+        <li><a href="#services" data-de="Leistungen" data-en="Services">Leistungen</a></li>
+        <li><a href="#how-it-works" data-de="Ablauf" data-en="How it works">Ablauf</a></li>
+        <li><a href="#portfolio" data-de="Referenzen" data-en="Portfolio">Referenzen</a></li>
+        <li><a href="#pricing" data-de="Preise" data-en="Pricing">Preise</a></li>
+        <li><a href="#contact" data-de="Kontakt" data-en="Contact">Kontakt</a></li>
+      </ul>
+      <div class="nav-actions">
+        <button class="lang-toggle" id="langToggle" aria-label="Sprache wechseln">EN</button>
+        <!-- 비로그인 -->
+        <button class="btn btn-primary btn-sm" id="openAuthBtn" data-de="Anmelden" data-en="Sign in">Anmelden</button>
+        <!-- 로그인 후 -->
+        <div class="nav-user" id="navUser" style="display:none">
+          <button class="user-avatar-btn" id="userMenuBtn" aria-label="Benutzermenü">
+            <span id="userInitial">?</span>
+          </button>
+          <div class="user-dropdown" id="userDropdown">
+            <a href="#" id="portalLink" data-de="Mein Bereich" data-en="My area">Mein Bereich</a>
+            <button id="signoutBtn" data-de="Abmelden" data-en="Sign out">Abmelden</button>
+          </div>
+        </div>
+      </div>
+      <button class="nav-burger" id="navBurger" aria-label="Menü öffnen">
+        <span></span><span></span><span></span>
+      </button>
+    </nav>
+    <div class="nav-mobile" id="navMobile">
+      <a href="#services" data-de="Leistungen" data-en="Services">Leistungen</a>
+      <a href="#how-it-works" data-de="Ablauf" data-en="How it works">Ablauf</a>
+      <a href="#portfolio" data-de="Referenzen" data-en="Portfolio">Referenzen</a>
+      <a href="#pricing" data-de="Preise" data-en="Pricing">Preise</a>
+      <a href="#contact" data-de="Kontakt" data-en="Contact">Kontakt</a>
+      <a href="#" id="mobileAuthLink" data-de="Anmelden" data-en="Sign in">Anmelden</a>
+    </div>
+  </header>
+
+  <!-- ░░ AUTH MODAL ░░ -->
+  <div class="auth-overlay" id="authOverlay">
+    <div class="auth-modal">
+      <button class="auth-close" id="closeAuth" aria-label="Schließen">✕</button>
+      <div class="auth-logo">lokalonline<span class="dot">.</span>at</div>
+      <div class="auth-tabs">
+        <button class="auth-tab active" data-panel="login" data-de="Anmelden" data-en="Sign in">Anmelden</button>
+        <button class="auth-tab" data-panel="signup" data-de="Registrieren" data-en="Sign up">Registrieren</button>
+      </div>
+      <!-- Login -->
+      <div class="auth-panel active" id="panelLogin">
+        <div class="auth-form-group">
+          <label data-de="E-Mail" data-en="Email">E-Mail</label>
+          <input type="email" id="loginEmail" placeholder="ihre@email.at" autocomplete="email" />
+        </div>
+        <div class="auth-form-group">
+          <label data-de="Passwort" data-en="Password">Passwort</label>
+          <input type="password" id="loginPassword" placeholder="••••••••" autocomplete="current-password" />
+        </div>
+        <button class="btn btn-primary btn-full" id="loginSubmitBtn" data-de="Anmelden" data-en="Sign in">Anmelden</button>
+        <div class="auth-error" id="loginError"></div>
+      </div>
+      <!-- Signup -->
+      <div class="auth-panel" id="panelSignup">
+        <!-- 필수 -->
+        <div class="auth-form-group">
+          <label data-de="Ihr Name *" data-en="Your name *">Ihr Name *</label>
+          <input type="text" id="signupName" placeholder="Maria Mustermann" autocomplete="name" />
+        </div>
+        <div class="auth-form-group">
+          <label data-de="E-Mail *" data-en="Email *">E-Mail *</label>
+          <input type="email" id="signupEmail" placeholder="ihre@email.at" autocomplete="email" />
+        </div>
+        <div class="auth-form-group">
+          <label data-de="Passwort * (min. 6 Zeichen)" data-en="Password * (min. 6 characters)">Passwort * (min. 6 Zeichen)</label>
+          <input type="password" id="signupPassword" placeholder="••••••••" autocomplete="new-password" />
+        </div>
+        <!-- 선택 -->
+        <div class="auth-divider" data-de="Angaben zu Ihrem Betrieb (optional)" data-en="About your business (optional)">Angaben zu Ihrem Betrieb (optional)</div>
+        <div class="auth-form-group">
+          <label data-de="Betriebsname" data-en="Business name">Betriebsname</label>
+          <input type="text" id="signupBusiness" placeholder="Café Wien" autocomplete="organization" />
+        </div>
+        <div class="auth-form-group">
+          <label data-de="Telefon" data-en="Phone">Telefon</label>
+          <input type="tel" id="signupPhone" placeholder="+43 660 000 00 00" autocomplete="tel" />
+        </div>
+        <div class="auth-form-group">
+          <label data-de="Adresse" data-en="Address">Adresse</label>
+          <input type="text" id="signupAddress" placeholder="Mariahilfer Str. 1, 1060 Wien" autocomplete="street-address" />
+        </div>
+        <div class="auth-form-group">
+          <label data-de="Instagram" data-en="Instagram">Instagram</label>
+          <input type="text" id="signupInstagram" placeholder="@cafewien" />
+        </div>
+        <div class="auth-form-group">
+          <label data-de="Website / Sonstige Links" data-en="Website / Other links">Website / Sonstige Links</label>
+          <input type="text" id="signupWebsite" placeholder="www.cafewien.at" />
+        </div>
+        <button class="btn btn-primary btn-full" id="signupSubmitBtn" data-de="Konto erstellen" data-en="Create account">Konto erstellen</button>
+        <div class="auth-error" id="signupError"></div>
+        <div class="auth-success" id="signupSuccess" style="display:none" data-de="✓ Konto erstellt!" data-en="✓ Account created!">
+          ✓ Konto erstellt!
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ░░ HERO ░░ -->
+  <section class="hero" id="hero">
+    <div class="container hero-inner">
+      <div class="hero-badge" data-de="🇦🇹 Gemacht für Wien" data-en="🇦🇹 Made for Vienna">🇦🇹 Gemacht für Wien</div>
+      <h1 class="hero-title">
+        <span data-de="Ihr Geschäft —" data-en="Your business —">Ihr Geschäft —</span><br />
+        <span class="gradient-text" data-de="online in 24 Stunden" data-en="online in 24 hours">online in 24 Stunden</span>
+      </h1>
+      <p class="hero-sub" data-de="Professionelle Websites & digitale Speisekarten für Cafés, Restaurants, Nagelstudios und mehr. Keine Technik-Kenntnisse nötig. Wir kümmern uns um alles." data-en="Professional websites & digital menus for cafés, restaurants, nail studios and more. No tech skills needed. We take care of everything.">
+        Professionelle Websites &amp; digitale Speisekarten für Cafés, Restaurants, Nagelstudios und mehr. Keine Technik-Kenntnisse nötig. Wir kümmern uns um alles.
+      </p>
+      <div class="hero-actions">
+        <a href="#contact" class="btn btn-primary btn-lg" data-de="Jetzt kostenlos anfragen" data-en="Request for free">Jetzt kostenlos anfragen</a>
+        <a href="#pricing" class="btn btn-ghost btn-lg" data-de="Preise ansehen" data-en="View pricing">Preise ansehen</a>
+      </div>
+      <div class="hero-trust">
+        <span data-de="✓ Keine versteckten Kosten" data-en="✓ No hidden fees">✓ Keine versteckten Kosten</span>
+        <span data-de="✓ Kündigung jederzeit möglich" data-en="✓ Cancel anytime">✓ Kündigung jederzeit möglich</span>
+        <span data-de="✓ Persönlicher Ansprechpartner" data-en="✓ Personal contact">✓ Persönlicher Ansprechpartner</span>
+      </div>
+    </div>
+    <div class="hero-bg-shapes">
+      <div class="shape shape-1"></div>
+      <div class="shape shape-2"></div>
+    </div>
+  </section>
+
+  <!-- ░░ SERVICES ░░ -->
+  <section class="section" id="services">
+    <div class="container">
+      <div class="section-header">
+        <p class="section-tag" data-de="Leistungen" data-en="Services">Leistungen</p>
+        <h2 class="section-title" data-de="Alles aus einer Hand" data-en="Everything from one source">Alles aus einer Hand</h2>
+        <p class="section-sub" data-de="Wir erstellen Ihre Online-Präsenz — von der Website bis zur digitalen Speisekarte." data-en="We build your online presence — from the website to the digital menu.">
+          Wir erstellen Ihre Online-Präsenz — von der Website bis zur digitalen Speisekarte.
+        </p>
+      </div>
+      <div class="cards-grid">
+        <div class="card">
+          <div class="card-icon">🌐</div>
+          <h3 class="card-title" data-de="Professionelle Website" data-en="Professional Website">Professionelle Website</h3>
+          <p class="card-text" data-de="Moderne, mobilfreundliche Website unter Ihrer eigenen Adresse — z.B. lokalonline.at/ihr-cafe. Fertig in 24 Stunden." data-en="Modern, mobile-friendly website under your own address — e.g. lokalonline.at/your-cafe. Ready in 24 hours.">
+            Moderne, mobilfreundliche Website unter Ihrer eigenen Adresse — z.B. <em>lokalonline.at/ihr-cafe</em>. Fertig in 24 Stunden.
+          </p>
+        </div>
+        <div class="card card-featured">
+          <div class="card-badge" data-de="Beliebt" data-en="Popular">Beliebt</div>
+          <div class="card-icon">📋</div>
+          <h3 class="card-title" data-de="Digitale Speisekarte" data-en="Digital Menu">Digitale Speisekarte</h3>
+          <p class="card-text" data-de="QR-Code scannen — Speisekarte öffnet sich sofort. Kein Download, keine App. Jederzeit aktualisierbar." data-en="Scan QR code — menu opens instantly. No download, no app. Updatable at any time.">
+            QR-Code scannen — Speisekarte öffnet sich sofort. Kein Download, keine App. Jederzeit aktualisierbar.
+          </p>
+        </div>
+        <div class="card">
+          <div class="card-icon">📱</div>
+          <h3 class="card-title" data-de="SNS Profilseite" data-en="SNS Profile Page">SNS Profilseite</h3>
+          <p class="card-text" data-de="Eine elegante Linkseite für Instagram, Facebook & Co. Alle wichtigen Infos und Links an einem Ort." data-en="An elegant link page for Instagram, Facebook & more. All important info and links in one place.">
+            Eine elegante Linkseite für Instagram, Facebook &amp; Co. Alle wichtigen Infos und Links an einem Ort.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ░░ HOW IT WORKS ░░ -->
+  <section class="section section-alt" id="how-it-works">
+    <div class="container">
+      <div class="section-header">
+        <p class="section-tag" data-de="Ablauf" data-en="How it works">Ablauf</p>
+        <h2 class="section-title" data-de="In 3 Schritten online" data-en="Online in 3 steps">In 3 Schritten online</h2>
+      </div>
+      <div class="steps">
+        <div class="step">
+          <div class="step-number">01</div>
+          <div class="step-content">
+            <h3 data-de="Anfragen & besprechen" data-en="Inquire & discuss">Anfragen &amp; besprechen</h3>
+            <p data-de="Sie kontaktieren uns über das Formular. Wir melden uns innerhalb von 24 Stunden und besprechen Ihre Wünsche." data-en="You contact us via the form. We get back to you within 24 hours and discuss your needs.">
+              Sie kontaktieren uns über das Formular. Wir melden uns innerhalb von 24 Stunden und besprechen Ihre Wünsche.
+            </p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-number">02</div>
+          <div class="step-content">
+            <h3 data-de="Wir erstellen alles" data-en="We create everything">Wir erstellen alles</h3>
+            <p data-de="Wir kümmern uns um Design, Texte und Technik. Sie erhalten einen Link zur Vorschau und können Änderungen wünschen." data-en="We handle design, text and technology. You receive a preview link and can request changes.">
+              Wir kümmern uns um Design, Texte und Technik. Sie erhalten einen Link zur Vorschau und können Änderungen wünschen.
+            </p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-number">03</div>
+          <div class="step-content">
+            <h3 data-de="Freischalten & fertig" data-en="Go live & done">Freischalten &amp; fertig</h3>
+            <p data-de="Nach Ihrer Freigabe geht die Seite live. Fertig! Wir bleiben für Updates und Fragen erreichbar." data-en="After your approval, the page goes live. Done! We remain available for updates and questions.">
+              Nach Ihrer Freigabe geht die Seite live. Fertig! Wir bleiben für Updates und Fragen erreichbar.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ░░ PORTFOLIO ░░ -->
+  <section class="section" id="portfolio">
+    <div class="container">
+      <div class="section-header">
+        <p class="section-tag" data-de="Referenzen" data-en="Portfolio">Referenzen</p>
+        <h2 class="section-title" data-de="Echte Projekte, echte Ergebnisse" data-en="Real projects, real results">Echte Projekte, echte Ergebnisse</h2>
+        <p class="section-sub" data-de="Hier sehen Sie, was wir für unsere Kunden gebaut haben — live und aufrufbar." data-en="Here you can see what we've built for our clients — live and accessible.">
+          Hier sehen Sie, was wir für unsere Kunden gebaut haben — live und aufrufbar.
+        </p>
+      </div>
+      <div class="portfolio-grid">
+
+        <a class="portfolio-card" href="/yori2/" target="_blank">
+          <div class="portfolio-thumb" style="background-image:url('/yori2/img/slide1.jpg')">
+            <div class="portfolio-overlay">
+              <span class="portfolio-visit" data-de="Website ansehen →" data-en="View website →">Website ansehen →</span>
+            </div>
+          </div>
+          <div class="portfolio-info">
+            <div class="portfolio-logo-wrap">
+              <img src="/yori2/img/Logo.png" alt="Yori2 Logo" class="portfolio-logo">
+            </div>
+            <div>
+              <p class="portfolio-name">Yori2</p>
+              <p class="portfolio-type" data-de="Korean Restaurant · Wien 3" data-en="Korean Restaurant · Vienna 3">Korean Restaurant · Wien 3</p>
+            </div>
+            <div class="portfolio-tags">
+              <span class="ptag" data-de="Website" data-en="Website">Website</span>
+              <span class="ptag" data-de="Speisekarte" data-en="Menu">Speisekarte</span>
+              <span class="ptag" data-de="Bewertungen" data-en="Reviews">Bewertungen</span>
+            </div>
+          </div>
+        </a>
+
+        <a class="portfolio-card" href="/seoulmate/" target="_blank">
+          <div class="portfolio-thumb" style="background-image:url('/seoulmate/img/slide1.jpg')">
+            <div class="portfolio-overlay">
+              <span class="portfolio-visit" data-de="Website ansehen →" data-en="View website →">Website ansehen →</span>
+            </div>
+          </div>
+          <div class="portfolio-info">
+            <div class="portfolio-logo-wrap portfolio-logo-text">SM</div>
+            <div>
+              <p class="portfolio-name">Seoulmate Korean Bistro</p>
+              <p class="portfolio-type" data-de="Korean Bistro · Wien 3" data-en="Korean Bistro · Vienna 3">Korean Bistro · Wien 3</p>
+            </div>
+            <div class="portfolio-tags">
+              <span class="ptag" data-de="Website" data-en="Website">Website</span>
+              <span class="ptag" data-de="Speisekarte" data-en="Menu">Speisekarte</span>
+              <span class="ptag" data-de="Bewertungen" data-en="Reviews">Bewertungen</span>
+            </div>
+          </div>
+        </a>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ░░ PRICING ░░ -->
+  <section class="section" id="pricing">
+    <div class="container">
+      <div class="section-header">
+        <p class="section-tag" data-de="Preise" data-en="Pricing">Preise</p>
+        <h2 class="section-title" data-de="Alles inklusive — €29/Monat" data-en="All inclusive — €29/month">Alles inklusive — €29/Monat</h2>
+        <p class="section-sub" data-de="Keine Einrichtungsgebühr. Keine versteckten Kosten. Jederzeit kündbar." data-en="No setup fee. No hidden costs. Cancel anytime.">
+          Keine Einrichtungsgebühr. Keine versteckten Kosten. Jederzeit kündbar.
+        </p>
+      </div>
+
+      <div class="pricing-single-wrap">
+        <div class="pricing-card pricing-card-featured" style="max-width:480px; margin:0 auto;">
+          <div class="pricing-popular" data-de="Alles inklusive" data-en="All inclusive">Alles inklusive</div>
+          <div class="pricing-price" style="justify-content:center; margin-top:8px;">
+            <span class="price-amount">€29</span>
+            <span class="price-per" data-de="/Monat" data-en="/month">/Monat</span>
+          </div>
+          <p class="pricing-setup" style="text-align:center;" data-de="Keine Einrichtungsgebühr · Jederzeit kündbar" data-en="No setup fee · Cancel anytime">Keine Einrichtungsgebühr · Jederzeit kündbar</p>
+          <ul class="pricing-features">
+            <li data-de="Professionelle Einzelseiten-Website" data-en="Professional single-page website">Professionelle Einzelseiten-Website</li>
+            <li data-de="Eigene Adresse (lokalonline.at/ihr-betrieb)" data-en="Own address (lokalonline.at/your-business)">Eigene Adresse (lokalonline.at/ihr-betrieb)</li>
+            <li data-de="Mobilfreundliches Design" data-en="Mobile-friendly design">Mobilfreundliches Design</li>
+            <li data-de="Digitale Speisekarte + QR-Code" data-en="Digital menu + QR code">Digitale Speisekarte + QR-Code</li>
+            <li data-de="SNS Profilseite (Link-in-Bio)" data-en="SNS profile page (link-in-bio)">SNS Profilseite (Link-in-Bio)</li>
+            <li data-de="Kundenbewertungen auf der Website" data-en="Customer reviews on the website">Kundenbewertungen auf der Website</li>
+            <li data-de="Updates & Support inklusive" data-en="Updates & support included">Updates &amp; Support inklusive</li>
+          </ul>
+          <a href="#contact" class="btn btn-primary btn-full" data-de="Jetzt kostenlos anfragen" data-en="Request for free">Jetzt kostenlos anfragen</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ░░ CONTACT ░░ -->
+  <section class="section section-alt" id="contact">
+    <div class="container">
+      <div class="section-header">
+        <p class="section-tag" data-de="Kontakt" data-en="Contact">Kontakt</p>
+        <h2 class="section-title" data-de="Kostenlose Beratung anfragen" data-en="Request free consultation">Kostenlose Beratung anfragen</h2>
+        <p class="section-sub" data-de="Wir melden uns innerhalb von 24 Stunden. Kein Auftrag nötig — erst schauen, dann entscheiden." data-en="We'll get back to you within 24 hours. No commitment — look first, decide later.">
+          Wir melden uns innerhalb von 24 Stunden. Kein Auftrag nötig — erst schauen, dann entscheiden.
+        </p>
+      </div>
+
+      <form class="contact-form" id="contactForm">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="name" data-de="Ihr Name *" data-en="Your name *">Ihr Name *</label>
+            <input type="text" id="name" name="name" required
+              placeholder="Maria Mustermann" />
+          </div>
+          <div class="form-group">
+            <label for="business" data-de="Betriebsname" data-en="Business name">Betriebsname</label>
+            <input type="text" id="business" name="business"
+              placeholder="Café Wien" />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="email" data-de="E-Mail-Adresse *" data-en="Email address *">E-Mail-Adresse *</label>
+            <input type="email" id="email" name="email" required
+              placeholder="maria@example.at" />
+          </div>
+          <div class="form-group">
+            <label for="phone" data-de="Telefon (optional)" data-en="Phone (optional)">Telefon (optional)</label>
+            <input type="tel" id="phone" name="phone"
+              placeholder="+43 660 000 00 00" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="plan" data-de="Interessierter Plan" data-en="Plan of interest">Interessierter Plan</label>
+          <select id="plan" name="plan">
+            <option value="" data-de="— Bitte wählen —" data-en="— Please select —">— Bitte wählen —</option>
+            <option value="standard" data-de="Flat — €29/Monat (alles inklusive)" data-en="Flat — €29/month (all inclusive)">Flat — €29/Monat (alles inklusive)</option>
+            <option value="unsure" data-de="Noch nicht sicher" data-en="Not sure yet">Noch nicht sicher</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="message" data-de="Ihre Nachricht" data-en="Your message">Ihre Nachricht</label>
+          <textarea id="message" name="message" rows="4"
+            placeholder="Erzählen Sie uns kurz von Ihrem Betrieb..."></textarea>
+        </div>
+        <div class="form-group form-check">
+          <label class="checkbox-label">
+            <input type="checkbox" name="dsgvo" required />
+            <span class="checkmark"></span>
+            <span data-de="Ich stimme der Verarbeitung meiner Daten gemäß der Datenschutzerklärung zu. *" data-en="I agree to the processing of my data in accordance with the privacy policy. *">
+              Ich stimme der Verarbeitung meiner Daten gemäß der <a href="/impressum.html" data-de="Datenschutzerklärung" data-en="privacy policy">Datenschutzerklärung</a> zu. *
+            </span>
+          </label>
+        </div>
+        <button type="submit" class="btn btn-primary btn-lg" data-de="Anfrage absenden" data-en="Send inquiry">Anfrage absenden</button>
+        <div class="form-success" id="formSuccess">
+          <span data-de="✓ Ihre Anfrage wurde gesendet! Wir melden uns bald." data-en="✓ Your inquiry was sent! We'll be in touch soon.">
+            ✓ Ihre Anfrage wurde gesendet! Wir melden uns bald.
+          </span>
+        </div>
+      </form>
+
+    </div>
+  </section>
+
+  <!-- ░░ PROMO POPUP ░░ -->
+  <div class="popup-overlay" id="promoOverlay">
+    <div class="popup" id="promoPopup" role="dialog" aria-modal="true">
+      <button class="popup-close" id="promoClose" aria-label="Schließen">✕</button>
+      <div class="popup-badge" data-de="🎉 Early Bird" data-en="🎉 Early Bird">🎉 Early Bird</div>
+      <h2 class="popup-title" data-de="Erster Monat gratis!" data-en="First month free!">Erster Monat gratis!</h2>
+      <p class="popup-sub" data-de="Für die ersten 10 Kunden: starten Sie ohne Risiko — der erste Monat ist kostenlos." data-en="For the first 10 customers: start risk-free — your first month is on us.">
+        Für die ersten 10 Kunden: starten Sie ohne Risiko — der erste Monat ist kostenlos.
+      </p>
+      <div class="popup-savings">
+        <span data-de="Danach nur" data-en="Then just">Danach nur</span>
+        <strong>€29/Monat</strong>
+      </div>
+      <div class="popup-actions">
+        <a href="#contact" class="btn btn-primary btn-lg popup-cta" data-de="Jetzt sichern" data-en="Claim now">Jetzt sichern</a>
+        <button class="popup-dismiss" id="promoDismiss" data-de="Nein danke" data-en="No thanks">Nein danke</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ░░ FOOTER ░░ -->
+  <footer class="footer">
+    <div class="container footer-inner">
+      <div class="footer-brand">
+        <span class="nav-logo">lokalonline<span class="dot">.</span>at</span>
+        <p data-de="Websites für Wiener Kleinunternehmen." data-en="Websites for Vienna's small businesses.">Websites für Wiener Kleinunternehmen.</p>
+      </div>
+      <div class="footer-legal">
+        <p class="footer-impressum-title" data-de="Impressum" data-en="Imprint">Impressum</p>
+        <p data-de="Angaben gemäß § 5 ECG" data-en="Information according to § 5 ECG">Angaben gemäß § 5 ECG</p>
+        <p>lokalonline.at · Wien, Österreich</p>
+        <p>
+          <a href="mailto:hallo@lokalonline.at">hallo@lokalonline.at</a>
+        </p>
+        <p class="footer-dsgvo" data-de="Diese Website verwendet keine Cookies. Kontaktformular-Daten werden über Supabase verarbeitet." data-en="This website uses no cookies. Contact form data is processed via Supabase.">
+          Diese Website verwendet keine Cookies. Kontaktformular-Daten werden über Supabase verarbeitet.
+        </p>
+        <p style="margin-top:8px;">
+          <a href="/impressum.html" style="color:rgba(255,255,255,0.7);text-decoration:underline;font-size:13px;" data-de="Impressum & Datenschutz" data-en="Imprint & Privacy">Impressum &amp; Datenschutz</a>
+        </p>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© <span id="year"></span> lokalonline.at — <span data-de="Alle Rechte vorbehalten" data-en="All rights reserved">Alle Rechte vorbehalten</span></p>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="js/stripe-config.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

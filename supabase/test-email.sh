@@ -25,7 +25,7 @@ echo "============================================"
 echo ""
 
 # ── Test 1: 새 주문 알림 (어드민에게) ─────────────────────────────
-echo "▶ [1/3] 새 주문 알림 테스트 (→ snowsiro@gmail.com)"
+echo "▶ [1/3] 새 주문 알림 테스트 (→ info@lokalonline.at)"
 RESULT=$(curl -s -X POST "$FUNCTION_URL" \
   -H "$AUTH_HEADER" \
   -H "Content-Type: application/json" \
@@ -35,7 +35,7 @@ RESULT=$(curl -s -X POST "$FUNCTION_URL" \
     "record": {
       "business_name": "Test Café Wien",
       "contact_name": "Max Mustermann",
-      "email": "snowsiro@gmail.com",
+      "email": "info@lokalonline.at",
       "phone": "+43 123 456789",
       "business_type": "cafe",
       "address": "Mariahilfer Str. 1, 1060 Wien",
@@ -46,7 +46,7 @@ echo "   결과: $RESULT"
 echo ""
 
 # ── Test 2: 클라이언트 → 어드민 메시지 알림 ────────────────────────
-echo "▶ [2/3] 고객 메시지 알림 테스트 (→ snowsiro@gmail.com)"
+echo "▶ [2/3] 고객 메시지 알림 테스트 (→ info@lokalonline.at)"
 RESULT=$(curl -s -X POST "$FUNCTION_URL" \
   -H "$AUTH_HEADER" \
   -H "Content-Type: application/json" \

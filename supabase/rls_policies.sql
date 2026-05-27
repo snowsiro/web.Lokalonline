@@ -1,6 +1,6 @@
 -- ── lokalonline RLS Policies ──────────────────────────────────────────
 -- Run in Supabase SQL Editor
--- Admin email: snowsiro@gmail.com
+-- Admin email: info@lokalonline.at
 
 -- ── ORDERS ────────────────────────────────────────────────────────────
 alter table public.orders enable row level security;
@@ -8,8 +8,8 @@ alter table public.orders enable row level security;
 drop policy if exists "admin_all_orders" on public.orders;
 create policy "admin_all_orders" on public.orders
   for all to authenticated
-  using (auth.email() = 'snowsiro@gmail.com')
-  with check (auth.email() = 'snowsiro@gmail.com');
+  using (auth.email() = 'info@lokalonline.at')
+  with check (auth.email() = 'info@lokalonline.at');
 
 -- Customers can read their own order by email
 drop policy if exists "client_read_own_order" on public.orders;
@@ -29,8 +29,8 @@ alter table public.messages enable row level security;
 drop policy if exists "admin_all_messages" on public.messages;
 create policy "admin_all_messages" on public.messages
   for all to authenticated
-  using (auth.email() = 'snowsiro@gmail.com')
-  with check (auth.email() = 'snowsiro@gmail.com');
+  using (auth.email() = 'info@lokalonline.at')
+  with check (auth.email() = 'info@lokalonline.at');
 
 -- Customers can read/insert messages for their own orders only
 drop policy if exists "client_read_own_messages" on public.messages;
@@ -68,8 +68,8 @@ drop policy if exists "auth_all_clients" on public.clients;
 drop policy if exists "admin_all_clients" on public.clients;
 create policy "admin_all_clients" on public.clients
   for all to authenticated
-  using (auth.email() = 'snowsiro@gmail.com')
-  with check (auth.email() = 'snowsiro@gmail.com');
+  using (auth.email() = 'info@lokalonline.at')
+  with check (auth.email() = 'info@lokalonline.at');
 
 drop policy if exists "client_read_own" on public.clients;
 create policy "client_read_own" on public.clients
@@ -82,8 +82,8 @@ drop policy if exists "auth_all_inquiries" on public.inquiries;
 drop policy if exists "admin_all_inquiries" on public.inquiries;
 create policy "admin_all_inquiries" on public.inquiries
   for all to authenticated
-  using (auth.email() = 'snowsiro@gmail.com')
-  with check (auth.email() = 'snowsiro@gmail.com');
+  using (auth.email() = 'info@lokalonline.at')
+  with check (auth.email() = 'info@lokalonline.at');
 
 -- Public insert still allowed (contact form)
 drop policy if exists "public_insert_inquiries" on public.inquiries;
@@ -101,8 +101,8 @@ alter table public.reviews enable row level security;
 drop policy if exists "admin_all_reviews" on public.reviews;
 create policy "admin_all_reviews" on public.reviews
   for all to authenticated
-  using (auth.email() = 'snowsiro@gmail.com')
-  with check (auth.email() = 'snowsiro@gmail.com');
+  using (auth.email() = 'info@lokalonline.at')
+  with check (auth.email() = 'info@lokalonline.at');
 
 -- Public can read approved reviews (for display on customer sites)
 drop policy if exists "public_read_reviews" on public.reviews;

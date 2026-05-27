@@ -8,8 +8,8 @@ drop policy if exists "auth_all_clients" on public.clients;
 drop policy if exists "admin_all_clients" on public.clients;
 create policy "admin_all_clients" on public.clients
   for all to authenticated
-  using (auth.email() = 'snowsiro@gmail.com')
-  with check (auth.email() = 'snowsiro@gmail.com');
+  using (auth.email() = 'info@lokalonline.at')
+  with check (auth.email() = 'info@lokalonline.at');
 
 -- 클라이언트는 본인 레코드만 조회
 drop policy if exists "client_read_own" on public.clients;
@@ -36,8 +36,8 @@ alter table public.update_requests enable row level security;
 drop policy if exists "admin_all_requests" on public.update_requests;
 create policy "admin_all_requests" on public.update_requests
   for all to authenticated
-  using (auth.email() = 'snowsiro@gmail.com')
-  with check (auth.email() = 'snowsiro@gmail.com');
+  using (auth.email() = 'info@lokalonline.at')
+  with check (auth.email() = 'info@lokalonline.at');
 
 -- 클라이언트: 본인 요청만 조회 및 추가
 drop policy if exists "client_read_own_requests" on public.update_requests;
@@ -56,5 +56,5 @@ drop policy if exists "auth_all_inquiries" on public.inquiries;
 drop policy if exists "admin_all_inquiries" on public.inquiries;
 create policy "admin_all_inquiries" on public.inquiries
   for all to authenticated
-  using (auth.email() = 'snowsiro@gmail.com')
-  with check (auth.email() = 'snowsiro@gmail.com');
+  using (auth.email() = 'info@lokalonline.at')
+  with check (auth.email() = 'info@lokalonline.at');

@@ -499,6 +499,13 @@ footer {
 }
 .toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
 
+/* ── HAMBURGER ── */
+.nav-hamburger { display:none; background:none; border:none; cursor:pointer; padding:8px; flex-direction:column; gap:5px; flex-shrink:0; }
+.nav-hamburger span { display:block; width:22px; height:1.5px; background:var(--black); transition:transform 0.25s, opacity 0.25s; }
+.nav-hamburger.open span:nth-child(1) { transform:rotate(45deg) translate(4px,5px); }
+.nav-hamburger.open span:nth-child(2) { opacity:0; }
+.nav-hamburger.open span:nth-child(3) { transform:rotate(-45deg) translate(4px,-5px); }
+
 /* ── FADE IN ── */
 .fade-in { opacity:0; transform:translateY(20px); transition:opacity 0.7s ease, transform 0.7s ease; }
 .fade-in.visible { opacity:1; transform:none; }
@@ -509,6 +516,9 @@ footer {
 @media (max-width:960px) {
   nav { padding:0 16px; }
   .nav-links { display:none; }
+  .nav-hamburger { display:flex; }
+  .nav-links.open { display:flex !important; flex-direction:column; position:fixed; top:96px; left:0; right:0; background:rgba(248,247,244,0.98); backdrop-filter:blur(16px); border-bottom:1px solid var(--line); padding:8px 0 16px; z-index:150; }
+  .nav-links.open a { padding:14px 24px; font-size:13px; display:block; border-bottom:1px solid var(--line); }
   .hero { margin-top:96px; height:calc(100dvh - 96px); }
   .slide-content { left:32px; bottom:80px; }
   .hero-bottom { left:32px; right:24px; }
@@ -535,6 +545,7 @@ footer {
 @media (max-width:480px) {
   .lang-bar { padding:0 16px; }
   nav { padding:0 16px; height:56px; }
+  .nav-links.open { top:88px; }
   .nav-logo { font-size:18px; }
   .nav-logo .sub { display:none; }
   .nav-reserve { font-size:9px; letter-spacing:0.1em; padding:9px 14px; }
@@ -574,13 +585,16 @@ footer {
 <!-- NAV -->
 <nav id="mainNav">
   <a href="#" class="nav-logo">Yori2 <span class="sub">Korean Dining</span></a>
-  <ul class="nav-links">
+  <ul class="nav-links" id="navLinks">
     <li><a href="#menu" data-i="nav_menu">Speisekarte</a></li>
     <li><a href="#info" data-i="nav_info">Öffnungszeiten</a></li>
     <li><a href="#location" data-i="nav_location">Anfahrt</a></li>
     <li><a href="#reviews" data-i="nav_reviews">Bewertungen</a></li>
   </ul>
   <a href="#reservation" class="nav-reserve" data-i="nav_reserve">Reservierung</a>
+  <button class="nav-hamburger" id="navHamburger" aria-label="Navigation öffnen">
+    <span></span><span></span><span></span>
+  </button>
 </nav>
 
 <!-- HERO SLIDER -->
@@ -865,10 +879,12 @@ footer {
     'sb_publishable_y5l1cAZXoAj8xaSVXUkBfw_Pk9pxb6H'
   );
 
+  function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
   function renderCard(r){
-    var stars='★'.repeat(r.stars)+'☆'.repeat(5-r.stars);
+    var n=Math.max(0,Math.min(5,r.stars||0));
+    var stars='★'.repeat(n)+'☆'.repeat(5-n);
     var card=document.createElement('div'); card.className='review-card';
-    card.innerHTML='<div class="review-stars">'+stars+'</div><p class="review-text">"'+r.text+'"</p><div class="review-author"><div class="review-avatar">'+r.name.charAt(0).toUpperCase()+'</div><div><div class="review-name">'+r.name+'</div><div class="review-date">'+(r.date||'')+'</div></div></div>';
+    card.innerHTML='<div class="review-stars">'+stars+'</div><p class="review-text">"'+esc(r.text)+'"</p><div class="review-author"><div class="review-avatar">'+esc(r.name.charAt(0).toUpperCase())+'</div><div><div class="review-name">'+esc(r.name)+'</div><div class="review-date">'+esc(r.date||'')+'</div></div></div>';
     return card;
   }
 
@@ -932,7 +948,7 @@ const T = {
     about_label:'Über uns',
     about_headline:'Saisonale Zutaten,<br><em>koreanische Seele</em>',
     about_body:'Im Yori2 vereinen wir die Tiefe der traditionellen koreanischen Küche mit der Frische saisonal ausgewählter Zutaten. Jedes Gericht wird täglich frisch zubereitet — mit Sorgfalt, Erfahrung und echtem Herzblut.',
-    about_btn:'Zur Speisekarte',
+    about_btn:'Zur Speisekarte <span class="arrow">→</span>',
     stat1:'6. Bezirk', stat2:'Geöffnet', stat3:'Frisch täglich',
     menu_label:'Speisekarte',
     menu_headline:'Entdecken Sie<br><em>unsere Gerichte</em>',
@@ -981,7 +997,7 @@ const T = {
     about_label:'About Us',
     about_headline:'Seasonal ingredients,<br><em>Korean soul</em>',
     about_body:'At Yori2, we blend the depth of traditional Korean cuisine with the freshness of seasonally selected ingredients. Every dish is freshly prepared daily.',
-    about_btn:'View Menu',
+    about_btn:'View Menu <span class="arrow">→</span>',
     stat1:'6th District', stat2:'Open', stat3:'Fresh Daily',
     menu_label:'Menu',
     menu_headline:'Discover<br><em>our dishes</em>',
@@ -1030,7 +1046,7 @@ const T = {
     about_label:'소개',
     about_headline:'제철 재료로 완성하는<br><em>한식의 맛</em>',
     about_body:'Yori2는 전통 한식의 깊은 맛과 제철 식재료의 신선함을 결합합니다. 모든 메뉴는 매일 아침 정성껏 준비됩니다.',
-    about_btn:'메뉴 보기',
+    about_btn:'메뉴 보기 <span class="arrow">→</span>',
     stat1:'6구역', stat2:'영업중', stat3:'매일 신선',
     menu_label:'메뉴',
     menu_headline:'다양한 메뉴를<br><em>만나보세요</em>',
@@ -1133,6 +1149,12 @@ async function submitReservation(){
   btn.disabled=false; btn.style.opacity='1';
 }
 function submitReview(){window.submitReviewDB();}
+(function(){
+  var h=document.getElementById('navHamburger');
+  var nl=document.getElementById('navLinks');
+  h.addEventListener('click',function(){h.classList.toggle('open');nl.classList.toggle('open');});
+  nl.querySelectorAll('a').forEach(function(a){a.addEventListener('click',function(){h.classList.remove('open');nl.classList.remove('open');});});
+})();
 </script>
 </body>
 </html>

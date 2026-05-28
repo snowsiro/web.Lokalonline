@@ -40,17 +40,12 @@
     loadStats();
     loadInquiries();
     bindTabs();
-    bindFilters();
+    bindAllFilters();
     bindModals();
     bindClientForm();
     bindInquiryForm();
-    bindRequestFilters();
-    bindSignupFilters();
-    bindReviewFilters();
-    bindOrderFilters();
     bindOrderForm();
     bindSiteGenerator();
-    bindSiteFilters();
   }
 
   // ── Stats ─────────────────────────────────────────────────────────
@@ -365,16 +360,6 @@
     return '<span class="badge ' + (map[status] || '') + '">' + (labels[status] || status) + '</span>';
   }
 
-  function bindRequestFilters() {
-    document.querySelectorAll('[data-req-status]').forEach(function (btn) {
-      btn.addEventListener('click', function () {
-        document.querySelectorAll('[data-req-status]').forEach(function (b) { b.classList.remove('active'); });
-        btn.classList.add('active');
-        requestFilter = btn.getAttribute('data-req-status');
-        loadRequests();
-      });
-    });
-  }
 
   // ── Signups ───────────────────────────────────────────────────────
   async function loadSignups() {
@@ -449,16 +434,6 @@
     }
   };
 
-  function bindSignupFilters() {
-    document.querySelectorAll('[data-signup-status]').forEach(function (btn) {
-      btn.addEventListener('click', function () {
-        document.querySelectorAll('[data-signup-status]').forEach(function (b) { b.classList.remove('active'); });
-        btn.classList.add('active');
-        signupFilter = btn.getAttribute('data-signup-status');
-        loadSignups();
-      });
-    });
-  }
 
   // ── Reviews ───────────────────────────────────────────────────────
   async function loadReviews() {
@@ -506,16 +481,6 @@
     if (!error) { showToast('Gelöscht'); loadReviews(); loadStats(); }
   };
 
-  function bindReviewFilters() {
-    document.querySelectorAll('[data-review-status]').forEach(function (btn) {
-      btn.addEventListener('click', function () {
-        document.querySelectorAll('[data-review-status]').forEach(function (b) { b.classList.remove('active'); });
-        btn.classList.add('active');
-        reviewFilter = btn.getAttribute('data-review-status');
-        loadReviews();
-      });
-    });
-  }
 
   // ── Orders ────────────────────────────────────────────────────────
   async function loadOrders() {
@@ -854,28 +819,6 @@
     });
   }
 
-  function bindOrderFilters() {
-    document.querySelectorAll('[data-order-status]').forEach(function (btn) {
-      btn.addEventListener('click', function () {
-        document.querySelectorAll('[data-order-status]').forEach(function (b) { b.classList.remove('active'); });
-        btn.classList.add('active');
-        orderFilter = btn.getAttribute('data-order-status');
-        loadOrders();
-      });
-    });
-  }
-
-  function bindSiteFilters() {
-    document.querySelectorAll('[data-site-type]').forEach(function (btn) {
-      btn.addEventListener('click', function () {
-        document.querySelectorAll('[data-site-type]').forEach(function (b) { b.classList.remove('active'); });
-        btn.classList.add('active');
-        siteTypeFilter = btn.getAttribute('data-site-type');
-        loadSites();
-      });
-    });
-  }
-
   // ── Tabs ──────────────────────────────────────────────────────────
   function bindTabs() {
     document.querySelectorAll('.tab-btn').forEach(function (btn) {
@@ -897,15 +840,23 @@
   }
 
   // ── Filters ───────────────────────────────────────────────────────
-  function bindFilters() {
-    document.querySelectorAll('.filter-btn').forEach(function (btn) {
+  function bindFilterGroup(selector, onSelect) {
+    document.querySelectorAll(selector).forEach(function (btn) {
       btn.addEventListener('click', function () {
-        document.querySelectorAll('.filter-btn').forEach(function (b) { b.classList.remove('active'); });
+        document.querySelectorAll(selector).forEach(function (b) { b.classList.remove('active'); });
         btn.classList.add('active');
-        inquiryFilter = btn.getAttribute('data-status');
-        loadInquiries();
+        onSelect(btn);
       });
     });
+  }
+
+  function bindAllFilters() {
+    bindFilterGroup('[data-status]',        function(b) { inquiryFilter  = b.getAttribute('data-status');        loadInquiries(); });
+    bindFilterGroup('[data-req-status]',    function(b) { requestFilter  = b.getAttribute('data-req-status');    loadRequests();  });
+    bindFilterGroup('[data-signup-status]', function(b) { signupFilter   = b.getAttribute('data-signup-status'); loadSignups();   });
+    bindFilterGroup('[data-review-status]', function(b) { reviewFilter   = b.getAttribute('data-review-status'); loadReviews();   });
+    bindFilterGroup('[data-order-status]',  function(b) { orderFilter    = b.getAttribute('data-order-status');  loadOrders();    });
+    bindFilterGroup('[data-site-type]',     function(b) { siteTypeFilter = b.getAttribute('data-site-type');     loadSites();     });
   }
 
   // ── Modals ────────────────────────────────────────────────────────

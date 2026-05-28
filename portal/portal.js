@@ -152,7 +152,7 @@
     // Messaging card for full clients
     var msgCard =
       '<div class="info-card" id="msgCard">' +
-      '<h2>💬 Nachrichten</h2>' +
+      '<h2>💬 Nachrichten <span id="msgUnreadBadge" class="badge-count" style="display:none"></span></h2>' +
       '<div id="portalMsgThread" style="max-height:300px;overflow-y:auto;display:flex;flex-direction:column;gap:8px;margin-bottom:12px;padding:4px 0"></div>' +
       '<div style="display:flex;gap:8px;align-items:center">' +
       '<label for="portalMsgFile" style="cursor:pointer;width:38px;height:38px;display:flex;align-items:center;justify-content:center;border:1.5px solid var(--border);border-radius:8px;font-size:18px;flex-shrink:0;color:var(--text-muted)">+</label>' +
@@ -238,7 +238,7 @@
       '<div style="font-size:13px;color:var(--text-muted);margin-top:2px">' + st.desc + '</div></div>' +
       '</div></div>' +
       '<div class="info-card" id="msgCard">' +
-      '<h2>💬 Nachrichten</h2>' +
+      '<h2>💬 Nachrichten <span id="msgUnreadBadge" class="badge-count" style="display:none"></span></h2>' +
       '<div id="portalMsgThread" style="max-height:300px;overflow-y:auto;display:flex;flex-direction:column;gap:8px;margin-bottom:12px;padding:4px 0"></div>' +
       '<div style="display:flex;gap:8px;align-items:center">' +
       '<label for="portalMsgFile" style="cursor:pointer;width:38px;height:38px;display:flex;align-items:center;justify-content:center;border:1.5px solid var(--border);border-radius:8px;font-size:18px;flex-shrink:0;color:var(--text-muted)">+</label>' +
@@ -330,10 +330,10 @@
 
     // Show unread badge on card heading before marking as read
     var unreadCount = (msgs || []).filter(function(m) { return m.sender_type === 'admin' && !m.read_at; }).length;
-    var msgCard = document.getElementById('msgCard');
-    if (msgCard) {
-      var h2 = msgCard.querySelector('h2');
-      if (h2) h2.innerHTML = '💬 Nachrichten' + (unreadCount > 0 ? ' <span class="badge-count">' + unreadCount + '</span>' : '');
+    var badge = document.getElementById('msgUnreadBadge');
+    if (badge) {
+      badge.textContent = unreadCount || '';
+      badge.style.display = unreadCount > 0 ? '' : 'none';
     }
 
     renderPortalMsgThread(thread, msgs || [], senderType);

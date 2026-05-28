@@ -580,6 +580,7 @@ So: Ruhetag"></textarea>
       <div class="success-icon">✅</div>
       <div class="success-title" id="successTitle">Anfrage erfolgreich gesendet!</div>
       <div class="success-sub" id="successSub">Vielen Dank! Wir melden uns innerhalb von 24 Stunden mit einem kostenlosen Prototyp Ihrer Website.<br><br><a href="/" style="color:var(--orange);font-weight:600">← Zurück zur Startseite</a></div>
+      <div id="uploadWarningMsg" style="display:none;color:#b45309;background:#fef3c7;border:1px solid #fde68a;border-radius:8px;padding:10px 14px;font-size:13px;margin-top:12px;text-align:left"></div>
 
       <!-- Account creation prompt -->
       <div class="signup-prompt" id="signupPrompt">
@@ -1037,9 +1038,8 @@ So: Ruhetag"></textarea>
         document.getElementById('successPanel').classList.add('show');
         applyLang(currentLang);
         if (uploadFailed) {
-          errEl.textContent = T[currentLang].uploadWarning;
-          errEl.style.display = 'block';
-          errEl.style.color = 'var(--warning, #b45309)';
+          var warnEl = document.getElementById('uploadWarningMsg');
+          if (warnEl) { warnEl.textContent = T[currentLang].uploadWarning; warnEl.style.display = 'block'; }
         }
 
         // Show submitted email in signup prompt

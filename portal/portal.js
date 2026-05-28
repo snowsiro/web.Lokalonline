@@ -333,7 +333,7 @@
     var msgCard = document.getElementById('msgCard');
     if (msgCard) {
       var h2 = msgCard.querySelector('h2');
-      if (h2) h2.innerHTML = '💬 Nachrichten' + (unreadCount > 0 ? ' <span class="badge-count" style="background:var(--primary);color:#fff;font-size:11px;padding:1px 6px;border-radius:10px;vertical-align:middle">' + unreadCount + '</span>' : '');
+      if (h2) h2.innerHTML = '💬 Nachrichten' + (unreadCount > 0 ? ' <span class="badge-count">' + unreadCount + '</span>' : '');
     }
 
     renderPortalMsgThread(thread, msgs || [], senderType);

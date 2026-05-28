@@ -666,13 +666,16 @@
 
     loadOrderMessages(id);
 
-    // Bind send button (clone to remove old listeners)
+    // Clone inputs to remove accumulated old listeners
     var sendBtn = document.getElementById('orderMsgSend');
     var msgInput = document.getElementById('orderMsgInput');
+    var msgFile = document.getElementById('orderMsgFile');
     var newSendBtn = sendBtn.cloneNode(true);
     sendBtn.parentNode.replaceChild(newSendBtn, sendBtn);
     var newInput = msgInput.cloneNode(true);
     msgInput.parentNode.replaceChild(newInput, msgInput);
+    var newMsgFile = msgFile.cloneNode(true);
+    msgFile.parentNode.replaceChild(newMsgFile, msgFile);
 
     async function sendAdminMsg(attachmentUrl, attachmentName) {
       var text = document.getElementById('orderMsgInput').value.trim();
@@ -712,7 +715,7 @@
     });
   };
 
-  async function loadOrderMessages(orderId) {
+  async function fetchOrderMessages(orderId) {
     var thread = document.getElementById('orderMsgThread');
     if (!thread) return;
 
@@ -724,14 +727,17 @@
     renderMsgThread(thread, msgs || [], 'admin');
     thread.scrollTop = thread.scrollHeight;
 
-    // Mark client messages as read
     var unread = (msgs || []).filter(function(m) { return m.sender_type === 'client' && !m.read_at; });
     if (unread.length > 0) {
       await sb.from('messages').update({ read_at: new Date().toISOString() })
         .in('id', unread.map(function(m) { return m.id; }));
     }
+  }
 
-    // Realtime: clean up previous channel, then subscribe to this order
+  function loadOrderMessages(orderId) {
+    fetchOrderMessages(orderId);
+
+    // Subscribe once per order; clean up the previous order's channel first
     if (adminMsgChannel) {
       adminMsgChannel.unsubscribe();
       adminMsgChannel = null;
@@ -743,7 +749,7 @@
         table: 'messages',
         filter: 'order_id=eq.' + orderId
       }, function() {
-        loadOrderMessages(orderId);
+        fetchOrderMessages(orderId);
       })
       .subscribe();
   }

@@ -461,7 +461,7 @@ nav.scrolled { border-color:var(--line); }
 /* ── FOOTER ── */
 footer {
   background:var(--black); color:var(--white);
-  display:grid; grid-template-columns:2fr 1fr 1fr;
+  display:grid; grid-template-columns:2fr 1fr 1fr 1fr;
   gap:48px; padding:72px 80px;
   border-bottom:1px solid rgba(255,255,255,0.06);
 }
@@ -488,6 +488,8 @@ footer {
   display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;
 }
 .footer-copy { font-size:11px; color:rgba(255,255,255,0.2); letter-spacing:0.06em; }
+.footer-link-legal { font-size:11px; color:rgba(255,255,255,0.2); letter-spacing:0.06em; text-decoration:none; transition:color 0.2s; }
+.footer-link-legal:hover { color:rgba(255,255,255,0.5); }
 
 /* ── TOAST ── */
 .toast {
@@ -861,9 +863,20 @@ footer {
       <li><a href="/yori2/menu/" target="_blank" data-i="fc_menu">Speisekarte ↗</a></li>
     </ul>
   </div>
+  <div class="footer-col">
+    <div class="footer-col-title">Rechtliches</div>
+    <ul>
+      <li><a href="/yori2/impressum/">Impressum</a></li>
+      <li><a href="/yori2/datenschutz/">Datenschutz</a></li>
+    </ul>
+  </div>
 </footer>
 <div class="footer-bottom">
   <span class="footer-copy">© 2025 Yori2 Wien</span>
+  <div style="display:flex;gap:24px">
+    <a href="/yori2/impressum/" class="footer-link-legal">Impressum</a>
+    <a href="/yori2/datenschutz/" class="footer-link-legal">Datenschutz</a>
+  </div>
   <span class="footer-copy">Stumpergasse 27, 1060 Wien, Österreich</span>
 </div>
 

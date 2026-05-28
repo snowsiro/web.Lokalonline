@@ -177,6 +177,26 @@ Deno.serve(async (req) => {
       }
     }
 
+    // ── Payment link → send to customer ──────────────────────────────
+    if (type === "payment-link") {
+      const { to, contact_name, business_name, payment_url } = body;
+      if (!to || !payment_url) return json({ ok: false, error: "Missing to or payment_url" }, 400);
+
+      const html = emailBase(`
+        <h2>💳 Ihre Rechnung ist bereit</h2>
+        <p>Hallo ${contact_name || ""},</p>
+        <p>Ihre Website für <strong>${business_name || ""}</strong> ist fertig vorbereitet. Bitte schließen Sie jetzt die Zahlung ab, damit wir Ihren Auftritt freischalten können.</p>
+        <div style="margin:24px 0;background:#f9f9f9;border-radius:8px;padding:20px;text-align:center">
+          <p style="margin:0 0 4px;font-size:13px;color:#666">Monatlicher Betrag</p>
+          <p style="margin:0 0 16px;font-size:28px;font-weight:700;color:#111">€29 / Monat</p>
+          <a class="btn" href="${payment_url}" style="display:inline-block">Jetzt bezahlen →</a>
+        </div>
+        <p style="color:#666;font-size:13px">Keine Einrichtungsgebühr · Jederzeit kündbar · Bei Fragen: <a href="mailto:info@lokalonline.at" style="color:#C8302A">info@lokalonline.at</a></p>
+      `);
+      const ok = await sendEmail(to, `Zahlungslink für Ihre Website — ${business_name || "lokalonline.at"}`, html);
+      return json({ ok });
+    }
+
     return json({ error: "Unknown type" }, 400);
   } catch (e) {
     return json({ error: e.message }, 500);

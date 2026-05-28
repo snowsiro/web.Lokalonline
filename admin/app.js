@@ -742,6 +742,38 @@
   }
 
   function bindOrderForm() {
+    document.getElementById('sendPaymentBtn').addEventListener('click', async function () {
+      if (!currentOrderData || !currentOrderData.email) return;
+      var paymentUrl = window.STRIPE_CONFIG && window.STRIPE_CONFIG.links && window.STRIPE_CONFIG.links.basis_monthly;
+      if (!paymentUrl) { showToast('Stripe 결제 링크가 설정되지 않았습니다.'); return; }
+
+      var btn = this;
+      btn.disabled = true; btn.textContent = '⏳ 전송 중…';
+
+      var session = (await sb.auth.getSession()).data.session;
+      var res = await fetch('https://vhnourjddnlslgabrasb.supabase.co/functions/v1/send-email', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + session.access_token
+        },
+        body: JSON.stringify({
+          type: 'payment-link',
+          to: currentOrderData.email,
+          contact_name: currentOrderData.contact_name,
+          business_name: currentOrderData.business_name,
+          payment_url: paymentUrl
+        })
+      });
+      var data = await res.json();
+      if (data.ok) {
+        showToast('결제 링크가 ' + currentOrderData.email + ' 로 전송됐습니다.');
+      } else {
+        showToast('전송 실패: ' + (data.error || 'unbekannt'));
+      }
+      btn.disabled = false; btn.textContent = '💳 결제 링크 전송';
+    });
+
     document.getElementById('generateSiteBtn').addEventListener('click', function () {
       if (!currentOrderId || !currentOrderData) return;
       openSiteGenerator(currentOrderData);

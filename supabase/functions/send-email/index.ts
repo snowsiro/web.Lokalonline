@@ -67,7 +67,7 @@ Deno.serve(async (req) => {
     const type = isWebhookEvent
       ? (table === 'orders' && body.type === 'INSERT' ? 'new-order'
        : table === 'orders' && body.type === 'UPDATE' ? 'order-update'
-       : table === 'messages' ? 'new-message' : null)
+       : (table === 'messages' && body.type === 'INSERT') ? 'new-message' : null)
       : body.type;
 
     // ── New order → notify admin + confirm to customer ───────────────

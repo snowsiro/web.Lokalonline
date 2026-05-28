@@ -41,7 +41,7 @@
     </div>
     <div class="stat-card">
       <div class="stat-number" id="statOrders">—</div>
-      <div class="stat-label">주문 (Orders)</div>
+      <div class="stat-label">Bestellungen</div>
     </div>
   </div>
 
@@ -62,7 +62,7 @@
         Bewertungen <span class="badge-count" id="reviewBadge" style="display:none"></span>
       </button>
       <button class="tab-btn" data-tab="orders">
-        주문 <span class="badge-count" id="orderBadge" style="display:none"></span>
+        Bestellungen <span class="badge-count" id="orderBadge" style="display:none"></span>
       </button>
       <button class="tab-btn" data-tab="sites">🌐 Webseiten</button>
     </div>
@@ -203,28 +203,28 @@
     </div>
   </div>
 
-    <!-- 주문 Tab -->
+    <!-- Bestellungen Tab -->
     <div class="tab-content" id="tab-orders">
       <div class="table-toolbar">
         <div class="filter-group">
-          <button class="filter-btn active" data-order-status="all">전체</button>
-          <button class="filter-btn" data-order-status="pending">결제대기</button>
-          <button class="filter-btn" data-order-status="paid">결제완료</button>
-          <button class="filter-btn" data-order-status="in_progress">작업중</button>
-          <button class="filter-btn" data-order-status="done">완료</button>
+          <button class="filter-btn active" data-order-status="all">Alle</button>
+          <button class="filter-btn" data-order-status="pending">Ausstehend</button>
+          <button class="filter-btn" data-order-status="paid">Bezahlt</button>
+          <button class="filter-btn" data-order-status="in_progress">In Bearbeitung</button>
+          <button class="filter-btn" data-order-status="done">Abgeschlossen</button>
         </div>
       </div>
       <div class="table-wrap">
         <table class="admin-table">
           <thead>
             <tr>
-              <th>날짜</th>
-              <th>업장명</th>
-              <th>업종</th>
-              <th>이메일</th>
-              <th>전화</th>
-              <th>결제상태</th>
-              <th>액션</th>
+              <th>Datum</th>
+              <th>Betriebsname</th>
+              <th>Branche</th>
+              <th>E-Mail</th>
+              <th>Telefon</th>
+              <th>Status</th>
+              <th>Aktionen</th>
             </tr>
           </thead>
           <tbody id="ordersBody"></tbody>
@@ -239,11 +239,11 @@
         <table class="admin-table">
           <thead>
             <tr>
-              <th>업장명</th>
-              <th>슬러그 (URL)</th>
-              <th>상태</th>
-              <th>링크</th>
-              <th>편집</th>
+              <th>Betrieb</th>
+              <th>Slug (URL)</th>
+              <th>Status</th>
+              <th>Links</th>
+              <th>Bearbeiten</th>
             </tr>
           </thead>
           <tbody id="sitesBody"></tbody>
@@ -256,13 +256,13 @@
   <div class="modal-overlay" id="orderOverlay">
     <div class="modal" style="max-width:600px">
       <div class="modal-header">
-        <span class="modal-title">주문 상세</span>
+        <span class="modal-title">Bestelldetails</span>
         <button class="modal-close" data-close="orderOverlay">✕</button>
       </div>
       <div class="modal-body">
         <div class="info-grid" id="orderInfo"></div>
         <div id="orderFilesWrap" style="margin-top:12px;display:none">
-          <label style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--text-muted);display:block;margin-bottom:8px">파일</label>
+          <label style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--text-muted);display:block;margin-bottom:8px">Dateien</label>
           <div id="orderFiles" style="display:flex;gap:12px;flex-wrap:wrap"></div>
         </div>
         <hr class="divider" />
@@ -278,17 +278,17 @@
         </div>
         <hr class="divider" />
         <div class="form-group">
-          <label>결제 상태</label>
+          <label>Zahlungsstatus</label>
           <select id="orderStatus">
-            <option value="pending">결제대기</option>
-            <option value="paid">결제완료</option>
-            <option value="in_progress">작업중</option>
-            <option value="done">완료</option>
+            <option value="pending">Ausstehend</option>
+            <option value="paid">Bezahlt</option>
+            <option value="in_progress">In Bearbeitung</option>
+            <option value="done">Abgeschlossen</option>
           </select>
         </div>
         <div class="form-group">
-          <label>내부 메모</label>
-          <textarea id="orderNotes" placeholder="내부 메모…"></textarea>
+          <label>Interne Notizen</label>
+          <textarea id="orderNotes" placeholder="Interne Notizen…"></textarea>
         </div>
         <div class="form-group">
           <label>Website Slug</label>
@@ -299,12 +299,12 @@
         </div>
       </div>
       <div class="modal-footer">
-        <button class="btn btn-danger btn-sm" id="deleteOrderBtn">삭제</button>
-        <button class="btn btn-outline" data-close="orderOverlay">취소</button>
+        <button class="btn btn-danger btn-sm" id="deleteOrderBtn">Löschen</button>
+        <button class="btn btn-outline" data-close="orderOverlay">Abbrechen</button>
         <button class="btn btn-outline" id="editSiteBtn" style="display:none">📝 data.js</button>
-        <button class="btn btn-outline" id="sendPaymentBtn" style="color:#7c3aed;border-color:#7c3aed">💳 결제 링크 전송</button>
+        <button class="btn btn-outline" id="sendPaymentBtn" style="color:#7c3aed;border-color:#7c3aed">💳 Zahlungslink senden</button>
         <button class="btn btn-outline" id="generateSiteBtn" style="color:#16a34a;border-color:#16a34a">🌐 Website erstellen</button>
-        <button class="btn btn-primary" id="saveOrderBtn">저장</button>
+        <button class="btn btn-primary" id="saveOrderBtn">Speichern</button>
       </div>
     </div>
   </div>
@@ -442,7 +442,7 @@
       <div class="modal-footer">
         <button class="btn btn-danger btn-sm" id="deleteInquiryBtn">Löschen</button>
         <button class="btn btn-outline" data-close="inquiryOverlay">Abbrechen</button>
-        <button class="btn btn-outline" id="sendPaymentLinkBtn" style="color:#16a34a;border-color:#16a34a" title="고객 이메일로 결제 링크 전송">💳 결제 링크 전송</button>
+        <button class="btn btn-outline" id="sendPaymentLinkBtn" style="color:#16a34a;border-color:#16a34a" title="Zahlungslink per E-Mail an Kunden senden">💳 Zahlungslink senden</button>
         <button class="btn btn-primary" id="saveInquiryBtn">Speichern</button>
       </div>
     </div>

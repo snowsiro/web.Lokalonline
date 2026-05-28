@@ -163,19 +163,15 @@
       if (!currentInquiryEmail) return;
       var name = currentInquiryName || '';
       var stripeLink = 'https://buy.stripe.com/00w6oA7DVeC3fXqbaQf3a01';
-      var subject = encodeURIComponent('lokalonline.at — Ihre Website ist fertig! 웹사이트 준비 완료');
+      var subject = encodeURIComponent('lokalonline.at — Ihr Website-Prototyp ist fertig!');
       var body = encodeURIComponent(
         'Guten Tag' + (name ? ' ' + name : '') + ',\n\n' +
-        '안녕하세요' + (name ? ' ' + name : '') + '님,\n\n' +
-        '웹사이트 프로토타입이 완성되었습니다!\n' +
         'Ihr Website-Prototyp ist fertig!\n\n' +
-        '마음에 드신다면 아래 링크에서 구독을 시작해주세요.\n' +
         'Falls Sie zufrieden sind, starten Sie einfach Ihr Abonnement:\n\n' +
         stripeLink + '\n\n' +
-        '✅ 첫 30일은 무료입니다 · Die ersten 30 Tage sind kostenlos.\n\n' +
-        '궁금한 점이 있으시면 언제든 연락해주세요.\n' +
+        '✅ Die ersten 30 Tage sind kostenlos.\n\n' +
         'Bei Fragen stehen wir Ihnen gerne zur Verfügung.\n\n' +
-        'Beste Grüße / 감사합니다\n' +
+        'Beste Grüße\n' +
         'lokalonline.at\n' +
         'info@lokalonline.at'
       );
@@ -539,7 +535,7 @@
     });
 
     if (!data || data.length === 0) {
-      tbody.innerHTML = '<tr class="empty-row"><td colspan="7">주문 없음</td></tr>';
+      tbody.innerHTML = '<tr class="empty-row"><td colspan="7">Keine Bestellungen vorhanden.</td></tr>';
       return;
     }
 
@@ -553,7 +549,7 @@
         '<td><a href="mailto:' + esc(o.email) + '" style="color:var(--primary)">' + esc(o.email) + '</a></td>' +
         '<td>' + (o.phone ? esc(o.phone) : '—') + '</td>' +
         '<td>' + orderStatusBadge(o.payment_status) + '</td>' +
-        '<td><button class="btn btn-outline btn-sm" onclick="openOrder(\'' + o.id + '\')">상세' + unreadBadge + '</button></td>' +
+        '<td><button class="btn btn-outline btn-sm" onclick="openOrder(\'' + o.id + '\')">Details' + unreadBadge + '</button></td>' +
         '</tr>';
     }).join('');
   }
@@ -568,7 +564,7 @@
     if (!tbody) return;
 
     if (!data || data.length === 0) {
-      tbody.innerHTML = '<tr class="empty-row"><td colspan="5">생성된 사이트 없음</td></tr>';
+      tbody.innerHTML = '<tr class="empty-row"><td colspan="5">Keine Webseiten vorhanden.</td></tr>';
       return;
     }
 
@@ -580,18 +576,18 @@
         '<td><code style="font-size:12px;background:var(--bg);padding:2px 6px;border-radius:4px">' + slug + '</code></td>' +
         '<td>' + orderStatusBadge(o.payment_status) + '</td>' +
         '<td style="display:flex;gap:6px;flex-wrap:wrap">' +
-          '<a href="' + base + '/" target="_blank" class="btn btn-outline btn-sm">🏠 홈</a>' +
-          '<a href="' + base + '/menu/" target="_blank" class="btn btn-outline btn-sm">📋 메뉴</a>' +
-          '<a href="' + base + '/link/" target="_blank" class="btn btn-outline btn-sm">🔗 링크</a>' +
+          '<a href="' + base + '/" target="_blank" class="btn btn-outline btn-sm">🏠 Start</a>' +
+          '<a href="' + base + '/menu/" target="_blank" class="btn btn-outline btn-sm">📋 Menü</a>' +
+          '<a href="' + base + '/link/" target="_blank" class="btn btn-outline btn-sm">🔗 Links</a>' +
         '</td>' +
-        '<td><button class="btn btn-outline btn-sm" onclick="openOrder(\'' + o.id + '\')">✏️ 상세</button></td>' +
+        '<td><button class="btn btn-outline btn-sm" onclick="openOrder(\'' + o.id + '\')">✏️ Details</button></td>' +
         '</tr>';
     }).join('');
   }
 
   function orderStatusBadge(status) {
     var map = { pending: 'badge-new', paid: 'badge-contacted', in_progress: 'badge-contacted', done: 'badge-active' };
-    var labels = { pending: '결제대기', paid: '결제완료', in_progress: '작업중', done: '완료' };
+    var labels = { pending: 'Ausstehend', paid: 'Bezahlt', in_progress: 'In Bearbeitung', done: 'Abgeschlossen' };
     return '<span class="badge ' + (map[status] || 'badge-new') + '">' + (labels[status] || status) + '</span>';
   }
 
@@ -729,10 +725,11 @@
       var bubbleStyle = 'max-width:80%;background:' + (isOwn ? 'var(--primary)' : 'var(--surface)') + ';color:' + (isOwn ? '#fff' : 'var(--text)') + ';border:' + (isOwn ? 'none' : '1px solid var(--border)') + ';border-radius:12px;padding:8px 12px;font-size:13px;line-height:1.5';
       var attachHtml = '';
       if (m.attachment_url) {
+        var safeUrl = esc(m.attachment_url);
         var isImg = /\.(jpg|jpeg|png|gif|webp)$/i.test(m.attachment_name || m.attachment_url);
         attachHtml = isImg
-          ? '<a href="' + m.attachment_url + '" target="_blank"><img src="' + m.attachment_url + '" style="max-width:220px;max-height:200px;border-radius:8px;display:block;margin-top:' + (m.content ? '6px' : '0') + '" /></a>'
-          : '<a href="' + m.attachment_url + '" target="_blank" style="display:inline-flex;align-items:center;gap:6px;color:inherit;font-size:12px;opacity:.85;text-decoration:underline;margin-top:' + (m.content ? '4px' : '0') + '">📎 ' + esc(m.attachment_name || 'Datei') + '</a>';
+          ? '<a href="' + safeUrl + '" target="_blank"><img src="' + safeUrl + '" style="max-width:220px;max-height:200px;border-radius:8px;display:block;margin-top:' + (m.content ? '6px' : '0') + '" /></a>'
+          : '<a href="' + safeUrl + '" target="_blank" style="display:inline-flex;align-items:center;gap:6px;color:inherit;font-size:12px;opacity:.85;text-decoration:underline;margin-top:' + (m.content ? '4px' : '0') + '">📎 ' + esc(m.attachment_name || 'Datei') + '</a>';
       }
       return '<div style="display:flex;flex-direction:column;align-items:' + (isOwn ? 'flex-end' : 'flex-start') + '">' +
         '<div style="' + bubbleStyle + '">' + (m.content ? esc(m.content) : '') + attachHtml + '</div>' +
@@ -745,10 +742,10 @@
     document.getElementById('sendPaymentBtn').addEventListener('click', async function () {
       if (!currentOrderData || !currentOrderData.email) return;
       var paymentUrl = window.STRIPE_CONFIG && window.STRIPE_CONFIG.links && window.STRIPE_CONFIG.links.basis_monthly;
-      if (!paymentUrl) { showToast('Stripe 결제 링크가 설정되지 않았습니다.'); return; }
+      if (!paymentUrl) { showToast('Zahlungslink nicht konfiguriert.'); return; }
 
       var btn = this;
-      btn.disabled = true; btn.textContent = '⏳ 전송 중…';
+      btn.disabled = true; btn.textContent = '⏳ Wird gesendet…';
 
       var session = (await sb.auth.getSession()).data.session;
       var res = await fetch('https://vhnourjddnlslgabrasb.supabase.co/functions/v1/send-email', {
@@ -767,11 +764,11 @@
       });
       var data = await res.json();
       if (data.ok) {
-        showToast('결제 링크가 ' + currentOrderData.email + ' 로 전송됐습니다.');
+        showToast('Zahlungslink an ' + currentOrderData.email + ' gesendet.');
       } else {
-        showToast('전송 실패: ' + (data.error || 'unbekannt'));
+        showToast('Fehler: ' + (data.error || 'unbekannt'));
       }
-      btn.disabled = false; btn.textContent = '💳 결제 링크 전송';
+      btn.disabled = false; btn.textContent = '💳 Zahlungslink senden';
     });
 
     document.getElementById('generateSiteBtn').addEventListener('click', function () {
@@ -796,7 +793,7 @@
       if (!error) {
         document.getElementById('editSiteBtn').style.display = slug ? 'inline-flex' : 'none';
         closeModal('orderOverlay');
-        showToast('저장되었습니다');
+        showToast('Gespeichert');
         loadOrders();
         loadStats();
       }
@@ -804,10 +801,10 @@
 
     document.getElementById('deleteOrderBtn').addEventListener('click', async function () {
       if (!currentOrderId) return;
-      if (!confirm('주문을 삭제할까요?')) return;
+      if (!confirm('Bestellung wirklich löschen?')) return;
       await sb.from('orders').delete().eq('id', currentOrderId);
       closeModal('orderOverlay');
-      showToast('삭제되었습니다');
+      showToast('Gelöscht');
       loadOrders();
       loadStats();
     });

@@ -82,9 +82,9 @@
       '<div class="info-card">' +
       '<h2>Ihr Abonnement</h2>' +
       '<div class="info-grid-2">' +
-      infoField('Plan', '<span class="plan-tag">' + (planLabels[client.plan] || client.plan) + '</span>') +
-      infoField('Status', '<span class="badge badge-' + client.status + '">' + (statusLabels[client.status] || client.status) + '</span>') +
-      infoField('Abrechnung', billingLabels[client.billing_cycle] || client.billing_cycle) +
+      infoField('Plan', '<span class="plan-tag">' + esc(planLabels[client.plan] || client.plan) + '</span>') +
+      infoField('Status', '<span class="badge badge-' + esc(client.status) + '">' + esc(statusLabels[client.status] || client.status) + '</span>') +
+      infoField('Abrechnung', esc(billingLabels[client.billing_cycle] || client.billing_cycle)) +
       infoField('Nächste Zahlung', client.next_billing ? formatDate(client.next_billing) : '—') +
       '</div>' +
       (client.page_url
@@ -293,7 +293,7 @@
           if (error) throw error;
           var { data: urlData } = sb.storage.from('uploads').getPublicUrl(path);
           await sendPortalMsg(urlData.publicUrl, file.name);
-        } catch(e) { alert('Upload fehlgeschlagen: ' + e.message); }
+        } catch(e) { showToast('Upload fehlgeschlagen: ' + e.message); }
         sendBtn.disabled = false; sendBtn.textContent = 'Senden';
         this.value = '';
       });
@@ -314,6 +314,10 @@
       })
       .subscribe();
   }
+
+  window.addEventListener('beforeunload', function() {
+    if (portalMsgChannel) portalMsgChannel.unsubscribe();
+  });
 
   async function loadPortalMessages(orderId, senderType) {
     var thread = document.getElementById('portalMsgThread');
@@ -346,10 +350,11 @@
       var bubbleStyle = 'max-width:80%;background:' + (isOwn ? 'var(--primary)' : 'var(--surface)') + ';color:' + (isOwn ? '#fff' : 'var(--text)') + ';border:' + (isOwn ? 'none' : '1px solid var(--border)') + ';border-radius:12px;padding:8px 12px;font-size:13px;line-height:1.5';
       var attachHtml = '';
       if (m.attachment_url) {
+        var safeUrl = esc(m.attachment_url);
         var isImg = /\.(jpg|jpeg|png|gif|webp)$/i.test(m.attachment_name || m.attachment_url);
         attachHtml = isImg
-          ? '<a href="' + m.attachment_url + '" target="_blank"><img src="' + m.attachment_url + '" style="max-width:220px;max-height:200px;border-radius:8px;display:block;margin-top:' + (m.content ? '6px' : '0') + '" /></a>'
-          : '<a href="' + m.attachment_url + '" target="_blank" style="display:inline-flex;align-items:center;gap:6px;color:inherit;font-size:12px;opacity:.85;text-decoration:underline;margin-top:' + (m.content ? '4px' : '0') + '">📎 ' + esc(m.attachment_name || 'Datei') + '</a>';
+          ? '<a href="' + safeUrl + '" target="_blank"><img src="' + safeUrl + '" style="max-width:220px;max-height:200px;border-radius:8px;display:block;margin-top:' + (m.content ? '6px' : '0') + '" /></a>'
+          : '<a href="' + safeUrl + '" target="_blank" style="display:inline-flex;align-items:center;gap:6px;color:inherit;font-size:12px;opacity:.85;text-decoration:underline;margin-top:' + (m.content ? '4px' : '0') + '">📎 ' + esc(m.attachment_name || 'Datei') + '</a>';
       }
       return '<div style="display:flex;flex-direction:column;align-items:' + (isOwn ? 'flex-end' : 'flex-start') + '">' +
         '<div style="' + bubbleStyle + '">' + (m.content ? esc(m.content) : '') + attachHtml + '</div>' +

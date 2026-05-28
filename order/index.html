@@ -669,6 +669,7 @@ So: Ruhetag"></textarea>
         backHome: '← Zurück zur Startseite',
         submitting: 'Wird gesendet…',
         submitError: 'Es ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut.',
+        uploadWarning: 'Hinweis: Ein oder mehrere Dateien konnten nicht hochgeladen werden. Ihre Anfrage wurde trotzdem gesendet — laden Sie die Dateien später per E-Mail nach.',
         spHeading: '🔐 Konto erstellen',
         spDesc: 'Erstellen Sie jetzt ein Konto, um den Status Ihrer Anfrage zu verfolgen und später einfach auf Ihr Kundenportal zuzugreifen.',
         spPasswordPh: 'Passwort wählen (min. 8 Zeichen)',
@@ -739,6 +740,7 @@ So: Ruhetag"></textarea>
         backHome: '← Back to homepage',
         submitting: 'Sending…',
         submitError: 'An error occurred. Please try again.',
+        uploadWarning: 'Note: One or more files could not be uploaded. Your request was still sent — you can send the files later by email.',
         spHeading: '🔐 Create an account',
         spDesc: 'Create an account to track the status of your request and easily access your customer portal later.',
         spPasswordPh: 'Choose a password (min. 8 characters)',
@@ -973,10 +975,12 @@ So: Ruhetag"></textarea>
         var logoUrl = null;
         var uploadedPhotoUrls = [];
 
+        var uploadFailed = false;
         if (logoFile) {
           var logoExt = logoFile.name.split('.').pop();
           var logoRes = await sb.storage.from('uploads').upload(orderId + '/logo.' + logoExt, logoFile, { upsert: true });
           if (!logoRes.error) logoUrl = sb.storage.from('uploads').getPublicUrl(orderId + '/logo.' + logoExt).data.publicUrl;
+          else uploadFailed = true;
         }
 
         for (var pi = 0; pi < photoFiles.length; pi++) {
@@ -984,6 +988,7 @@ So: Ruhetag"></textarea>
           var pPath = orderId + '/photo_' + (pi + 1) + '.' + pFile.name.split('.').pop();
           var pRes = await sb.storage.from('uploads').upload(pPath, pFile, { upsert: true });
           if (!pRes.error) uploadedPhotoUrls.push(sb.storage.from('uploads').getPublicUrl(pPath).data.publicUrl);
+          else uploadFailed = true;
         }
 
         var payload = {
@@ -1012,6 +1017,11 @@ So: Ruhetag"></textarea>
         document.getElementById('progressWrap').style.display = 'none';
         document.getElementById('successPanel').classList.add('show');
         applyLang(currentLang);
+        if (uploadFailed) {
+          errEl.textContent = T[currentLang].uploadWarning;
+          errEl.style.display = 'block';
+          errEl.style.color = 'var(--warning, #b45309)';
+        }
 
         // Show submitted email in signup prompt
         var submittedEmail = payload.email;

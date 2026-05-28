@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Datenschutz — Seoulmate Wien</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--black:#111110;--white:#F8F7F4;--warm:#EDEAE4;--mid:#9B9893;--dim:#5C5A57;--line:#DDDAD4;--red:#C8291F}
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',sans-serif;background:var(--white);color:var(--black)}
+
+.lang-bar{position:fixed;top:0;left:0;right:0;z-index:300;height:32px;background:var(--black);display:flex;align-items:center;padding:0 48px}
+.lang-bar-back{font-family:'DM Sans',sans-serif;font-size:10px;font-weight:400;letter-spacing:0.18em;text-transform:uppercase;color:rgba(255,255,255,0.32);text-decoration:none;transition:color 0.2s}
+.lang-bar-back:hover{color:rgba(255,255,255,0.7)}
+
+nav{position:fixed;top:32px;left:0;right:0;z-index:200;display:flex;justify-content:space-between;align-items:center;padding:0 48px;height:64px;background:rgba(248,247,244,0.96);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
+.nav-logo{font-family:'DM Serif Display',serif;font-size:22px;color:var(--black);text-decoration:none;letter-spacing:0.04em;display:flex;align-items:baseline}
+.nav-logo .sub{font-family:'DM Sans',sans-serif;font-size:9px;font-weight:400;letter-spacing:0.22em;text-transform:uppercase;color:var(--mid);margin-left:8px}
+
+.page-header{background:var(--black);padding:112px 80px 64px;margin-top:96px}
+.page-tag{font-size:10px;font-weight:400;letter-spacing:0.3em;text-transform:uppercase;color:rgba(255,255,255,0.35);margin-bottom:20px;display:flex;align-items:center;gap:12px}
+.page-tag::before{content:"";width:24px;height:1px;background:rgba(255,255,255,0.35)}
+.page-title{font-family:'DM Serif Display',serif;font-size:clamp(36px,4vw,60px);color:var(--white);line-height:1.1;letter-spacing:-0.01em}
+
+.content{max-width:720px;margin:0 auto;padding:72px 48px 96px}
+.content h2{font-family:'DM Serif Display',serif;font-size:22px;font-weight:400;letter-spacing:-0.01em;margin:48px 0 16px;padding-top:48px;border-top:1px solid var(--line)}
+.content h2:first-of-type{margin-top:0;padding-top:0;border-top:none}
+.content p{font-size:14px;font-weight:300;line-height:1.9;color:var(--dim);margin-bottom:12px}
+.content ul{margin:8px 0 16px 0;padding-left:0;list-style:none}
+.content ul li{font-size:14px;font-weight:300;line-height:1.9;color:var(--dim);padding:3px 0 3px 18px;position:relative}
+.content ul li::before{content:"—";position:absolute;left:0;color:var(--mid)}
+.content a{color:var(--black);transition:color 0.2s}
+.content a:hover{color:var(--red)}
+
+.service-block{border:1px solid var(--line);border-radius:4px;padding:20px 24px;margin:16px 0}
+.service-name{font-size:13px;font-weight:500;color:var(--black);margin-bottom:6px}
+.service-desc{font-size:13px;font-weight:300;color:var(--dim);line-height:1.75}
+.service-desc a{font-size:13px}
+
+.rights-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);border:1px solid var(--line);margin:16px 0}
+.rights-item{background:var(--white);padding:16px 20px}
+.rights-art{font-size:10px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--mid);margin-bottom:4px}
+.rights-label{font-size:14px;font-weight:300;color:var(--dim)}
+
+.contact-box{background:var(--warm);border:1px solid var(--line);border-radius:4px;padding:20px 24px;margin:16px 0}
+.contact-box p{margin-bottom:0}
+
+footer{background:var(--black);padding:48px 80px;text-align:center}
+.footer-logo{font-family:'DM Serif Display',serif;font-size:22px;color:var(--white);text-decoration:none;display:inline-block;margin-bottom:10px}
+.footer-desc{font-size:13px;font-weight:300;color:rgba(255,255,255,0.32);line-height:1.85}
+.footer-bottom{background:var(--black);padding:20px 80px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;border-top:1px solid rgba(255,255,255,0.06)}
+.footer-copy{font-size:11px;color:rgba(255,255,255,0.2);letter-spacing:0.06em}
+.footer-link{font-size:11px;color:rgba(255,255,255,0.2);letter-spacing:0.06em;text-decoration:none;transition:color 0.2s}
+.footer-link:hover{color:rgba(255,255,255,0.5)}
+
+@media(max-width:960px){
+  nav{padding:0 16px}
+  .lang-bar{padding:0 24px}
+  .page-header{padding:96px 32px 48px}
+  .content{padding:48px 32px 72px}
+  footer{padding:36px 32px}
+  .footer-bottom{padding:16px 32px}
+  .rights-grid{grid-template-columns:1fr}
+}
+@media(max-width:480px){
+  nav{padding:0 16px;height:56px}
+  .nav-logo{font-size:18px}
+  .nav-logo .sub{display:none}
+  .page-header{margin-top:88px;padding:80px 20px 40px}
+  .content{padding:36px 20px 60px}
+  footer{padding:28px 20px}
+  .footer-bottom{padding:14px 20px}
+}
+</style>
+</head>
+<body>
+
+<div class="lang-bar">
+  <a href="/seoulmate/" class="lang-bar-back">← Zurück zu Seoulmate</a>
+</div>
+
+<nav>
+  <a href="/seoulmate/" class="nav-logo">Seoulmate <span class="sub">Korean Bistro</span></a>
+</nav>
+
+<div class="page-header">
+  <div class="page-tag">Rechtliches</div>
+  <h1 class="page-title">Datenschutz&shy;erklärung</h1>
+</div>
+
+<div class="content">
+
+  <h2>1. Verantwortlicher</h2>
+  <p>Verantwortlich für die Verarbeitung personenbezogener Daten auf dieser Website ist:</p>
+  <div class="contact-box">
+    <p><span style="font-weight:500">Seoulmate Korean Bistro</span><br>
+    Rüdengasse 16/4, 1030 Wien, Österreich<br>
+    <a href="tel:+436766537332">+43 676 6537332</a> · <a href="mailto:seoulmate.vienna@gmail.com">seoulmate.vienna@gmail.com</a></p>
+  </div>
+
+  <h2>2. Welche Daten wir verarbeiten</h2>
+
+  <p><strong>Bewertungen:</strong> Wenn Sie freiwillig eine Bewertung hinterlassen, speichern wir Ihren Namen, den Bewertungstext, die Sternebewertung und das angegebene Datum.</p>
+  <p>Rechtsgrundlage: Art. 6 Abs. 1 lit. a DSGVO (Einwilligung durch aktives Absenden).</p>
+
+  <h2>3. Drittanbieter</h2>
+
+  <div class="service-block">
+    <div class="service-name">Supabase (EU-Rechenzentren)</div>
+    <div class="service-desc">Bewertungen werden in der Supabase-Datenbank gespeichert. Die Daten liegen auf Servern innerhalb der EU (Frankfurt, AWS eu-central-1).<br>
+    <a href="https://supabase.com/privacy" target="_blank" rel="noopener">Datenschutzerklärung Supabase →</a></div>
+  </div>
+
+  <div class="service-block">
+    <div class="service-name">Google Fonts (USA)</div>
+    <div class="service-desc">Zum Laden der Schriftarten werden beim ersten Besuch Verbindungen zu Google-Servern aufgebaut, wobei Ihre IP-Adresse übertragen wird. Rechtsgrundlage: Art. 6 Abs. 1 lit. f DSGVO (berechtigtes Interesse an einheitlicher Darstellung).<br>
+    <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Datenschutzerklärung Google →</a></div>
+  </div>
+
+  <div class="service-block">
+    <div class="service-name">OpenStreetMap</div>
+    <div class="service-desc">Die eingebettete Karte lädt Kartendaten von openstreetmap.org. Dabei wird Ihre IP-Adresse an die OpenStreetMap Foundation übertragen.<br>
+    <a href="https://wiki.osmfoundation.org/wiki/Privacy_Policy" target="_blank" rel="noopener">Datenschutzerklärung OpenStreetMap →</a></div>
+  </div>
+
+  <h2>4. Cookies &amp; Tracking</h2>
+  <p>Diese Website verwendet <strong>keine Tracking-Cookies und keine Werbecookies</strong>.</p>
+  <p>Die von Ihnen gewählte Spracheinstellung (DE / EN / 한국어) wird lokal in Ihrem Browser gespeichert (<code>localStorage</code>). Diese Daten verbleiben auf Ihrem Gerät und werden nicht an uns oder Dritte übertragen.</p>
+
+  <h2>5. Speicherdauer</h2>
+  <ul>
+    <li>Bewertungen: unbegrenzt bis zu einer Löschanfrage</li>
+    <li>Spracheinstellung (localStorage): bis zur manuellen Löschung im Browser</li>
+  </ul>
+
+  <h2>6. Ihre Rechte (DSGVO Art. 15–21)</h2>
+  <div class="rights-grid">
+    <div class="rights-item"><div class="rights-art">Art. 15</div><div class="rights-label">Auskunft über gespeicherte Daten</div></div>
+    <div class="rights-item"><div class="rights-art">Art. 16</div><div class="rights-label">Berichtigung unrichtiger Daten</div></div>
+    <div class="rights-item"><div class="rights-art">Art. 17</div><div class="rights-label">Löschung („Recht auf Vergessenwerden")</div></div>
+    <div class="rights-item"><div class="rights-art">Art. 18</div><div class="rights-label">Einschränkung der Verarbeitung</div></div>
+    <div class="rights-item"><div class="rights-art">Art. 20</div><div class="rights-label">Datenübertragbarkeit</div></div>
+    <div class="rights-item"><div class="rights-art">Art. 21</div><div class="rights-label">Widerspruch gegen die Verarbeitung</div></div>
+  </div>
+  <p>Zur Ausübung Ihrer Rechte wenden Sie sich bitte an: <a href="mailto:seoulmate.vienna@gmail.com">seoulmate.vienna@gmail.com</a></p>
+
+  <h2>7. Beschwerderecht</h2>
+  <p>Sie haben das Recht, bei der österreichischen Datenschutzbehörde Beschwerde einzulegen:</p>
+  <div class="contact-box">
+    <p><strong>Österreichische Datenschutzbehörde</strong><br>
+    Barichgasse 40–42, 1030 Wien<br>
+    <a href="https://www.dsb.gv.at" target="_blank" rel="noopener">dsb.gv.at</a></p>
+  </div>
+
+  <h2>8. Aktualität</h2>
+  <p>Diese Datenschutzerklärung ist aktuell gültig. Bei wesentlichen Änderungen dieser Website behalten wir uns vor, die Erklärung anzupassen.</p>
+
+</div>
+
+<footer>
+  <a href="/seoulmate/" class="footer-logo">Seoulmate</a>
+  <p class="footer-desc">Seouler Straßenküche mit Herz — mitten in Wien.</p>
+</footer>
+<div class="footer-bottom">
+  <span class="footer-copy">© 2025 Seoulmate Korean Bistro Wien</span>
+  <div style="display:flex;gap:20px">
+    <a href="/seoulmate/impressum/" class="footer-link">Impressum</a>
+    <span class="footer-copy">Datenschutz</span>
+  </div>
+  <span class="footer-copy">Rüdengasse 16/4, 1030 Wien</span>
+</div>
+
+</body>
+</html>

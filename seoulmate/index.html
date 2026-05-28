@@ -399,7 +399,7 @@ nav.scrolled { border-color:var(--line); }
 /* ── FOOTER ── */
 footer {
   background:var(--black); color:var(--white);
-  display:grid; grid-template-columns:2fr 1fr 1fr;
+  display:grid; grid-template-columns:2fr 1fr 1fr 1fr;
   gap:48px; padding:72px 80px;
   border-bottom:1px solid rgba(255,255,255,0.06);
 }
@@ -426,6 +426,8 @@ footer {
   display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;
 }
 .footer-copy { font-size:11px; color:rgba(255,255,255,0.2); letter-spacing:0.06em; }
+.footer-link-legal { font-size:11px; color:rgba(255,255,255,0.2); letter-spacing:0.06em; text-decoration:none; transition:color 0.2s; }
+.footer-link-legal:hover { color:rgba(255,255,255,0.5); }
 
 /* ── TOAST ── */
 .toast {
@@ -437,6 +439,13 @@ footer {
 }
 .toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
 
+/* ── HAMBURGER ── */
+.nav-hamburger { display:none; background:none; border:none; cursor:pointer; padding:8px; flex-direction:column; gap:5px; flex-shrink:0; }
+.nav-hamburger span { display:block; width:22px; height:1.5px; background:var(--black); transition:transform 0.25s, opacity 0.25s; }
+.nav-hamburger.open span:nth-child(1) { transform:rotate(45deg) translate(4px,5px); }
+.nav-hamburger.open span:nth-child(2) { opacity:0; }
+.nav-hamburger.open span:nth-child(3) { transform:rotate(-45deg) translate(4px,-5px); }
+
 /* ── FADE IN ── */
 .fade-in { opacity:0; transform:translateY(20px); transition:opacity 0.7s ease, transform 0.7s ease; }
 .fade-in.visible { opacity:1; transform:none; }
@@ -447,6 +456,9 @@ footer {
 @media (max-width:960px) {
   nav { padding:0 16px; }
   .nav-links { display:none; }
+  .nav-hamburger { display:flex; }
+  .nav-links.open { display:flex !important; flex-direction:column; position:fixed; top:96px; left:0; right:0; background:rgba(248,247,244,0.98); backdrop-filter:blur(16px); border-bottom:1px solid var(--line); padding:8px 0 16px; z-index:150; }
+  .nav-links.open a { padding:14px 24px; font-size:13px; display:block; border-bottom:1px solid var(--line); }
   .hero { margin-top:96px; height:calc(100dvh - 96px); }
   .slide-content { left:32px; bottom:80px; }
   .hero-bottom { left:32px; right:24px; }
@@ -472,6 +484,7 @@ footer {
   nav { padding:0 16px; height:56px; }
   .nav-logo { font-size:18px; }
   .nav-logo .sub { display:none; }
+  .nav-links.open { top:88px; }
   .hero { margin-top:88px; height:calc(100dvh - 88px); }
   .slide-overlay {
     background:linear-gradient(to top, rgba(0,0,0,0.65) 0%, rgba(0,0,0,0.2) 60%, transparent 100%);
@@ -536,12 +549,15 @@ footer {
 <!-- NAV -->
 <nav id="mainNav">
   <a href="#" class="nav-logo">Seoulmate <span class="sub">Korean Bistro</span></a>
-  <ul class="nav-links">
+  <ul class="nav-links" id="navLinks">
     <li><a href="#menu" data-i="nav_menu">Speisekarte</a></li>
     <li><a href="#info" data-i="nav_info">Öffnungszeiten</a></li>
     <li><a href="#location" data-i="nav_location">Anfahrt</a></li>
     <li><a href="#reviews" data-i="nav_reviews">Bewertungen</a></li>
   </ul>
+  <button class="nav-hamburger" id="navHamburger" aria-label="Navigation öffnen">
+    <span></span><span></span><span></span>
+  </button>
 </nav>
 
 <!-- HERO SLIDER -->
@@ -755,9 +771,20 @@ footer {
       <li><a href="/seoulmate/menu/" target="_blank" data-i="fc_menu">Speisekarte ↗</a></li>
     </ul>
   </div>
+  <div class="footer-col">
+    <div class="footer-col-title">Rechtliches</div>
+    <ul>
+      <li><a href="/seoulmate/impressum/">Impressum</a></li>
+      <li><a href="/seoulmate/datenschutz/">Datenschutz</a></li>
+    </ul>
+  </div>
 </footer>
 <div class="footer-bottom">
   <span class="footer-copy">© 2025 Seoulmate Korean Bistro Wien</span>
+  <div style="display:flex;gap:24px">
+    <a href="/seoulmate/impressum/" class="footer-link-legal">Impressum</a>
+    <a href="/seoulmate/datenschutz/" class="footer-link-legal">Datenschutz</a>
+  </div>
   <span class="footer-copy">Rüdengasse 16/4, 1030 Wien, Österreich</span>
 </div>
 
@@ -773,10 +800,12 @@ footer {
     'sb_publishable_y5l1cAZXoAj8xaSVXUkBfw_Pk9pxb6H'
   );
 
+  function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
   function renderCard(r){
-    var stars='★'.repeat(r.stars)+'☆'.repeat(5-r.stars);
+    var n=Math.max(0,Math.min(5,r.stars||0));
+    var stars='★'.repeat(n)+'☆'.repeat(5-n);
     var card=document.createElement('div'); card.className='review-card';
-    card.innerHTML='<div class="review-stars">'+stars+'</div><p class="review-text">"'+r.text+'"</p><div class="review-author"><div class="review-avatar">'+r.name.charAt(0).toUpperCase()+'</div><div><div class="review-name">'+r.name+'</div><div class="review-date">'+(r.date||'')+'</div></div></div>';
+    card.innerHTML='<div class="review-stars">'+stars+'</div><p class="review-text">"'+esc(r.text)+'"</p><div class="review-author"><div class="review-avatar">'+esc(r.name.charAt(0).toUpperCase())+'</div><div><div class="review-name">'+esc(r.name)+'</div><div class="review-date">'+esc(r.date||'')+'</div></div></div>';
     return card;
   }
 
@@ -840,7 +869,7 @@ const T = {
     about_label:'Über uns',
     about_headline:'Seoul trifft Wien,<br><em>täglich frisch</em>',
     about_body:'Seoulmate bringt die lebendige Straßenküche Seouls nach Wien. Knuspriger Korean Fried Chicken, feuriges Tteokbokki, handgemachte Corndogs und bunte Gimbap — täglich frisch zubereitet mit originalkoreanischen Zutaten.',
-    about_btn:'Zur Speisekarte',
+    about_btn:'Zur Speisekarte <span class="arrow">→</span>',
     stat1:'3. Bezirk', stat2:'Geöffnet', stat3:'Street Food',
     menu_label:'Speisekarte',
     menu_headline:'Entdecken Sie<br><em>unsere Gerichte</em>',
@@ -880,7 +909,7 @@ const T = {
     about_label:'About Us',
     about_headline:'Seoul meets Vienna,<br><em>fresh every day</em>',
     about_body:'Seoulmate brings Seoul\'s vibrant street food scene to Vienna. Crispy Korean Fried Chicken, fiery Tteokbokki, handcrafted Corndogs and colourful Gimbap — freshly prepared every day.',
-    about_btn:'View Menu',
+    about_btn:'View Menu <span class="arrow">→</span>',
     stat1:'3rd District', stat2:'Open', stat3:'Street Food',
     menu_label:'Menu',
     menu_headline:'Discover<br><em>our dishes</em>',
@@ -920,7 +949,7 @@ const T = {
     about_label:'소개',
     about_headline:'서울이 빈을 만나다,<br><em>매일 신선하게</em>',
     about_body:'Seoulmate가 서울의 활기찬 길거리 음식을 빈으로 가져왔습니다. 바삭한 치킨, 매콤한 떡볶이, 직접 만든 콘도그, 알록달록한 김밥까지 — 매일 정통 한국 식재료로 신선하게 준비합니다.',
-    about_btn:'메뉴 보기',
+    about_btn:'메뉴 보기 <span class="arrow">→</span>',
     stat1:'3구역', stat2:'영업중', stat3:'스트릿 푸드',
     menu_label:'메뉴',
     menu_headline:'다양한 메뉴를<br><em>만나보세요</em>',
@@ -986,6 +1015,12 @@ window._stars=0;
 function selectStar(n){window._stars=n; document.querySelectorAll('.star-btn').forEach((b,i)=>b.classList.toggle('on',i<n));}
 function showToast(msg){const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),3400);}
 function submitReview(){window.submitReviewDB();}
+(function(){
+  var h=document.getElementById('navHamburger');
+  var nl=document.getElementById('navLinks');
+  h.addEventListener('click',function(){h.classList.toggle('open');nl.classList.toggle('open');});
+  nl.querySelectorAll('a').forEach(function(a){a.addEventListener('click',function(){h.classList.remove('open');nl.classList.remove('open');});});
+})();
 </script>
 </body>
 </html>

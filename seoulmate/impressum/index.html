@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Impressum — Seoulmate Wien</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--black:#111110;--white:#F8F7F4;--warm:#EDEAE4;--mid:#9B9893;--dim:#5C5A57;--line:#DDDAD4;--red:#C8291F}
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',sans-serif;background:var(--white);color:var(--black)}
+
+.lang-bar{position:fixed;top:0;left:0;right:0;z-index:300;height:32px;background:var(--black);display:flex;align-items:center;padding:0 48px}
+.lang-bar-back{font-family:'DM Sans',sans-serif;font-size:10px;font-weight:400;letter-spacing:0.18em;text-transform:uppercase;color:rgba(255,255,255,0.32);text-decoration:none;transition:color 0.2s}
+.lang-bar-back:hover{color:rgba(255,255,255,0.7)}
+
+nav{position:fixed;top:32px;left:0;right:0;z-index:200;display:flex;justify-content:space-between;align-items:center;padding:0 48px;height:64px;background:rgba(248,247,244,0.96);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
+.nav-logo{font-family:'DM Serif Display',serif;font-size:22px;color:var(--black);text-decoration:none;letter-spacing:0.04em;display:flex;align-items:baseline}
+.nav-logo .sub{font-family:'DM Sans',sans-serif;font-size:9px;font-weight:400;letter-spacing:0.22em;text-transform:uppercase;color:var(--mid);margin-left:8px}
+
+.page-header{background:var(--black);padding:112px 80px 64px;margin-top:96px}
+.page-tag{font-size:10px;font-weight:400;letter-spacing:0.3em;text-transform:uppercase;color:rgba(255,255,255,0.35);margin-bottom:20px;display:flex;align-items:center;gap:12px}
+.page-tag::before{content:"";width:24px;height:1px;background:rgba(255,255,255,0.35)}
+.page-title{font-family:'DM Serif Display',serif;font-size:clamp(36px,4vw,60px);color:var(--white);line-height:1.1;letter-spacing:-0.01em}
+
+.content{max-width:720px;margin:0 auto;padding:72px 48px 96px}
+
+.content h2{font-family:'DM Serif Display',serif;font-size:22px;font-weight:400;letter-spacing:-0.01em;margin:48px 0 20px;padding-top:48px;border-top:1px solid var(--line)}
+.content h2:first-of-type{margin-top:0;padding-top:0;border-top:none}
+.content p{font-size:14px;font-weight:300;line-height:1.9;color:var(--dim);margin-bottom:12px}
+.content a{color:var(--black);transition:color 0.2s}
+.content a:hover{color:var(--red)}
+
+.info-table{width:100%;border-collapse:collapse;margin-bottom:12px}
+.info-table td{font-size:14px;font-weight:300;color:var(--dim);padding:10px 0;border-bottom:1px solid var(--line);vertical-align:top;line-height:1.65}
+.info-table td:first-child{width:180px;font-weight:400;color:var(--black);flex-shrink:0}
+.info-table tr:last-child td{border-bottom:none}
+.placeholder{color:#b45309;font-style:italic}
+
+footer{background:var(--black);padding:48px 80px;text-align:center}
+.footer-logo{font-family:'DM Serif Display',serif;font-size:22px;color:var(--white);text-decoration:none;display:inline-block;margin-bottom:10px}
+.footer-desc{font-size:13px;font-weight:300;color:rgba(255,255,255,0.32);line-height:1.85}
+.footer-bottom{background:var(--black);padding:20px 80px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;border-top:1px solid rgba(255,255,255,0.06)}
+.footer-copy{font-size:11px;color:rgba(255,255,255,0.2);letter-spacing:0.06em}
+.footer-link{font-size:11px;color:rgba(255,255,255,0.2);letter-spacing:0.06em;text-decoration:none;transition:color 0.2s}
+.footer-link:hover{color:rgba(255,255,255,0.5)}
+
+@media(max-width:960px){
+  .lang-bar,.footer-bottom{padding-left:24px;padding-right:24px}
+  nav{padding:0 16px}
+  .page-header{padding:96px 32px 48px}
+  .content{padding:48px 32px 72px}
+  footer{padding:36px 32px}
+}
+@media(max-width:480px){
+  nav{padding:0 16px;height:56px}
+  .nav-logo{font-size:18px}
+  .nav-logo .sub{display:none}
+  .page-header{margin-top:88px;padding:80px 20px 40px}
+  .content{padding:36px 20px 60px}
+  .info-table{display:block}
+  .info-table tr{display:flex;flex-direction:column;padding:12px 0;border-bottom:1px solid var(--line)}
+  .info-table tr:last-child{border-bottom:none}
+  .info-table td{border-bottom:none;padding:2px 0;width:auto}
+  footer{padding:28px 20px}
+  .footer-bottom{padding:14px 20px}
+}
+</style>
+</head>
+<body>
+
+<div class="lang-bar">
+  <a href="/seoulmate/" class="lang-bar-back">← Zurück zu Seoulmate</a>
+</div>
+
+<nav>
+  <a href="/seoulmate/" class="nav-logo">Seoulmate <span class="sub">Korean Bistro</span></a>
+</nav>
+
+<div class="page-header">
+  <div class="page-tag">Rechtliches</div>
+  <h1 class="page-title">Impressum</h1>
+</div>
+
+<div class="content">
+
+  <h2>Angaben gemäß § 5 ECG</h2>
+  <table class="info-table">
+    <tr>
+      <td>Unternehmensname</td>
+      <td><span class="placeholder">Unternehmensname folgt</span><br><span style="font-size:12px;color:var(--mid)">(Betrieb: Seoulmate Korean Bistro)</span></td>
+    </tr>
+    <tr>
+      <td>Rechtsform</td>
+      <td><span class="placeholder">Rechtsform folgt</span></td>
+    </tr>
+    <tr>
+      <td>Geschäftsführung</td>
+      <td><span class="placeholder">Geschäftsführung folgt</span></td>
+    </tr>
+    <tr>
+      <td>Adresse</td>
+      <td>Rüdengasse 16/4<br>1030 Wien, Österreich</td>
+    </tr>
+    <tr>
+      <td>Telefon</td>
+      <td><a href="tel:+436766537332">+43 676 6537332</a></td>
+    </tr>
+    <tr>
+      <td>E-Mail</td>
+      <td><a href="mailto:seoulmate.vienna@gmail.com">seoulmate.vienna@gmail.com</a></td>
+    </tr>
+    <tr>
+      <td>Unternehmens&shy;gegenstand</td>
+      <td>Gastronomie / Restaurant</td>
+    </tr>
+    <tr>
+      <td>Firmenbuchnummer</td>
+      <td><span class="placeholder">FN folgt</span></td>
+    </tr>
+    <tr>
+      <td>Firmenbuchgericht</td>
+      <td>Handelsgericht Wien</td>
+    </tr>
+    <tr>
+      <td>UID-Nummer</td>
+      <td><span class="placeholder">ATU-Nummer folgt</span></td>
+    </tr>
+    <tr>
+      <td>Mitgliedschaft</td>
+      <td>Wirtschaftskammer Wien<br>Fachgruppe Gastronomie</td>
+    </tr>
+    <tr>
+      <td>Gewerbebehörde</td>
+      <td>Magistrat der Stadt Wien</td>
+    </tr>
+  </table>
+
+  <h2>Urheberrecht</h2>
+  <p>Die auf dieser Website veröffentlichten Inhalte — Texte, Bilder und Grafiken — unterliegen dem österreichischen Urheberrecht. Jede Vervielfältigung, Bearbeitung oder Verbreitung bedarf der schriftlichen Zustimmung des jeweiligen Urhebers. Downloads und Kopien dieser Seite sind nur für den privaten, nicht kommerziellen Gebrauch gestattet.</p>
+
+  <h2>Haftungsausschluss</h2>
+  <p>Die Inhalte dieser Website wurden mit größtmöglicher Sorgfalt erstellt. Für die Richtigkeit, Vollständigkeit und Aktualität der Inhalte übernehmen wir keine Gewähr.</p>
+  <p>Als Diensteanbieter sind wir gemäß § 17 ECG für eigene Inhalte auf diesen Seiten verantwortlich. Für fremde Inhalte, auf die wir verweisen, übernehmen wir keine Haftung, da wir uns diese nicht zu eigen machen und zum Zeitpunkt der Verlinkung keine rechtswidrigen Inhalte erkennbar waren.</p>
+
+</div>
+
+<footer>
+  <a href="/seoulmate/" class="footer-logo">Seoulmate</a>
+  <p class="footer-desc">Seouler Straßenküche mit Herz — mitten in Wien.</p>
+</footer>
+<div class="footer-bottom">
+  <span class="footer-copy">© 2025 Seoulmate Korean Bistro Wien</span>
+  <div style="display:flex;gap:20px">
+    <span class="footer-copy">Impressum</span>
+    <a href="/seoulmate/datenschutz/" class="footer-link">Datenschutz</a>
+  </div>
+  <span class="footer-copy">Rüdengasse 16/4, 1030 Wien</span>
+</div>
+
+</body>
+</html>

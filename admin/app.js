@@ -524,7 +524,7 @@
 
   async function loadSites() {
     var { data } = await sb.from('orders')
-      .select('id, business_name, business_type, site_slug, payment_status, status')
+      .select('id, business_name, business_type, site_slug, payment_status')
       .not('site_slug', 'is', null)
       .order('created_at', { ascending: false });
 
@@ -563,10 +563,29 @@
           '<a href="' + base + '/menu/" target="_blank" class="btn btn-outline btn-sm">📋 Menü</a>' +
           '<a href="' + base + '/link/" target="_blank" class="btn btn-outline btn-sm">🔗 Links</a>' +
         '</td>' +
-        '<td><button class="btn btn-outline btn-sm" onclick="openOrder(\'' + o.id + '\')">✏️ Details</button></td>' +
+        '<td style="display:flex;gap:6px">' +
+          '<button class="btn btn-outline btn-sm" onclick="openOrder(\'' + o.id + '\')">✏️ Details</button>' +
+          '<button class="btn btn-danger btn-sm" onclick="deleteSite(\'' + o.id + '\',\'' + slug + '\')">🗑️</button>' +
+        '</td>' +
         '</tr>';
     }).join('');
   }
+
+  window.deleteSite = async function(orderId, slug) {
+    if (!confirm('Website "' + slug + '" wirklich löschen?\nDieser Vorgang kann nicht rückgängig gemacht werden.')) return;
+    var session = (await sb.auth.getSession()).data.session;
+    var token = session ? session.access_token : '';
+    var res = await fetch(EDGE_FN, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+      body: JSON.stringify({ action: 'delete-folder', slug: slug })
+    });
+    var data = await res.json();
+    if (data.error) { showToast('Fehler: ' + data.error); return; }
+    await sb.from('orders').update({ site_slug: null }).eq('id', orderId);
+    showToast('✅ "' + slug + '" gelöscht.');
+    loadSites();
+  };
 
   function orderStatusBadge(status) {
     var map = { pending: 'badge-new', paid: 'badge-contacted', in_progress: 'badge-contacted', done: 'badge-active' };

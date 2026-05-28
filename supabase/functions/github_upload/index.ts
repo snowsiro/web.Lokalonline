@@ -81,6 +81,29 @@ Deno.serve(async (req) => {
       return json({ content: decoded, sha: data.sha });
     }
 
+    // Delete all files under a slug folder
+    if (action === "delete-folder") {
+      const slug = body.slug;
+      if (!slug || !/^[a-z0-9-]+$/.test(slug)) return json({ error: "Invalid slug" }, 400);
+      const listRes = await fetch(
+        `https://api.github.com/repos/${GITHUB_REPO}/contents/${slug}?ref=${GITHUB_BRANCH}`,
+        { headers: { Authorization: `Bearer ${GITHUB_TOKEN}`, Accept: "application/vnd.github+json" } }
+      );
+      if (listRes.status === 404) return json({ ok: true });
+      const files = await listRes.json();
+      if (!Array.isArray(files)) return json({ error: "Could not list folder" }, 500);
+      for (const file of files) {
+        if (file.type === "file") {
+          await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/${file.path}`, {
+            method: "DELETE",
+            headers: { Authorization: `Bearer ${GITHUB_TOKEN}`, Accept: "application/vnd.github+json", "Content-Type": "application/json" },
+            body: JSON.stringify({ message: "Delete site: " + slug, sha: file.sha, branch: GITHUB_BRANCH })
+          });
+        }
+      }
+      return json({ ok: true });
+    }
+
     return json({ error: "Unknown action" }, 400);
   } catch (e) {
     return json({ error: e.message }, 500);

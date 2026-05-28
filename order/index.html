@@ -666,7 +666,6 @@ So: Ruhetag"></textarea>
   </div><!-- /order-wrap -->
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
   <script>
   (function () {
     var SB_URL = 'https://vhnourjddnlslgabrasb.supabase.co';
@@ -1281,12 +1280,26 @@ So: Ruhetag"></textarea>
         fillEl.style.width = '0';
         statusText.textContent = T[currentLang].menuAiLoadingText;
 
-        if (typeof Tesseract === 'undefined') {
-          reset();
-          alert(currentLang === 'en' ? 'OCR library not loaded. Please refresh and try again.' : 'OCR-Bibliothek nicht geladen. Bitte Seite neu laden.');
-          return;
-        }
+        loadTesseract(function (loadErr) {
+          if (loadErr || typeof Tesseract === 'undefined') {
+            reset();
+            alert(currentLang === 'en' ? 'OCR library failed to load. Please check your connection.' : 'OCR-Bibliothek konnte nicht geladen werden. Bitte Verbindung prüfen.');
+            return;
+          }
+          runOcr(file);
+        });
+      });
 
+      function loadTesseract(cb) {
+        if (typeof Tesseract !== 'undefined') { cb(null); return; }
+        var s = document.createElement('script');
+        s.src = 'https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js';
+        s.onload  = function () { cb(null); };
+        s.onerror = function () { cb(new Error('load failed')); };
+        document.head.appendChild(s);
+      }
+
+      function runOcr(file) {
         Tesseract.recognize(file, 'deu', {
           logger: function (m) {
             if (m.status === 'recognizing text') {
@@ -1307,7 +1320,7 @@ So: Ruhetag"></textarea>
           reset();
           alert(currentLang === 'en' ? 'Text recognition failed. Please try again.' : 'Texterkennung fehlgeschlagen. Bitte erneut versuchen.');
         });
-      });
+      }
 
       resetBtn.addEventListener('click', reset);
     })();
@@ -1325,6 +1338,11 @@ So: Ruhetag"></textarea>
       var isDE    = currentLang === 'de';
 
       panel.innerHTML =
+        '<div style="background:#fef3c7;border:1px solid #fde68a;border-radius:6px;padding:8px 12px;font-size:11px;color:#92400e;margin-bottom:12px">' +
+          (isDE
+            ? '⚠️ <strong>Vorlage</strong> — bitte mit UID-Nummer, Gewerbeschein-Nr. und weiteren branchenspezifischen Pflichtangaben ergänzen.'
+            : '⚠️ <strong>Template only</strong> — please add your UID number, trade licence and any sector-specific mandatory disclosures.') +
+        '</div>' +
         '<div class="impressum-section">' +
           '<h4>' + (isDE ? 'Impressum' : 'Legal Notice') + '</h4>' +
           '<p style="font-size:11px;color:var(--text-muted);margin-bottom:6px">' +

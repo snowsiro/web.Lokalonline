@@ -241,7 +241,7 @@
     document.getElementById('clientBusiness').value = data ? data.business_name : '';
     document.getElementById('clientEmail').value = data ? data.email : '';
     document.getElementById('clientPhone').value = data ? (data.phone || '') : '';
-    document.getElementById('clientPlan').value = data ? data.plan : 'basis';
+    document.getElementById('clientPlan').value = data ? data.plan : 'flat';
     document.getElementById('clientBilling').value = data ? data.billing_cycle : 'monthly';
     document.getElementById('clientStartDate').value = data ? (data.start_date || '') : '';
     document.getElementById('clientNextBilling').value = data ? (data.next_billing || '') : '';
@@ -886,7 +886,7 @@
   }
 
   function planLabel(plan) {
-    return { basis: 'Basis', standard: 'Standard', premium: 'Premium', unsure: 'Unsicher' }[plan] || plan;
+    return { flat: 'Premium', basis: 'Premium', standard: 'Premium', premium: 'Premium', unsure: 'Unsicher' }[plan] || plan;
   }
 
   function infoItem(label, value) {

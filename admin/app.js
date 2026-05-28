@@ -1374,7 +1374,7 @@
         var s2 = document.createElement('script');
         s2.src = 'https://unpkg.com/qrcode@1.5.3/build/qrcode.min.js';
         s2.onload = resolve;
-        s2.onerror = reject;
+        s2.onerror = function() { reject(new Error('QRCode-Bibliothek konnte nicht geladen werden.')); };
         document.head.appendChild(s2);
       };
       document.head.appendChild(s);
@@ -1486,7 +1486,8 @@
       // 6. Photos + QR code
       btn.textContent = '⏳ 6/7 Fotos & QR…';
       await copyPhotosToGitHub(slug, currentOrderData);
-      await generateQrCode(slug);
+      var qrErr = null;
+      try { await generateQrCode(slug); } catch(e) { qrErr = e.message; }
 
       // 7. Save to DB
       btn.textContent = '⏳ 7/7 Speichert…';
@@ -1501,6 +1502,7 @@
 
       closeModal('siteGenOverlay');
       showQrResult(slug);
+      if (qrErr) showToast('⚠️ QR-Code: ' + qrErr);
 
     } catch (e) {
       errEl.textContent = 'Fehler: ' + e.message;

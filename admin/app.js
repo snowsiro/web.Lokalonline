@@ -1505,8 +1505,10 @@
       if (qrErr) showToast('⚠️ QR-Code: ' + qrErr);
 
     } catch (e) {
-      errEl.textContent = 'Fehler: ' + e.message;
+      var step = btn.textContent.replace('⏳ ', '');
+      errEl.textContent = 'Fehler bei [' + step + ']: ' + (e && e.message ? e.message : String(e));
       errEl.style.display = 'block';
+      console.error('doGenerateSite error:', step, e);
     }
 
     btn.disabled = false;

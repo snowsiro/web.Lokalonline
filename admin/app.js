@@ -899,7 +899,7 @@
   var selectedTemplate = 'restaurant';
   var currentOrderData = null;
 
-  var EDGE_FN = 'https://vhnourjddnlslgabrasb.supabase.co/functions/v1/github_upload';
+  var EDGE_FN = 'https://vhnourjddnlslgabrasb.supabase.co/functions/v1/github-upload';
 
   function bindSiteGenerator() {
     // Template card selection

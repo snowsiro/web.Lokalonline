@@ -74,7 +74,7 @@
     document.getElementById('heroSub').textContent = 'Hier verwalten Sie Ihren Auftrag bei lokalonline.at';
 
     // 구독 정보 카드
-    var planLabels = { basis: 'Basis', standard: 'Standard', premium: 'Premium' };
+    var planLabels = { flat: 'Premium', basis: 'Premium', standard: 'Premium', premium: 'Premium' };
     var billingLabels = { monthly: 'Monatlich', yearly: 'Jährlich' };
     var statusLabels = { active: '✓ Aktiv', inactive: 'Inaktiv', cancelled: 'Gekündigt' };
 
@@ -412,33 +412,13 @@
   // ── Stripe 결제 버튼 ──────────────────────────────────────────────
   function stripeActionsHtml(client) {
     var billing = client.billing_cycle === 'yearly' ? 'yearly' : 'monthly';
-    var plans = ['basis', 'standard', 'premium'];
-    var planLabels = { basis: 'Basis (€19/Mo)', standard: 'Standard (€39/Mo)', premium: 'Premium (€69/Mo)' };
+    var currentLink = STRIPE_LINKS['flat_' + billing] || STRIPE_LINKS['premium_' + billing];
+    if (!currentLink) return '';
 
-    // 현재 플랜보다 높은 플랜만 업그레이드로 표시
-    var currentIdx = plans.indexOf(client.plan);
-    var upgrades = plans.slice(currentIdx + 1).filter(function (p) {
-      return STRIPE_LINKS[p + '_' + billing];
-    });
-
-    var currentLink = STRIPE_LINKS[client.plan + '_' + billing];
-    if (!currentLink && upgrades.length === 0) return '';
-
-    var html = '<div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--border)">' +
+    return '<div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--border)">' +
       '<p style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--text-muted);margin-bottom:10px">Abonnement verwalten</p>' +
-      '<div style="display:flex;flex-wrap:wrap;gap:8px">';
-
-    if (currentLink) {
-      html += '<a href="' + esc(currentLink) + '" target="_blank" rel="noopener" class="btn btn-outline btn-sm">Abo erneuern / verwalten</a>';
-    }
-
-    upgrades.forEach(function (p) {
-      var link = STRIPE_LINKS[p + '_' + billing];
-      html += '<a href="' + esc(link) + '" target="_blank" rel="noopener" class="btn btn-primary btn-sm">Upgrade → ' + (planLabels[p] || p) + '</a>';
-    });
-
-    html += '</div></div>';
-    return html;
+      '<a href="' + esc(currentLink) + '" target="_blank" rel="noopener" class="btn btn-outline btn-sm">Abo erneuern / verwalten</a>' +
+      '</div>';
   }
 
   // ── Helpers ───────────────────────────────────────────────────────

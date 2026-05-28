@@ -1229,13 +1229,14 @@
 
   function esc(s) { return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
-  async function uploadFile(path, content) {
+  async function uploadFile(path, content, rawBase64) {
     var session = (await sb.auth.getSession()).data.session;
     var token = session ? session.access_token : '';
+    var encoded = rawBase64 || btoa(unescape(encodeURIComponent(content)));
     var res = await fetch(EDGE_FN, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
-      body: JSON.stringify({ action: 'put-file', path: path, content: btoa(unescape(encodeURIComponent(content))), message: 'Generate site: ' + path })
+      body: JSON.stringify({ action: 'put-file', path: path, content: encoded, message: 'Generate site: ' + path })
     });
     var data = await res.json();
     if (!res.ok || data.error) throw new Error(data.error || 'Upload failed');
@@ -1363,51 +1364,17 @@
     return '<!DOCTYPE html>\n<html lang="de">\n<head>\n<meta charset="UTF-8">\n<meta name="viewport" content="width=device-width,initial-scale=1">\n<title>' + name + '</title>\n<style>\n*{box-sizing:border-box;margin:0;padding:0}\nbody{min-height:100vh;background:#0a0a0a;display:flex;align-items:center;justify-content:center;font-family:system-ui,sans-serif;padding:24px}\n.card{width:100%;max-width:400px}\n.logo{width:80px;height:80px;border-radius:50%;object-fit:cover;margin:0 auto 16px;display:block;background:#222}\n.name{color:#fff;font-size:22px;font-weight:700;text-align:center;margin-bottom:4px}\n.sub{color:rgba(255,255,255,.45);font-size:14px;text-align:center;margin-bottom:32px}\n.link-btn{display:flex;align-items:center;gap:14px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:#fff;text-decoration:none;padding:16px 20px;border-radius:12px;margin-bottom:10px;font-size:15px;transition:background .2s,border-color .2s}\n.link-btn:hover{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.25)}\n.link-icon{font-size:20px;flex-shrink:0;width:28px;text-align:center}\n.footer{text-align:center;margin-top:28px;font-size:11px;color:rgba(255,255,255,.2)}\n</style>\n</head>\n<body>\n<div class="card">\n  <img class="logo" src="img/logo.png" onerror="this.style.display=\'none\'">\n  <div class="name">' + name + '</div>\n  <div class="sub" id="subtext">Wien</div>\n  <div id="links">\n      ' + linksHtml + '\n  </div>\n  <div class="footer">lokalonline.at</div>\n</div>\n<script>\nvar d=document.getElementById("subtext");\nif(d&&"' + address + '")d.textContent="' + address + '";\n<\/script>\n</body>\n</html>\n';
   }
 
-  function loadQRCodeLib() {
-    if (typeof QRCode !== 'undefined') return Promise.resolve();
-    return new Promise(function(resolve, reject) {
-      var s = document.createElement('script');
-      s.src = 'https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js';
-      s.onload = resolve;
-      s.onerror = function() {
-        // fallback CDN
-        var s2 = document.createElement('script');
-        s2.src = 'https://unpkg.com/qrcode@1.5.3/build/qrcode.min.js';
-        s2.onload = resolve;
-        s2.onerror = function() { reject(new Error('QRCode-Bibliothek konnte nicht geladen werden.')); };
-        document.head.appendChild(s2);
-      };
-      document.head.appendChild(s);
-    });
-  }
-
   async function generateQrCode(slug) {
-    await loadQRCodeLib();
     var menuUrl = 'https://lokalonline.at/' + slug + '/menu/';
-    return new Promise(function(resolve) {
-      var canvas = document.createElement('canvas');
-      QRCode.toCanvas(canvas, menuUrl, { width: 400, margin: 2, color: { dark: '#000000', light: '#ffffff' } }, async function(err) {
-        if (!err) {
-          canvas.toBlob(async function(blob) {
-            var reader = new FileReader();
-            reader.onloadend = async function() {
-              var base64 = reader.result.split(',')[1];
-              try {
-                var session = (await sb.auth.getSession()).data.session;
-                var token = session ? session.access_token : '';
-                await fetch(EDGE_FN, {
-                  method: 'POST',
-                  headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
-                  body: JSON.stringify({ action: 'put-file', path: slug + '/img/qr-menu.png', content: base64, message: 'Add QR code for menu' })
-                });
-              } catch(e) { /* non-fatal */ }
-              resolve();
-            };
-            reader.readAsDataURL(blob);
-          }, 'image/png');
-        } else { resolve(); }
-      });
-    });
+    var apiUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=400x400&margin=10&data=' + encodeURIComponent(menuUrl);
+    var imgRes = await fetch(apiUrl);
+    if (!imgRes.ok) throw new Error('QR-API nicht erreichbar (' + imgRes.status + ')');
+    var buffer = await imgRes.arrayBuffer();
+    var bytes = new Uint8Array(buffer);
+    var binary = '';
+    for (var i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
+    var base64 = btoa(binary);
+    await uploadFile(slug + '/img/qr-menu.png', null, base64);
   }
 
   function showQrResult(slug) {
@@ -1424,17 +1391,10 @@
 
     document.getElementById('qrCodeUrl').textContent = menuUrl;
 
-    // Render QR directly into the img element via canvas
-    loadQRCodeLib().then(function() {
-      var canvas = document.createElement('canvas');
-      QRCode.toCanvas(canvas, menuUrl, { width: 200, margin: 2, color: { dark: '#000000', light: '#ffffff' } }, function(err) {
-        if (!err) {
-          var dataUrl = canvas.toDataURL('image/png');
-          document.getElementById('qrCodeImg').src = dataUrl;
-          document.getElementById('qrDownloadBtn').href = dataUrl;
-        }
-      });
-    });
+    // Render QR via API
+    var qrApiUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&margin=6&data=' + encodeURIComponent(menuUrl);
+    document.getElementById('qrCodeImg').src = qrApiUrl;
+    document.getElementById('qrDownloadBtn').href = qrApiUrl;
 
     openModal('qrResultOverlay');
   }

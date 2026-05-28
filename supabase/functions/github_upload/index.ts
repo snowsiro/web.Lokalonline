@@ -22,6 +22,9 @@ async function putFile(path: string, base64Content: string, message: string) {
     { headers: { Authorization: `Bearer ${GITHUB_TOKEN}`, Accept: "application/vnd.github+json" } }
   );
   const shaData = shaRes.status === 404 ? null : await shaRes.json();
+  if (shaData && shaData.message && !shaData.sha) {
+    throw new Error("GitHub auth error: " + shaData.message);
+  }
   const sha = shaData ? shaData.sha : undefined;
   const body: Record<string, string> = { message, content: base64Content, branch: GITHUB_BRANCH };
   if (sha) body.sha = sha;
@@ -33,7 +36,11 @@ async function putFile(path: string, base64Content: string, message: string) {
       body: JSON.stringify(body),
     }
   );
-  return r.ok;
+  if (!r.ok) {
+    const errData = await r.json().catch(() => ({}));
+    throw new Error("GitHub PUT failed (" + r.status + "): " + (errData.message || r.statusText));
+  }
+  return true;
 }
 
 Deno.serve(async (req) => {

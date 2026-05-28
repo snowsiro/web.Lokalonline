@@ -407,6 +407,15 @@
     .dsgvo-btn { padding:6px 14px; border-radius:6px; font-size:11px; font-weight:600; border:none; cursor:default; }
     .dsgvo-btn-accept { background:#22c55e; color:#fff; }
     .dsgvo-btn-decline { background:transparent; color:#94a3b8; border:1px solid #475569 !important; }
+    /* ── Legal Type Selector ───────────────────────────────────────── */
+    .legal-type-row { display:flex; gap:12px; flex-wrap:wrap; margin-top:6px; }
+    .legal-type-opt { display:flex; align-items:center; gap:8px; cursor:pointer; padding:10px 16px; border:1px solid var(--border); border-radius:8px; font-size:13px; flex:1; min-width:180px; transition:border-color 0.2s, background 0.2s; }
+    .legal-type-opt:has(input:checked) { border-color:var(--primary); background:#fff7f0; }
+    .legal-type-opt input[type="radio"] { accent-color:var(--primary); width:15px; height:15px; flex-shrink:0; }
+    .legal-fields-section { margin-top:4px; padding:14px 16px; background:#fafafa; border:1px solid var(--border); border-radius:8px; }
+    .legal-fields-section .form-row { margin-bottom:0; }
+    .legal-fields-section .form-group { margin-bottom:12px; }
+    .legal-fields-section .form-group:last-child { margin-bottom:0; }
   </style>
 </head>
 <body>
@@ -519,6 +528,65 @@
           <label id="lbl_contact_name">Ihr Name <span class="req">*</span></label>
           <input type="text" id="f_contact_name" placeholder="Maria Mustermann" />
           <div class="field-error" id="err_contact_name">Bitte geben Sie Ihren Namen ein.</div>
+        </div>
+
+        <!-- Legal Entity Type -->
+        <div class="form-group">
+          <label id="lbl_legal_type">Unternehmensform <span class="req">*</span></label>
+          <div class="legal-type-row">
+            <label class="legal-type-opt">
+              <input type="radio" name="legal_type" value="einzelunternehmer" id="r_einzelunternehmer" checked>
+              <span id="lbl_einzelunternehmer">Einzelunternehmer / Einzelkaufmann</span>
+            </label>
+            <label class="legal-type-opt">
+              <input type="radio" name="legal_type" value="gesellschaft" id="r_gesellschaft">
+              <span id="lbl_gesellschaft">Gesellschaft (GmbH, KG, OG …)</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Einzelunternehmer fields -->
+        <div id="legal_eu_fields" class="legal-fields-section">
+          <div class="form-group">
+            <label id="lbl_owner_name">Vor- und Nachname (Inhaber/in) <span class="req">*</span></label>
+            <input type="text" id="f_owner_name" placeholder="Maria Mustermann" />
+            <div class="field-error" id="err_owner_name">Bitte geben Sie den Vor- und Nachnamen ein.</div>
+          </div>
+        </div>
+
+        <!-- Gesellschaft fields -->
+        <div id="legal_gmbh_fields" class="legal-fields-section" style="display:none">
+          <div class="form-group">
+            <label id="lbl_company_legal_name">Firmenname (vollständig) <span class="req">*</span></label>
+            <input type="text" id="f_company_legal_name" placeholder="Muster GmbH" />
+            <div class="field-error" id="err_company_legal_name">Bitte geben Sie den vollständigen Firmennamen ein.</div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label id="lbl_legal_form">Rechtsform</label>
+              <select id="f_legal_form">
+                <option value="GmbH">GmbH</option>
+                <option value="KG">KG</option>
+                <option value="GmbH &amp; Co KG">GmbH &amp; Co KG</option>
+                <option value="OG">OG</option>
+                <option value="AG">AG</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label id="lbl_geschaeftsfuehrer">Geschäftsführung</label>
+              <input type="text" id="f_geschaeftsfuehrer" placeholder="Maria Mustermann" />
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label id="lbl_fn_number">Firmenbuchnummer (FN)</label>
+              <input type="text" id="f_fn_number" placeholder="FN 123456 a" />
+            </div>
+            <div class="form-group">
+              <label id="lbl_uid_number">UID-Nummer</label>
+              <input type="text" id="f_uid_number" placeholder="ATU 12345678" />
+            </div>
+          </div>
         </div>
 
         <!-- Impressum Live Preview -->
@@ -751,6 +819,17 @@ So: Ruhetag"></textarea>
         menuAiLoadingText: 'AI analysiert Ihre Speisekarte…',
         menuParsedTitle: 'Erkannte Gerichte',
         menuParsedResetText: 'Neu hochladen',
+        lbl_legal_type: 'Unternehmensform',
+        lbl_einzelunternehmer: 'Einzelunternehmer / Einzelkaufmann',
+        lbl_gesellschaft: 'Gesellschaft (GmbH, KG, OG …)',
+        lbl_owner_name: 'Vor- und Nachname (Inhaber/in)',
+        lbl_company_legal_name: 'Firmenname (vollständig)',
+        lbl_legal_form: 'Rechtsform',
+        lbl_geschaeftsfuehrer: 'Geschäftsführung',
+        lbl_fn_number: 'Firmenbuchnummer (FN)',
+        lbl_uid_number: 'UID-Nummer',
+        err_owner_name: 'Bitte geben Sie den Vor- und Nachnamen ein.',
+        err_company_legal_name: 'Bitte geben Sie den vollständigen Firmennamen ein.',
         lbl_impressum_toggle: 'Impressum & Datenschutz — Vorschau',
         spHeading: '🔐 Konto erstellen',
         spDesc: 'Erstellen Sie jetzt ein Konto, um den Status Ihrer Anfrage zu verfolgen und später einfach auf Ihr Kundenportal zuzugreifen.',
@@ -831,6 +910,17 @@ So: Ruhetag"></textarea>
         menuAiLoadingText: 'AI is analysing your menu…',
         menuParsedTitle: 'Detected dishes',
         menuParsedResetText: 'Upload again',
+        lbl_legal_type: 'Business entity type',
+        lbl_einzelunternehmer: 'Sole trader (Einzelunternehmer)',
+        lbl_gesellschaft: 'Company (GmbH, KG, OG …)',
+        lbl_owner_name: 'First and last name (owner)',
+        lbl_company_legal_name: 'Full legal company name',
+        lbl_legal_form: 'Legal form',
+        lbl_geschaeftsfuehrer: 'Managing director',
+        lbl_fn_number: 'Company register no. (FN)',
+        lbl_uid_number: 'VAT number (UID)',
+        err_owner_name: 'Please enter your first and last name.',
+        err_company_legal_name: 'Please enter the full legal company name.',
         lbl_impressum_toggle: 'Impressum & Privacy — Preview',
         spHeading: '🔐 Create an account',
         spDesc: 'Create an account to track the status of your request and easily access your customer portal later.',
@@ -903,8 +993,14 @@ So: Ruhetag"></textarea>
         if (el) el.textContent = t['opt_'+k];
       });
 
+      // Legal entity labels
+      ['legal_type','einzelunternehmer','gesellschaft','owner_name','company_legal_name','legal_form','geschaeftsfuehrer','fn_number','uid_number'].forEach(function(k) {
+        var el = document.getElementById('lbl_'+k);
+        if (el && t['lbl_'+k]) el.textContent = t['lbl_'+k];
+      });
+
       // Errors
-      ['business_name','business_type','address','phone','email','contact_name'].forEach(function(k) {
+      ['business_name','business_type','address','phone','email','contact_name','owner_name','company_legal_name'].forEach(function(k) {
         var el = document.getElementById('err_'+k);
         if (el) el.textContent = t['err_'+k];
       });
@@ -1117,6 +1213,7 @@ So: Ruhetag"></textarea>
           else uploadFailed = true;
         }
 
+        var legalType = document.querySelector('input[name="legal_type"]:checked').value;
         var payload = {
           id: orderId,
           business_name: document.getElementById('f_business_name').value.trim(),
@@ -1125,6 +1222,14 @@ So: Ruhetag"></textarea>
           phone: document.getElementById('f_phone').value.trim(),
           email: document.getElementById('f_email').value.trim(),
           contact_name: document.getElementById('f_contact_name').value.trim(),
+          legal_type: legalType,
+          legal_name: legalType === 'einzelunternehmer'
+            ? document.getElementById('f_owner_name').value.trim()
+            : document.getElementById('f_company_legal_name').value.trim(),
+          legal_form: legalType === 'gesellschaft' ? (document.getElementById('f_legal_form').value || null) : null,
+          geschaeftsfuehrer: legalType === 'gesellschaft' ? (document.getElementById('f_geschaeftsfuehrer').value.trim() || null) : null,
+          fn_number: legalType === 'gesellschaft' ? (document.getElementById('f_fn_number').value.trim() || null) : null,
+          uid_number: legalType === 'gesellschaft' ? (document.getElementById('f_uid_number').value.trim() || null) : null,
           description: document.getElementById('f_description').value.trim() || null,
           instagram: document.getElementById('f_instagram').value.trim() || null,
           website: document.getElementById('f_website').value.trim() || null,
@@ -1325,6 +1430,17 @@ So: Ruhetag"></textarea>
       resetBtn.addEventListener('click', reset);
     })();
 
+    // ── Legal type toggle ───────────────────────────────────────────
+    document.querySelectorAll('input[name="legal_type"]').forEach(function (r) {
+      r.addEventListener('change', function () {
+        var isEU = this.value === 'einzelunternehmer';
+        document.getElementById('legal_eu_fields').style.display   = isEU ? 'block' : 'none';
+        document.getElementById('legal_gmbh_fields').style.display = isEU ? 'none'  : 'block';
+        var preview = document.getElementById('impressumPreview');
+        if (preview.style.display !== 'none') renderImpressum();
+      });
+    });
+
     // ── Feature 3: Impressum & DSGVO Live Preview ──────────────────
     function renderImpressum() {
       var panel = document.getElementById('impressumPanel');
@@ -1336,20 +1452,32 @@ So: Ruhetag"></textarea>
       var phone   = (document.getElementById('f_phone').value.trim()         || '—');
       var email   = (document.getElementById('f_email').value.trim()         || '—');
       var isDE    = currentLang === 'de';
+      var legalType = document.querySelector('input[name="legal_type"]:checked').value;
+      var isEU = legalType === 'einzelunternehmer';
+
+      var legalName, legalLine;
+      if (isEU) {
+        legalName = document.getElementById('f_owner_name').value.trim() || '—';
+        legalLine = legalName;
+      } else {
+        legalName = document.getElementById('f_company_legal_name').value.trim() || '—';
+        var legalForm = document.getElementById('f_legal_form').value;
+        var gf = document.getElementById('f_geschaeftsfuehrer').value.trim();
+        var fn = document.getElementById('f_fn_number').value.trim();
+        var uid = document.getElementById('f_uid_number').value.trim();
+        legalLine = legalName + (legalForm ? ' (' + legalForm + ')' : '')
+          + (gf  ? '\n' + (isDE ? 'Geschäftsführung: ' : 'Managing Director: ') + gf : '')
+          + (fn  ? '\nFN ' + fn : '')
+          + (uid ? '\nUID: ' + uid : '');
+      }
 
       panel.innerHTML =
-        '<div style="background:#fef3c7;border:1px solid #fde68a;border-radius:6px;padding:8px 12px;font-size:11px;color:#92400e;margin-bottom:12px">' +
-          (isDE
-            ? '⚠️ <strong>Vorlage</strong> — bitte mit UID-Nummer, Gewerbeschein-Nr. und weiteren branchenspezifischen Pflichtangaben ergänzen.'
-            : '⚠️ <strong>Template only</strong> — please add your UID number, trade licence and any sector-specific mandatory disclosures.') +
-        '</div>' +
         '<div class="impressum-section">' +
           '<h4>' + (isDE ? 'Impressum' : 'Legal Notice') + '</h4>' +
           '<p style="font-size:11px;color:var(--text-muted);margin-bottom:6px">' +
-            (isDE ? 'Informationspflicht laut §5 E-Commerce Gesetz (ECG) und §25 Mediengesetz (MedienG)' :
-                    'Disclosure pursuant to §5 Austrian E-Commerce Act (ECG) and §25 Media Act (MedienG)') +
+            (isDE ? 'Angaben gemäß §5 E-Commerce-Gesetz (ECG)' : 'Disclosure pursuant to §5 Austrian E-Commerce Act (ECG)') +
           '</p>' +
-          '<p><strong>' + name + '</strong>\n' + address + '</p>' +
+          '<p><strong>' + name + '</strong>\n' + legalLine + '\n' + address + '</p>' +
         '</div>' +
         '<div class="impressum-section">' +
           '<h4>' + (isDE ? 'Kontakt' : 'Contact') + '</h4>' +
@@ -1392,11 +1520,17 @@ So: Ruhetag"></textarea>
     document.getElementById('impressumToggle').addEventListener('click', toggleImpressum);
 
     // Re-render Impressum when relevant fields change
-    ['f_business_name','f_address','f_phone','f_email'].forEach(function (id) {
-      document.getElementById(id).addEventListener('input', function () {
+    ['f_business_name','f_address','f_phone','f_email','f_owner_name','f_company_legal_name','f_geschaeftsfuehrer','f_fn_number','f_uid_number'].forEach(function (id) {
+      var el = document.getElementById(id);
+      if (!el) return;
+      el.addEventListener('input', function () {
         var preview = document.getElementById('impressumPreview');
         if (preview.style.display !== 'none') renderImpressum();
       });
+    });
+    document.getElementById('f_legal_form').addEventListener('change', function () {
+      var preview = document.getElementById('impressumPreview');
+      if (preview.style.display !== 'none') renderImpressum();
     });
 
   })();

@@ -1024,11 +1024,210 @@
       supabase: { url: SUPABASE_URL, key: SUPABASE_KEY },
       reviewSlug: slug,
       instagramPhotos: photoUrls.slice(0, 6).concat(['img/slide1.jpg','img/slide2.jpg','img/iroom.jpg','img/food.jpg','img/slide1.jpg','img/slide2.jpg']).slice(0, 6),
-      seo: { title: (order.business_name || '') + ' — Wien', description: { de: order.description || '', en: '' }, ogImage: photoUrls[0] || 'img/og-image.jpg' }
+      seo: { title: (order.business_name || '') + ' — Wien', description: { de: order.description || '', en: '' }, ogImage: photoUrls[0] || 'img/og-image.jpg' },
+      legal: {
+        type: order.legal_type || 'einzelunternehmer',
+        name: order.legal_name || '',
+        legal_form: order.legal_form || '',
+        geschaeftsfuehrer: order.geschaeftsfuehrer || '',
+        fn_number: order.fn_number || '',
+        uid_number: order.uid_number || ''
+      }
     };
 
     return 'window.SITE_DATA = ' + JSON.stringify(D, null, 2) + ';\n';
   }
+
+  function generateImpressumHtml(slug, order) {
+    var isEU = (order.legal_type || 'einzelunternehmer') === 'einzelunternehmer';
+    var businessName = order.business_name || '';
+    var legalName = order.legal_name || '';
+    var address = order.address || '';
+    var phone = order.phone || '';
+    var email = order.email || '';
+    var legalForm = order.legal_form || '';
+    var gf = order.geschaeftsfuehrer || '';
+    var fn = order.fn_number || '';
+    var uid = order.uid_number || '';
+
+    var tableRows = '';
+    if (isEU) {
+      tableRows =
+        '<tr><td>Diensteanbieter</td><td>' + esc(businessName) + '<br><span style="font-size:12px;color:var(--mid)">(Inhaber/in: ' + esc(legalName) + ')</span></td></tr>' +
+        '<tr><td>Adresse</td><td>' + esc(address) + '</td></tr>' +
+        '<tr><td>Telefon</td><td><a href="tel:' + esc(phone.replace(/\s/g,'')) + '">' + esc(phone) + '</a></td></tr>' +
+        '<tr><td>E-Mail</td><td><a href="mailto:' + esc(email) + '">' + esc(email) + '</a></td></tr>' +
+        '<tr><td>Unternehmens&shy;gegenstand</td><td>' + esc(order.business_type || '') + '</td></tr>' +
+        '<tr><td>Mitgliedschaft</td><td>Wirtschaftskammer Wien</td></tr>' +
+        '<tr><td>Gewerbebehörde</td><td>Magistrat der Stadt Wien</td></tr>';
+    } else {
+      tableRows =
+        '<tr><td>Unternehmensname</td><td>' + esc(legalName) + (legalForm ? ' (' + esc(legalForm) + ')' : '') + '<br><span style="font-size:12px;color:var(--mid)">(Betrieb: ' + esc(businessName) + ')</span></td></tr>' +
+        '<tr><td>Rechtsform</td><td>' + esc(legalForm) + '</td></tr>' +
+        (gf ? '<tr><td>Geschäftsführung</td><td>' + esc(gf) + '</td></tr>' : '') +
+        '<tr><td>Adresse</td><td>' + esc(address) + '</td></tr>' +
+        '<tr><td>Telefon</td><td><a href="tel:' + esc(phone.replace(/\s/g,'')) + '">' + esc(phone) + '</a></td></tr>' +
+        '<tr><td>E-Mail</td><td><a href="mailto:' + esc(email) + '">' + esc(email) + '</a></td></tr>' +
+        '<tr><td>Unternehmens&shy;gegenstand</td><td>' + esc(order.business_type || '') + '</td></tr>' +
+        (fn  ? '<tr><td>Firmenbuchnummer</td><td>FN ' + esc(fn) + '</td></tr><tr><td>Firmenbuchgericht</td><td>Handelsgericht Wien</td></tr>' : '') +
+        (uid ? '<tr><td>UID-Nummer</td><td>' + esc(uid) + '</td></tr>' : '') +
+        '<tr><td>Mitgliedschaft</td><td>Wirtschaftskammer Wien</td></tr>' +
+        '<tr><td>Gewerbebehörde</td><td>Magistrat der Stadt Wien</td></tr>';
+    }
+
+    return '<!DOCTYPE html>\n<html lang="de">\n<head>\n' +
+      '<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">\n' +
+      '<title>Impressum — ' + esc(businessName) + '</title>\n' +
+      '<link rel="preconnect" href="https://fonts.googleapis.com">\n' +
+      '<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">\n' +
+      '<style>\n*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}\n' +
+      ':root{--black:#111110;--white:#F8F7F4;--warm:#EDEAE4;--mid:#9B9893;--dim:#5C5A57;--line:#DDDAD4}\n' +
+      'body{font-family:"DM Sans",sans-serif;background:var(--white);color:var(--black)}\n' +
+      'nav{padding:20px 48px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between}\n' +
+      '.nav-logo{font-family:"DM Serif Display",serif;font-size:20px;color:var(--black);text-decoration:none}\n' +
+      '.back-link{font-size:12px;color:var(--mid);text-decoration:none;letter-spacing:0.1em}\n' +
+      '.back-link:hover{color:var(--black)}\n' +
+      '.page-header{background:var(--black);padding:64px 80px 48px}\n' +
+      '.page-tag{font-size:10px;letter-spacing:0.3em;text-transform:uppercase;color:rgba(255,255,255,0.35);margin-bottom:16px}\n' +
+      '.page-title{font-family:"DM Serif Display",serif;font-size:clamp(32px,4vw,54px);color:#fff;line-height:1.1}\n' +
+      '.content{max-width:720px;margin:0 auto;padding:64px 48px 96px}\n' +
+      '.content h2{font-family:"DM Serif Display",serif;font-size:22px;font-weight:400;margin:48px 0 20px;padding-top:48px;border-top:1px solid var(--line)}\n' +
+      '.content h2:first-of-type{margin-top:0;padding-top:0;border-top:none}\n' +
+      '.content p{font-size:14px;font-weight:300;line-height:1.9;color:var(--dim);margin-bottom:12px}\n' +
+      '.content a{color:var(--black)}\n' +
+      '.info-table{width:100%;border-collapse:collapse;margin-bottom:12px}\n' +
+      '.info-table td{font-size:14px;font-weight:300;color:var(--dim);padding:10px 0;border-bottom:1px solid var(--line);vertical-align:top;line-height:1.65}\n' +
+      '.info-table td:first-child{width:180px;font-weight:400;color:var(--black)}\n' +
+      '.info-table tr:last-child td{border-bottom:none}\n' +
+      'footer{background:var(--black);padding:32px 80px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}\n' +
+      '.footer-copy{font-size:11px;color:rgba(255,255,255,0.2);letter-spacing:0.06em}\n' +
+      '.footer-link{font-size:11px;color:rgba(255,255,255,0.2);letter-spacing:0.06em;text-decoration:none}\n' +
+      '.footer-link:hover{color:rgba(255,255,255,0.5)}\n' +
+      '@media(max-width:768px){nav{padding:16px 24px}.page-header{padding:48px 24px 36px}.content{padding:40px 24px 72px}footer{padding:20px 24px}}\n' +
+      '</style></head><body>\n' +
+      '<nav><a href="/' + slug + '/" class="nav-logo">' + esc(businessName) + '</a><a href="/' + slug + '/" class="back-link">← Zurück</a></nav>\n' +
+      '<div class="page-header"><div class="page-tag">Rechtliches</div><h1 class="page-title">Impressum</h1></div>\n' +
+      '<div class="content">\n' +
+      '<h2>Angaben gemäß § 5 ECG</h2>\n' +
+      '<table class="info-table"><tbody>' + tableRows + '</tbody></table>\n' +
+      '<h2>Urheberrecht</h2>\n' +
+      '<p>Die auf dieser Website veröffentlichten Inhalte unterliegen dem österreichischen Urheberrecht. Jede Vervielfältigung oder Verbreitung bedarf der schriftlichen Zustimmung des jeweiligen Urhebers.</p>\n' +
+      '<h2>Haftungsausschluss</h2>\n' +
+      '<p>Die Inhalte dieser Website wurden mit größtmöglicher Sorgfalt erstellt. Für die Richtigkeit, Vollständigkeit und Aktualität der Inhalte übernehmen wir keine Gewähr.</p>\n' +
+      '</div>\n' +
+      '<footer><span class="footer-copy">© ' + new Date().getFullYear() + ' ' + esc(businessName) + '</span>' +
+      '<div style="display:flex;gap:16px"><span class="footer-copy">Impressum</span><a href="/' + slug + '/datenschutz/" class="footer-link">Datenschutz</a></div>' +
+      '<span class="footer-copy">' + esc(address) + '</span></footer>\n' +
+      '</body></html>\n';
+  }
+
+  function generateDatenschutzHtml(slug, order) {
+    var businessName = order.business_name || '';
+    var isEU = (order.legal_type || 'einzelunternehmer') === 'einzelunternehmer';
+    var legalName = order.legal_name || '';
+    var address = order.address || '';
+    var phone = order.phone || '';
+    var email = order.email || '';
+    var legalId = isEU ? '' : ((order.fn_number ? 'FN ' + order.fn_number + ' · ' : '') + (order.uid_number ? order.uid_number : ''));
+    var hasReservation = !!(order.notes && order.notes.toLowerCase().includes('reserv'));
+
+    var verantwortlicher = isEU
+      ? esc(legalName) + ' (Betrieb: ' + esc(businessName) + ')'
+      : esc(order.legal_name || businessName) + (order.legal_form ? ' (' + esc(order.legal_form) + ')' : '') + '<br>(Betrieb: ' + esc(businessName) + ')';
+
+    var thirdParties =
+      (hasReservation
+        ? '<div class="service-block"><div class="service-name">Formspree.io (USA)</div>' +
+          '<div class="service-desc">Reservierungsanfragen werden über Formspree weitergeleitet. Angemessenes Schutzniveau durch EU-Standardvertragsklauseln (SCCs).<br>' +
+          '<a href="https://formspree.io/legal/privacy-policy" target="_blank" rel="noopener">Datenschutzerklärung Formspree →</a></div></div>'
+        : '') +
+      '<div class="service-block"><div class="service-name">Supabase (EU-Rechenzentren)</div>' +
+      '<div class="service-desc">Bewertungen werden in der Supabase-Datenbank gespeichert. Die Daten liegen auf Servern innerhalb der EU.<br>' +
+      '<a href="https://supabase.com/privacy" target="_blank" rel="noopener">Datenschutzerklärung Supabase →</a></div></div>' +
+      '<div class="service-block"><div class="service-name">Google Fonts (USA)</div>' +
+      '<div class="service-desc">Beim Seitenaufruf wird eine Verbindung zu Google-Servern aufgebaut und Ihre IP-Adresse übertragen. Rechtsgrundlage: Art. 6 Abs. 1 lit. f DSGVO.<br>' +
+      '<a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Datenschutzerklärung Google →</a></div></div>' +
+      '<div class="service-block"><div class="service-name">OpenStreetMap</div>' +
+      '<div class="service-desc">Die eingebettete Karte lädt Kartendaten von openstreetmap.org. Dabei wird Ihre IP-Adresse an die OpenStreetMap Foundation übertragen.<br>' +
+      '<a href="https://wiki.osmfoundation.org/wiki/Privacy_Policy" target="_blank" rel="noopener">Datenschutzerklärung OpenStreetMap →</a></div></div>';
+
+    return '<!DOCTYPE html>\n<html lang="de">\n<head>\n' +
+      '<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">\n' +
+      '<title>Datenschutz — ' + esc(businessName) + '</title>\n' +
+      '<link rel="preconnect" href="https://fonts.googleapis.com">\n' +
+      '<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">\n' +
+      '<style>\n*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}\n' +
+      ':root{--black:#111110;--white:#F8F7F4;--warm:#EDEAE4;--mid:#9B9893;--dim:#5C5A57;--line:#DDDAD4}\n' +
+      'body{font-family:"DM Sans",sans-serif;background:var(--white);color:var(--black)}\n' +
+      'nav{padding:20px 48px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between}\n' +
+      '.nav-logo{font-family:"DM Serif Display",serif;font-size:20px;color:var(--black);text-decoration:none}\n' +
+      '.back-link{font-size:12px;color:var(--mid);text-decoration:none;letter-spacing:0.1em}\n' +
+      '.back-link:hover{color:var(--black)}\n' +
+      '.page-header{background:var(--black);padding:64px 80px 48px}\n' +
+      '.page-tag{font-size:10px;letter-spacing:0.3em;text-transform:uppercase;color:rgba(255,255,255,0.35);margin-bottom:16px}\n' +
+      '.page-title{font-family:"DM Serif Display",serif;font-size:clamp(32px,4vw,54px);color:#fff;line-height:1.1}\n' +
+      '.content{max-width:720px;margin:0 auto;padding:64px 48px 96px}\n' +
+      '.content h2{font-family:"DM Serif Display",serif;font-size:22px;font-weight:400;margin:48px 0 16px;padding-top:48px;border-top:1px solid var(--line)}\n' +
+      '.content h2:first-of-type{margin-top:0;padding-top:0;border-top:none}\n' +
+      '.content p{font-size:14px;font-weight:300;line-height:1.9;color:var(--dim);margin-bottom:12px}\n' +
+      '.content ul{margin:8px 0 16px;padding-left:0;list-style:none}\n' +
+      '.content ul li{font-size:14px;font-weight:300;line-height:1.9;color:var(--dim);padding:3px 0 3px 18px;position:relative}\n' +
+      '.content ul li::before{content:"—";position:absolute;left:0;color:var(--mid)}\n' +
+      '.content a{color:var(--black)}\n' +
+      '.contact-box{background:var(--warm);border:1px solid var(--line);border-radius:4px;padding:20px 24px;margin:16px 0}\n' +
+      '.contact-box p{margin-bottom:0}\n' +
+      '.service-block{border:1px solid var(--line);border-radius:4px;padding:20px 24px;margin:16px 0}\n' +
+      '.service-name{font-size:13px;font-weight:500;color:var(--black);margin-bottom:6px}\n' +
+      '.service-desc{font-size:13px;font-weight:300;color:var(--dim);line-height:1.75}\n' +
+      '.rights-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);border:1px solid var(--line);margin:16px 0}\n' +
+      '.rights-item{background:var(--white);padding:16px 20px}\n' +
+      '.rights-art{font-size:10px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--mid);margin-bottom:4px}\n' +
+      '.rights-label{font-size:14px;font-weight:300;color:var(--dim)}\n' +
+      'footer{background:var(--black);padding:32px 80px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}\n' +
+      '.footer-copy{font-size:11px;color:rgba(255,255,255,0.2);letter-spacing:0.06em}\n' +
+      '.footer-link{font-size:11px;color:rgba(255,255,255,0.2);letter-spacing:0.06em;text-decoration:none}\n' +
+      '.footer-link:hover{color:rgba(255,255,255,0.5)}\n' +
+      '@media(max-width:768px){nav{padding:16px 24px}.page-header{padding:48px 24px 36px}.content{padding:40px 24px 72px}footer{padding:20px 24px}.rights-grid{grid-template-columns:1fr}}\n' +
+      '</style></head><body>\n' +
+      '<nav><a href="/' + slug + '/" class="nav-logo">' + esc(businessName) + '</a><a href="/' + slug + '/" class="back-link">← Zurück</a></nav>\n' +
+      '<div class="page-header"><div class="page-tag">Rechtliches</div><h1 class="page-title">Datenschutz&shy;erklärung</h1></div>\n' +
+      '<div class="content">\n' +
+      '<h2>1. Verantwortlicher</h2>\n' +
+      '<div class="contact-box"><p><strong>' + verantwortlicher + '</strong><br>' +
+      esc(address) + '<br><a href="tel:' + esc(phone.replace(/\s/g,'')) + '">' + esc(phone) + '</a>' +
+      (email ? ' · <a href="mailto:' + esc(email) + '">' + esc(email) + '</a>' : '') +
+      (legalId ? '<br>' + esc(legalId) : '') +
+      (isEU ? '' : (order.geschaeftsfuehrer ? '<br>Geschäftsführer/in: ' + esc(order.geschaeftsfuehrer) : '')) +
+      '</p></div>\n' +
+      '<h2>2. Welche Daten wir verarbeiten</h2>\n' +
+      '<p><strong>Bewertungen:</strong> Wenn Sie freiwillig eine Bewertung hinterlassen, speichern wir Ihren Namen, den Bewertungstext, die Sternebewertung und das angegebene Datum.</p>\n' +
+      '<p>Rechtsgrundlage: Art. 6 Abs. 1 lit. a DSGVO (Einwilligung durch aktives Absenden).</p>\n' +
+      '<h2>3. Drittanbieter</h2>\n' + thirdParties + '\n' +
+      '<h2>4. Cookies &amp; Tracking</h2>\n' +
+      '<p>Diese Website verwendet <strong>keine Tracking-Cookies und keine Werbecookies</strong>.</p>\n' +
+      '<p>Die von Ihnen gewählte Spracheinstellung wird lokal in Ihrem Browser gespeichert (<code>localStorage</code>). Diese Daten verbleiben auf Ihrem Gerät und werden nicht übertragen.</p>\n' +
+      '<h2>5. Speicherdauer</h2>\n' +
+      '<ul><li>Bewertungen: unbegrenzt bis zu einer Löschanfrage</li><li>Spracheinstellung (localStorage): bis zur manuellen Löschung im Browser</li></ul>\n' +
+      '<h2>6. Ihre Rechte (DSGVO Art. 15–21)</h2>\n' +
+      '<div class="rights-grid">' +
+      '<div class="rights-item"><div class="rights-art">Art. 15</div><div class="rights-label">Auskunft über gespeicherte Daten</div></div>' +
+      '<div class="rights-item"><div class="rights-art">Art. 16</div><div class="rights-label">Berichtigung unrichtiger Daten</div></div>' +
+      '<div class="rights-item"><div class="rights-art">Art. 17</div><div class="rights-label">Löschung</div></div>' +
+      '<div class="rights-item"><div class="rights-art">Art. 18</div><div class="rights-label">Einschränkung der Verarbeitung</div></div>' +
+      '<div class="rights-item"><div class="rights-art">Art. 20</div><div class="rights-label">Datenübertragbarkeit</div></div>' +
+      '<div class="rights-item"><div class="rights-art">Art. 21</div><div class="rights-label">Widerspruch gegen die Verarbeitung</div></div>' +
+      '</div>\n' +
+      '<p>Zur Ausübung Ihrer Rechte: <a href="mailto:' + esc(email) + '">' + esc(email) + '</a></p>\n' +
+      '<h2>7. Beschwerderecht</h2>\n' +
+      '<div class="contact-box"><p><strong>Österreichische Datenschutzbehörde</strong><br>Barichgasse 40–42, 1030 Wien<br><a href="https://www.dsb.gv.at" target="_blank" rel="noopener">dsb.gv.at</a></p></div>\n' +
+      '</div>\n' +
+      '<footer><span class="footer-copy">© ' + new Date().getFullYear() + ' ' + esc(businessName) + '</span>' +
+      '<div style="display:flex;gap:16px"><a href="/' + slug + '/impressum/" class="footer-link">Impressum</a><span class="footer-copy">Datenschutz</span></div>' +
+      '<span class="footer-copy">' + esc(address) + '</span></footer>\n' +
+      '</body></html>\n';
+  }
+
+  function esc(s) { return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
   async function uploadFile(path, content) {
     var session = (await sb.auth.getSession()).data.session;
@@ -1241,7 +1440,7 @@
       await uploadFile(slug + '/data.js', dataJs);
 
       // 2. Menu page
-      btn.textContent = '⏳ 2/5 Menüseite…';
+      btn.textContent = '⏳ 2/7 Menüseite…';
       var menuRes = await fetch('/templates/' + selectedTemplate + '/menu/index.html');
       if (menuRes.ok) {
         var menuHtml = await menuRes.text();
@@ -1251,17 +1450,25 @@
       }
 
       // 3. Link page
-      btn.textContent = '⏳ 3/5 Link-Seite…';
+      btn.textContent = '⏳ 3/7 Link-Seite…';
       var linkHtml = generateLinkPageHtml(slug, currentOrderData);
       await uploadFile(slug + '/link/index.html', linkHtml);
 
-      // 4. Photos + QR code
-      btn.textContent = '⏳ 4/5 Fotos & QR…';
+      // 4. Impressum
+      btn.textContent = '⏳ 4/7 Impressum…';
+      await uploadFile(slug + '/impressum/index.html', generateImpressumHtml(slug, currentOrderData));
+
+      // 5. Datenschutz
+      btn.textContent = '⏳ 5/7 Datenschutz…';
+      await uploadFile(slug + '/datenschutz/index.html', generateDatenschutzHtml(slug, currentOrderData));
+
+      // 6. Photos + QR code
+      btn.textContent = '⏳ 6/7 Fotos & QR…';
       await copyPhotosToGitHub(slug, currentOrderData);
       await generateQrCode(slug);
 
-      // 5. Save to DB
-      btn.textContent = '⏳ 5/5 Speichert…';
+      // 7. Save to DB
+      btn.textContent = '⏳ 7/7 Speichert…';
       await sb.from('orders').update({
         site_slug: slug,
         admin_notes: (currentOrderData.admin_notes ? currentOrderData.admin_notes + '\n' : '') + 'Site: lokalonline.at/' + slug + '/'

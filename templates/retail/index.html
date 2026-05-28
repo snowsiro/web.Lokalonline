@@ -614,7 +614,7 @@ footer { background: var(--dark); color: rgba(255,255,255,0.45); padding: 72px 0
     </div>
     <div class="footer-bottom">
       <p class="footer-copy" id="footer-copy"></p>
-      <p class="footer-copy"><a href="/impressum.html">Impressum</a> · <a href="/impressum.html">Datenschutz</a></p>
+      <p class="footer-copy"><a href="impressum/">Impressum</a> · <a href="datenschutz/">Datenschutz</a></p>
     </div>
   </div>
 </footer>
@@ -850,6 +850,7 @@ document.getElementById('contact-form').addEventListener('submit', async e => {
   }
 });
 
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 // ─── LOAD REVIEWS ────────────────────────────────────────────────
 async function loadReviews() {
   const { data, error } = await sb.from('reviews')
@@ -865,8 +866,8 @@ async function loadReviews() {
   container.innerHTML = `<div class="reviews-grid">${data.map(r => `
     <div class="review-card">
       <div class="review-stars">${'★'.repeat(r.rating||5)}${'☆'.repeat(5-(r.rating||5))}</div>
-      <p class="review-text">"${r.text || r.comment || ''}"</p>
-      <div class="review-author">${r.name || r.author || 'Anonym'}</div>
+      <p class="review-text">"${esc(r.text || r.comment || '')}"</p>
+      <div class="review-author">${esc(r.name || r.author || 'Anonym')}</div>
     </div>`).join('')}</div>`;
 }
 

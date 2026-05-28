@@ -1111,8 +1111,8 @@
     <div class="footer-bottom">
       <span id="footer-copy"></span>
       <div style="display:flex;gap:24px;">
-        <a href="/impressum.html" id="lnk-impressum">Impressum</a>
-        <a href="/datenschutz.html" id="lnk-datenschutz">Datenschutz</a>
+        <a href="impressum/" id="lnk-impressum">Impressum</a>
+        <a href="datenschutz/" id="lnk-datenschutz">Datenschutz</a>
       </div>
     </div>
   </footer>
@@ -1385,6 +1385,7 @@
     }
 
     /* ── REVIEWS ── */
+    function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
     async function loadReviews() {
       setText('rev-eyebrow', lang === 'de' ? 'Bewertungen' : 'Reviews');
       setHTML('rev-title', lang === 'de' ? 'Was unsere Gäste<br><em>sagen</em>' : 'What our guests<br><em>say</em>');
@@ -1417,8 +1418,8 @@
           return `
             <div class="review-card">
               <div class="review-stars">${stars}</div>
-              <p class="review-text">"${r.text || r.content || ''}"</p>
-              <div class="review-author">— ${r.author || r.name || 'Gast'}</div>
+              <p class="review-text">"${esc(r.text || r.content || '')}"</p>
+              <div class="review-author">— ${esc(r.author || r.name || 'Gast')}</div>
             </div>`;
         }).join('');
       } catch (e) {

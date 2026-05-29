@@ -1,5 +1,5 @@
 window.SITE_DATA = {
-  "template": "retail",
+  "template": "restaurant",
   "slug": "hayandal",
   "name": "Hayandal",
   "tagline": {
@@ -11,17 +11,17 @@ window.SITE_DATA = {
     "en": ""
   },
   "colors": {
-    "primary": "#E85D26",
-    "accent": "#E85D26",
-    "bg": "#FFFFFF",
-    "dark": "#0A0A0A",
-    "mid": "#6B6B6B",
-    "dim": "#9A9A9A",
-    "line": "#E8E8E8"
+    "primary": "#C8302A",
+    "accent": "#C8302A",
+    "bg": "#F8F7F4",
+    "dark": "#111110",
+    "mid": "#9B9893",
+    "dim": "#5C5A57",
+    "line": "#DDDAD4"
   },
   "fonts": {
-    "heading": "Space Grotesk",
-    "body": "Inter"
+    "heading": "DM Serif Display",
+    "body": "DM Sans"
   },
   "address": "Singerstrasse 30",
   "phone": "+4367763107304",

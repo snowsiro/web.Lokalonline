@@ -3,207 +3,150 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title id="page-title">Sortiment</title>
+  <title id="page-title">Speisekarte</title>
   <meta name="description" id="page-desc" content="">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --primary: #E85D26;
-      --accent:  #E85D26;
-      --bg:      #FFFFFF;
-      --dark:    #0A0A0A;
-      --mid:     #6B6B6B;
-      --dim:     #9A9A9A;
-      --line:    #E8E8E8;
-      --font-heading: 'Space Grotesk', system-ui, sans-serif;
-      --font-body:    'Inter', system-ui, sans-serif;
+      --primary: #C8302A;
+      --accent:  #C8302A;
+      --bg:      #F8F7F4;
+      --dark:    #111110;
+      --mid:     #9B9893;
+      --dim:     #5C5A57;
+      --line:    #DDDAD4;
+      --font-heading: 'DM Serif Display', Georgia, serif;
+      --font-body:    'DM Sans', system-ui, sans-serif;
     }
 
     html { scroll-behavior: smooth; }
 
     body {
-      background: var(--bg);
-      color: var(--dark);
+      background: var(--dark);
+      color: var(--bg);
       font-family: var(--font-body);
       font-size: 16px;
       line-height: 1.6;
       overflow-x: hidden;
     }
 
-    /* ── ANNOUNCEMENT BAR ── */
-    #ann-bar {
-      background: var(--dark);
-      color: rgba(255,255,255,.75);
-      font-family: var(--font-heading);
-      font-size: 11px;
-      font-weight: 500;
-      letter-spacing: .1em;
-      text-transform: uppercase;
-      text-align: center;
-      padding: 10px 20px;
+    /* ── LANG BAR ── */
+    #lang-bar {
       position: fixed;
       top: 0; left: 0; right: 0;
-      z-index: 1001;
+      z-index: 1000;
+      background: rgba(17,17,16,.98);
       height: 36px;
       display: flex;
       align-items: center;
-      justify-content: center;
+      justify-content: flex-end;
+      padding: 0 32px;
+      gap: 4px;
+      border-bottom: 1px solid rgba(255,255,255,.06);
     }
+
+    .lang-btn {
+      background: none;
+      border: none;
+      color: var(--mid);
+      font-family: var(--font-body);
+      font-size: 11px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      cursor: pointer;
+      padding: 4px 8px;
+      transition: color .2s;
+    }
+    .lang-btn.active { color: var(--bg); }
+    .lang-btn:hover  { color: var(--bg); }
+    .lang-sep { color: #333; font-size: 11px; }
 
     /* ── NAV ── */
     #main-nav {
       position: fixed;
       top: 36px; left: 0; right: 0;
-      z-index: 1000;
+      z-index: 999;
       display: flex;
       align-items: center;
       justify-content: space-between;
       padding: 0 40px;
       height: 64px;
-      background: rgba(255,255,255,.97);
+      background: rgba(17,17,16,.95);
       backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--line);
+      border-bottom: 1px solid rgba(255,255,255,.06);
     }
 
     .nav-logo {
       font-family: var(--font-heading);
-      font-size: 17px;
-      font-weight: 700;
-      color: var(--dark);
+      font-size: 20px;
+      color: #fff;
       text-decoration: none;
-      letter-spacing: -.01em;
-      text-transform: uppercase;
-    }
-
-    .nav-right {
-      display: flex;
-      align-items: center;
-      gap: 24px;
     }
 
     .nav-back {
       display: flex;
       align-items: center;
       gap: 8px;
-      color: var(--mid);
+      color: rgba(255,255,255,.55);
       text-decoration: none;
       font-size: 13px;
-      font-family: var(--font-heading);
-      font-weight: 500;
-      letter-spacing: .04em;
+      letter-spacing: .06em;
       transition: color .2s;
     }
-    .nav-back:hover { color: var(--primary); }
+    .nav-back:hover { color: #fff; }
+    .nav-back-arrow { font-size: 16px; }
 
-    .lang-bar {
-      display: flex;
-      align-items: center;
-      gap: 2px;
-    }
-    .lang-btn {
-      background: none;
-      border: none;
-      color: var(--mid);
-      font-family: var(--font-heading);
-      font-size: 11px;
-      font-weight: 600;
-      letter-spacing: .1em;
-      text-transform: uppercase;
-      cursor: pointer;
-      padding: 4px 6px;
-      transition: color .2s;
-    }
-    .lang-btn.active { color: var(--dark); }
-    .lang-btn:hover  { color: var(--primary); }
-    .lang-sep { color: var(--line); font-size: 14px; }
-
-    /* ── HERO ── */
-    #hero {
+    /* ── HERO BAND ── */
+    #hero-band {
       padding-top: calc(36px + 64px);
       background: var(--dark);
+      padding-bottom: 0;
     }
 
     .hero-inner {
-      padding: 80px 10vw 72px;
-      display: flex;
-      align-items: flex-end;
-      justify-content: space-between;
-      gap: 40px;
+      padding: 80px 10vw 64px;
+      border-bottom: 1px solid rgba(255,255,255,.08);
     }
 
-    .hero-tag {
-      display: inline-block;
-      background: var(--primary);
-      color: #fff;
-      font-family: var(--font-heading);
-      font-size: 10px;
-      font-weight: 700;
-      letter-spacing: .18em;
+    .hero-eyebrow {
+      font-size: 11px;
+      letter-spacing: .22em;
       text-transform: uppercase;
-      padding: 6px 14px;
-      margin-bottom: 24px;
+      color: var(--primary);
+      margin-bottom: 20px;
     }
 
     .hero-title {
       font-family: var(--font-heading);
-      font-size: clamp(44px, 6vw, 80px);
-      font-weight: 700;
-      line-height: .95;
+      font-size: clamp(48px, 6vw, 80px);
+      line-height: 1.05;
       color: #fff;
-      letter-spacing: -.02em;
-      text-transform: uppercase;
       margin-bottom: 24px;
     }
-    .hero-title span { color: var(--primary); }
+    .hero-title em { font-style: italic; color: var(--primary); }
 
     .hero-sub {
       font-size: 15px;
       color: rgba(255,255,255,.45);
-      max-width: 440px;
+      max-width: 520px;
       font-weight: 300;
     }
 
-    .hero-stat {
-      text-align: right;
-      flex-shrink: 0;
-    }
-
-    .hero-stat-num {
-      font-family: var(--font-heading);
-      font-size: clamp(48px, 6vw, 72px);
-      font-weight: 700;
-      color: var(--primary);
-      line-height: 1;
-    }
-
-    .hero-stat-label {
-      font-size: 11px;
-      font-family: var(--font-heading);
-      font-weight: 500;
-      color: rgba(255,255,255,.35);
-      letter-spacing: .12em;
-      text-transform: uppercase;
-      margin-top: 4px;
-    }
-
-    @media (max-width: 640px) {
-      .hero-inner { flex-direction: column; align-items: flex-start; }
-      .hero-stat { text-align: left; }
-    }
-
-    /* ── CAT NAV ── */
+    /* ── CATEGORY NAV ── */
     #cat-nav {
-      background: var(--dark);
-      border-top: 1px solid rgba(255,255,255,.06);
       position: sticky;
       top: calc(36px + 64px);
       z-index: 90;
+      background: rgba(17,17,16,.97);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(255,255,255,.06);
       display: flex;
-      align-items: stretch;
+      align-items: center;
+      gap: 0;
       overflow-x: auto;
       scrollbar-width: none;
       padding: 0 10vw;
@@ -212,298 +155,188 @@
 
     .cat-nav-link {
       flex-shrink: 0;
-      padding: 16px 22px;
-      color: rgba(255,255,255,.35);
+      padding: 18px 24px;
+      color: rgba(255,255,255,.4);
       text-decoration: none;
-      font-size: 11px;
-      font-family: var(--font-heading);
-      font-weight: 600;
+      font-size: 12px;
       letter-spacing: .12em;
       text-transform: uppercase;
       transition: color .2s;
       border-bottom: 2px solid transparent;
       white-space: nowrap;
     }
-    .cat-nav-link:hover { color: rgba(255,255,255,.7); }
+    .cat-nav-link:hover { color: rgba(255,255,255,.8); }
     .cat-nav-link.active {
       color: #fff;
       border-bottom-color: var(--primary);
     }
 
-    /* ── MAIN ── */
+    /* ── MAIN CONTENT ── */
     #menu-content {
       padding: 0 10vw 100px;
     }
 
-    /* ── CATEGORY ── */
+    /* ── CATEGORY SECTION ── */
     .menu-category {
       padding-top: 80px;
     }
 
     .cat-header {
-      margin-bottom: 40px;
       display: flex;
-      align-items: center;
-      justify-content: space-between;
+      align-items: baseline;
       gap: 24px;
+      margin-bottom: 40px;
       padding-bottom: 20px;
-      border-bottom: 3px solid var(--dark);
+      border-bottom: 1px solid rgba(255,255,255,.08);
+    }
+
+    .cat-number {
+      font-family: var(--font-heading);
+      font-size: 13px;
+      color: var(--primary);
+      letter-spacing: .1em;
     }
 
     .cat-title {
       font-family: var(--font-heading);
-      font-size: clamp(22px, 2.8vw, 34px);
-      font-weight: 700;
-      color: var(--dark);
-      text-transform: uppercase;
-      letter-spacing: -.01em;
+      font-size: clamp(28px, 3.5vw, 44px);
+      color: #fff;
+      line-height: 1.1;
     }
 
-    .cat-count {
-      font-family: var(--font-heading);
-      font-size: 11px;
-      font-weight: 600;
-      letter-spacing: .12em;
-      color: var(--dim);
-      text-transform: uppercase;
-      flex-shrink: 0;
-    }
-
-    /* ── PRODUCT GRID ── */
-    .product-grid {
+    /* ── MENU ITEMS GRID ── */
+    .menu-items {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      grid-template-columns: 1fr 1fr;
       gap: 2px;
     }
 
-    .product-card {
-      background: #fff;
-      border: 1px solid var(--line);
-      transition: border-color .2s, transform .2s, box-shadow .2s;
-      cursor: default;
-      overflow: hidden;
-    }
-    .product-card:hover {
-      border-color: var(--dark);
-      transform: translateY(-3px);
-      box-shadow: 0 12px 40px rgba(0,0,0,.08);
+    @media (max-width: 768px) {
+      .menu-items { grid-template-columns: 1fr; }
     }
 
-    .product-img-wrap {
-      aspect-ratio: 4/3;
-      overflow: hidden;
-      background: #f0f0f0;
-      position: relative;
-    }
-
-    .product-img-wrap img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-      transition: transform .5s ease;
-    }
-    .product-card:hover .product-img-wrap img { transform: scale(1.04); }
-
-    .product-img-placeholder {
-      width: 100%;
-      height: 100%;
+    .menu-item {
       display: flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--dim);
-      font-size: 32px;
-      font-family: var(--font-heading);
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 24px;
+      padding: 28px 32px;
+      background: rgba(255,255,255,.03);
+      border: 1px solid rgba(255,255,255,.05);
+      transition: background .2s, border-color .2s;
+      cursor: default;
+    }
+    .menu-item:hover {
+      background: rgba(255,255,255,.055);
+      border-color: rgba(255,255,255,.1);
     }
 
-    .product-badge {
-      position: absolute;
-      top: 12px;
-      left: 12px;
-      background: var(--primary);
-      color: #fff;
-      font-family: var(--font-heading);
-      font-size: 9px;
-      font-weight: 700;
-      letter-spacing: .12em;
-      text-transform: uppercase;
-      padding: 4px 10px;
-    }
+    .item-text { flex: 1; min-width: 0; }
 
-    .product-body {
-      padding: 20px 20px 24px;
-    }
-
-    .product-name {
-      font-family: var(--font-heading);
-      font-size: 15px;
-      font-weight: 600;
-      color: var(--dark);
-      margin-bottom: 6px;
-      letter-spacing: -.01em;
-    }
-
-    .product-desc {
-      font-size: 13px;
-      color: var(--mid);
-      line-height: 1.6;
-      margin-bottom: 14px;
-      font-weight: 300;
-    }
-
-    .product-price {
-      font-family: var(--font-heading);
-      font-size: 17px;
-      font-weight: 700;
-      color: var(--dark);
-    }
-
-    /* ── CATEGORY SHOWCASE ── */
-    #cat-showcase {
-      padding: 80px 10vw;
-      background: var(--dark);
-    }
-
-    .showcase-label {
-      font-family: var(--font-heading);
-      font-size: 11px;
-      font-weight: 600;
-      letter-spacing: .18em;
-      text-transform: uppercase;
-      color: var(--primary);
-      margin-bottom: 16px;
-    }
-
-    .showcase-title {
-      font-family: var(--font-heading);
-      font-size: clamp(32px, 4vw, 52px);
-      font-weight: 700;
-      color: #fff;
-      letter-spacing: -.02em;
-      text-transform: uppercase;
-      margin-bottom: 48px;
-      line-height: 1;
-    }
-    .showcase-title span { color: var(--primary); }
-
-    .showcase-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-      gap: 2px;
-    }
-
-    .showcase-card {
-      position: relative;
-      aspect-ratio: 3/4;
-      overflow: hidden;
-      background: #1a1a1a;
-    }
-
-    .showcase-card img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-      opacity: .7;
-      transition: opacity .4s, transform .5s;
-    }
-    .showcase-card:hover img { opacity: .85; transform: scale(1.04); }
-
-    .showcase-card-body {
-      position: absolute;
-      bottom: 0; left: 0; right: 0;
-      padding: 28px 24px;
-      background: linear-gradient(to top, rgba(10,10,10,.9), transparent);
-    }
-
-    .showcase-card-name {
+    .item-name {
       font-family: var(--font-heading);
       font-size: 18px;
-      font-weight: 700;
       color: #fff;
-      letter-spacing: -.01em;
-      text-transform: uppercase;
+      margin-bottom: 6px;
+      line-height: 1.2;
+    }
+
+    .item-name-alt {
+      font-size: 12px;
+      color: rgba(255,255,255,.3);
+      font-style: italic;
       margin-bottom: 8px;
     }
 
-    .showcase-card-cta {
+    .item-desc {
+      font-size: 13px;
+      color: rgba(255,255,255,.45);
+      line-height: 1.65;
+      font-weight: 300;
+    }
+
+    .item-price {
       font-family: var(--font-heading);
+      font-size: 18px;
+      color: var(--primary);
+      white-space: nowrap;
+      flex-shrink: 0;
+      padding-top: 2px;
+    }
+
+    /* ── DIVIDER ── */
+    .section-divider {
+      height: 1px;
+      background: rgba(255,255,255,.06);
+      margin: 40px 0;
+    }
+
+    /* ── INFO BAND ── */
+    #info-band {
+      background: rgba(255,255,255,.03);
+      border-top: 1px solid rgba(255,255,255,.08);
+      border-bottom: 1px solid rgba(255,255,255,.08);
+      padding: 48px 10vw;
+      display: flex;
+      gap: 48px;
+      flex-wrap: wrap;
+    }
+
+    .info-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+    }
+
+    .info-icon {
+      width: 40px;
+      height: 40px;
+      border: 1px solid rgba(255,255,255,.12);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+
+    .info-label {
       font-size: 11px;
-      font-weight: 600;
       letter-spacing: .1em;
       text-transform: uppercase;
-      color: var(--primary);
+      color: rgba(255,255,255,.3);
+      margin-bottom: 4px;
     }
 
-    .showcase-placeholder {
-      width: 100%;
-      height: 100%;
-      background: rgba(255,255,255,.04);
-      display: flex;
-      align-items: flex-end;
-    }
-
-    /* ── INFO STRIP ── */
-    #info-strip {
-      padding: 56px 10vw;
-      background: var(--bg);
-      border-top: 1px solid var(--line);
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 40px;
-    }
-
-    .info-col-label {
-      font-family: var(--font-heading);
-      font-size: 10px;
-      font-weight: 700;
-      letter-spacing: .18em;
-      text-transform: uppercase;
-      color: var(--dim);
-      margin-bottom: 12px;
-    }
-
-    .info-col-body {
+    .info-value {
       font-size: 14px;
-      color: var(--mid);
-      line-height: 1.8;
+      color: rgba(255,255,255,.7);
     }
-    .info-col-body a {
-      color: var(--dark);
-      text-decoration: none;
-      font-weight: 500;
-    }
-    .info-col-body a:hover { color: var(--primary); }
 
     /* ── FOOTER ── */
     #menu-footer {
-      padding: 32px 10vw;
-      background: var(--dark);
+      padding: 40px 10vw;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      gap: 16px;
+      gap: 24px;
       flex-wrap: wrap;
+      border-top: 1px solid rgba(255,255,255,.06);
     }
 
     .footer-name {
       font-family: var(--font-heading);
-      font-size: 15px;
-      font-weight: 700;
+      font-size: 20px;
       color: #fff;
-      text-transform: uppercase;
-      letter-spacing: -.01em;
     }
 
     .footer-copy {
       font-size: 12px;
       color: rgba(255,255,255,.25);
-      margin-top: 2px;
     }
 
     .footer-links {
       display: flex;
-      gap: 20px;
+      gap: 24px;
     }
     .footer-links a {
       color: rgba(255,255,255,.3);
@@ -513,92 +346,86 @@
     }
     .footer-links a:hover { color: rgba(255,255,255,.6); }
 
-    /* ── REVEAL ── */
+    /* ── SCROLL REVEAL ── */
     .reveal {
       opacity: 0;
       transform: translateY(20px);
       transition: opacity .6s ease, transform .6s ease;
     }
-    .reveal.visible { opacity: 1; transform: translateY(0); }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
 
     /* ── MOBILE ── */
     @media (max-width: 768px) {
       #main-nav { padding: 0 20px; }
-      .hero-inner { padding: 56px 6vw 56px; }
+      .hero-inner { padding: 60px 6vw 48px; }
       #cat-nav { padding: 0 6vw; }
       #menu-content { padding: 0 6vw 80px; }
-      #cat-showcase { padding: 64px 6vw; }
-      #info-strip { padding: 48px 6vw; }
-      #menu-footer { padding: 28px 6vw; }
-      .product-grid { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
-    }
-    @media (max-width: 480px) {
-      .product-grid { grid-template-columns: repeat(2, 1fr); }
+      .menu-item { padding: 20px 16px; }
+      #info-band { padding: 40px 6vw; flex-direction: column; gap: 28px; }
+      #menu-footer { padding: 32px 6vw; flex-direction: column; align-items: flex-start; }
     }
   </style>
 </head>
 <body>
 
-  <!-- ANNOUNCEMENT BAR -->
-  <div id="ann-bar"></div>
+  <!-- LANG BAR -->
+  <div id="lang-bar">
+    <button class="lang-btn" data-lang="de" onclick="setLang('de')">DE</button>
+    <span class="lang-sep">/</span>
+    <button class="lang-btn" data-lang="en" onclick="setLang('en')">EN</button>
+    <span class="lang-sep">/</span>
+    <button class="lang-btn" data-lang="ko" onclick="setLang('ko')">한국어</button>
+  </div>
 
   <!-- NAV -->
   <nav id="main-nav">
-    <a href="../" class="nav-logo" id="nav-logo">Boutique</a>
-    <div class="nav-right">
-      <div class="lang-bar">
-        <button class="lang-btn" data-lang="de" onclick="setLang('de')">DE</button>
-        <span class="lang-sep">/</span>
-        <button class="lang-btn" data-lang="en" onclick="setLang('en')">EN</button>
-      </div>
-      <a href="../" class="nav-back" id="nav-back">
-        <span>←</span>
-        <span id="nav-back-text">Zurück</span>
-      </a>
-    </div>
+    <a href="../" class="nav-logo" id="nav-logo">Restaurant</a>
+    <a href="../" class="nav-back" id="nav-back">
+      <span class="nav-back-arrow">←</span>
+      <span id="nav-back-text">Zurück</span>
+    </a>
   </nav>
 
-  <!-- HERO -->
-  <header id="hero">
+  <!-- HERO BAND -->
+  <section id="hero-band">
     <div class="hero-inner">
-      <div class="hero-text">
-        <div class="hero-tag" id="hero-tag">Sortiment</div>
-        <h1 class="hero-title" id="hero-title">UNSER<br><span>SORTIMENT</span></h1>
-        <p class="hero-sub" id="hero-sub"></p>
-      </div>
-      <div class="hero-stat" id="hero-stat">
-        <div class="hero-stat-num" id="hero-stat-num"></div>
-        <div class="hero-stat-label" id="hero-stat-label">Produkte</div>
-      </div>
+      <p class="hero-eyebrow" id="hero-eyebrow">Speisekarte</p>
+      <h1 class="hero-title" id="hero-title">Unsere<br><em>Gerichte</em></h1>
+      <p class="hero-sub" id="hero-sub"></p>
     </div>
-  </header>
-
-  <!-- CAT NAV -->
-  <nav id="cat-nav" aria-label="Kategorien"></nav>
-
-  <!-- PRODUCT CONTENT -->
-  <main id="menu-content"></main>
-
-  <!-- CATEGORY SHOWCASE -->
-  <section id="cat-showcase">
-    <p class="showcase-label" id="showcase-label"></p>
-    <h2 class="showcase-title" id="showcase-title">UNSERE<br><span>KATEGORIEN</span></h2>
-    <div class="showcase-grid" id="showcase-grid"></div>
   </section>
 
-  <!-- INFO STRIP -->
-  <section id="info-strip">
-    <div>
-      <div class="info-col-label" id="info-hours-label">Öffnungszeiten</div>
-      <div class="info-col-body" id="info-hours"></div>
+  <!-- CATEGORY NAV -->
+  <nav id="cat-nav" aria-label="Menu categories"></nav>
+
+  <!-- MENU CONTENT -->
+  <main id="menu-content"></main>
+
+  <!-- INFO BAND -->
+  <section id="info-band">
+    <div class="info-item">
+      <div class="info-icon">📍</div>
+      <div>
+        <div class="info-label" id="info-addr-label">Adresse</div>
+        <div class="info-value" id="info-addr"></div>
+      </div>
     </div>
-    <div>
-      <div class="info-col-label" id="info-contact-label">Kontakt</div>
-      <div class="info-col-body" id="info-contact"></div>
+    <div class="info-item">
+      <div class="info-icon">📞</div>
+      <div>
+        <div class="info-label" id="info-phone-label">Telefon</div>
+        <div class="info-value"><a id="info-phone" href="#" style="color:inherit;text-decoration:none;"></a></div>
+      </div>
     </div>
-    <div>
-      <div class="info-col-label" id="info-addr-label">Adresse</div>
-      <div class="info-col-body" id="info-addr"></div>
+    <div class="info-item">
+      <div class="info-icon">🕐</div>
+      <div>
+        <div class="info-label" id="info-hours-label">Öffnungszeiten</div>
+        <div class="info-value" id="info-hours"></div>
+      </div>
     </div>
   </section>
 
@@ -624,14 +451,22 @@
     const MD = window.MENU_DATA;
     let lang = localStorage.getItem('lang') || 'de';
 
+    /* ── UTILS ── */
     function t(obj) {
       if (!obj) return '';
-      if (typeof obj === 'string') return obj;
       return obj[lang] || obj.de || '';
     }
-    function setText(id, val) { const el = document.getElementById(id); if (el) el.textContent = val; }
-    function setHTML(id, val) { const el = document.getElementById(id); if (el) el.innerHTML = val; }
 
+    function setText(id, val) {
+      const el = document.getElementById(id);
+      if (el) el.textContent = val;
+    }
+    function setHTML(id, val) {
+      const el = document.getElementById(id);
+      if (el) el.innerHTML = val;
+    }
+
+    /* ── LANG ── */
     function setLang(l) {
       lang = l;
       localStorage.setItem('lang', l);
@@ -643,6 +478,7 @@
     }
     window.setLang = setLang;
 
+    /* ── CSS VARS ── */
     function applyCSSVars() {
       const r = document.documentElement;
       const c = D.colors;
@@ -653,155 +489,102 @@
       r.style.setProperty('--mid',     c.mid);
       r.style.setProperty('--dim',     c.dim);
       r.style.setProperty('--line',    c.line);
-      r.style.setProperty('--font-heading', `'${D.fonts.heading}', system-ui, sans-serif`);
+      r.style.setProperty('--font-heading', `'${D.fonts.heading}', Georgia, serif`);
       r.style.setProperty('--font-body',    `'${D.fonts.body}', system-ui, sans-serif`);
     }
 
+    /* ── NAV ── */
     function renderNav() {
-      setText('nav-logo', D.name);
-      setText('nav-back-text', lang === 'en' ? 'Back' : 'Zurück');
+      const logo = document.getElementById('nav-logo');
+      if (logo) logo.textContent = D.name;
+
+      const backText = document.getElementById('nav-back-text');
+      if (backText) backText.textContent = lang === 'ko' ? '뒤로' : (lang === 'en' ? 'Back' : 'Zurück');
     }
 
-    function getCategories() {
-      if (MD && MD.categories && MD.categories.length) return MD.categories;
-      if (D.services && D.services.length) {
-        return [{ name: { de: 'Alle Produkte', en: 'All Products' }, items: D.services }];
-      }
-      return [];
-    }
-
+    /* ── HERO ── */
     function renderHero() {
-      document.title = (lang === 'en' ? 'Collection' : 'Sortiment') + ' — ' + D.name;
-      if (D.announcementBar) setText('ann-bar', t(D.announcementBar));
+      document.title = (lang === 'ko' ? '메뉴' : (lang === 'en' ? 'Menu' : 'Speisekarte')) + ' — ' + D.name;
+      setText('page-desc', t(D.seo && D.seo.description) || '');
 
-      setText('hero-tag', lang === 'en' ? 'Collection' : 'Sortiment');
-      setHTML('hero-title', lang === 'en'
-        ? 'OUR<br><span>COLLECTION</span>'
-        : 'UNSER<br><span>SORTIMENT</span>'
+      setText('hero-eyebrow', lang === 'ko' ? '메뉴' : (lang === 'en' ? 'Menu' : 'Speisekarte'));
+      setHTML('hero-title',
+        lang === 'ko' ? '저희의<br><em>메뉴</em>' :
+        lang === 'en' ? 'Our<br><em>Menu</em>' :
+        'Unsere<br><em>Gerichte</em>'
       );
       setText('hero-sub', t(D.tagline));
-
-      const cats  = getCategories();
-      const total = cats.reduce((sum, c) => sum + (c.items ? c.items.length : 0), 0);
-      if (total > 0) {
-        setText('hero-stat-num', total + '+');
-        setText('hero-stat-label', lang === 'en' ? 'Products' : 'Produkte');
-      } else {
-        const stat = document.getElementById('hero-stat');
-        if (stat) stat.style.display = 'none';
-      }
     }
 
+    /* ── CATEGORY NAV ── */
     function renderCatNav() {
-      const nav  = document.getElementById('cat-nav');
-      const cats = getCategories();
-      if (!nav || !cats.length) return;
-      nav.innerHTML = cats.map((cat, i) =>
+      const nav = document.getElementById('cat-nav');
+      if (!nav || !MD.categories) return;
+      nav.innerHTML = MD.categories.map((cat, i) =>
         `<a class="cat-nav-link${i === 0 ? ' active' : ''}" href="#cat-${i}" data-idx="${i}">${t(cat.name)}</a>`
       ).join('');
     }
 
-    function renderProducts() {
+    /* ── MENU ITEMS ── */
+    function renderMenu() {
       const content = document.getElementById('menu-content');
-      const cats    = getCategories();
-      if (!content || !cats.length) return;
+      if (!content || !MD.categories) return;
 
-      content.innerHTML = cats.map((cat, i) => {
-        const cards = (cat.items || []).map(item => {
-          const imgSrc = item.img
-            ? (item.img.startsWith('http') ? item.img : '../' + item.img)
-            : '';
-          const imgHtml = imgSrc
-            ? `<img src="${imgSrc}" alt="${t(item.name)}" loading="lazy">`
-            : `<div class="product-img-placeholder">◈</div>`;
-
-          const badgeHtml = item.badge
-            ? `<div class="product-badge">${t(item.badge)}</div>`
-            : '';
-
+      content.innerHTML = MD.categories.map((cat, i) => {
+        const items = cat.items.map(item => {
+          const altLang = lang === 'en' ? 'de' : (lang === 'ko' ? 'de' : 'en');
+          const altName = item.name[altLang] && item.name[altLang] !== t(item.name) ? item.name[altLang] : '';
           return `
-            <div class="product-card reveal">
-              <div class="product-img-wrap">
-                ${imgHtml}
-                ${badgeHtml}
+            <div class="menu-item">
+              <div class="item-text">
+                <div class="item-name">${t(item.name)}</div>
+                ${altName ? `<div class="item-name-alt">${altName}</div>` : ''}
+                <div class="item-desc">${t(item.desc)}</div>
               </div>
-              <div class="product-body">
-                <div class="product-name">${t(item.name)}</div>
-                <div class="product-desc">${t(item.desc)}</div>
-                <div class="product-price">${item.price || ''}</div>
-              </div>
+              <div class="item-price">${item.price}</div>
             </div>`;
         }).join('');
 
         return `
-          <section class="menu-category" id="cat-${i}">
-            <div class="cat-header reveal">
+          <section class="menu-category reveal" id="cat-${i}">
+            <div class="cat-header">
+              <span class="cat-number">0${i + 1}</span>
               <h2 class="cat-title">${t(cat.name)}</h2>
-              <span class="cat-count">${(cat.items || []).length} ${lang === 'en' ? 'Items' : 'Artikel'}</span>
             </div>
-            <div class="product-grid">${cards}</div>
+            <div class="menu-items">${items}</div>
           </section>`;
       }).join('');
     }
 
-    function renderShowcase() {
-      setText('showcase-label', lang === 'en' ? 'Browse' : 'Entdecken');
-      setHTML('showcase-title', lang === 'en'
-        ? 'OUR<br><span>CATEGORIES</span>'
-        : 'UNSERE<br><span>KATEGORIEN</span>'
-      );
-
-      const grid = document.getElementById('showcase-grid');
-      const cats = D.categories;
-      if (!grid || !cats || !cats.length) {
-        const section = document.getElementById('cat-showcase');
-        if (section) section.style.display = 'none';
-        return;
-      }
-
-      grid.innerHTML = cats.map(cat => {
-        const imgSrc = cat.img ? '../' + cat.img : '';
-        const imgHtml = imgSrc
-          ? `<img src="${imgSrc}" alt="${t(cat.name)}" loading="lazy">`
-          : `<div class="showcase-placeholder"></div>`;
-        return `
-          <div class="showcase-card reveal">
-            ${imgHtml}
-            <div class="showcase-card-body">
-              <div class="showcase-card-name">${t(cat.name)}</div>
-              ${cat.cta ? `<div class="showcase-card-cta">${t(cat.cta)} →</div>` : ''}
-            </div>
-          </div>`;
-      }).join('');
-    }
-
+    /* ── INFO BAND ── */
     function renderInfo() {
-      setText('info-hours-label', lang === 'en' ? 'Opening Hours' : 'Öffnungszeiten');
-      setText('info-contact-label', lang === 'en' ? 'Contact' : 'Kontakt');
-      setText('info-addr-label', lang === 'en' ? 'Address' : 'Adresse');
-
-      if (D.hours) {
-        setHTML('info-hours', D.hours.map(h =>
-          `<div>${t(h.day)}: ${h.closed ? (lang === 'en' ? 'Closed' : 'Geschlossen') : h.time}</div>`
-        ).join(''));
-      }
-
-      setHTML('info-contact', `
-        <div><a href="tel:${D.phone}">${D.phone}</a></div>
-        <div><a href="mailto:${D.email}">${D.email}</a></div>
-      `);
-
+      setText('info-addr-label', lang === 'ko' ? '주소' : (lang === 'en' ? 'Address' : 'Adresse'));
+      setText('info-phone-label', lang === 'ko' ? '전화' : (lang === 'en' ? 'Phone' : 'Telefon'));
+      setText('info-hours-label', lang === 'ko' ? '영업시간' : (lang === 'en' ? 'Opening Hours' : 'Öffnungszeiten'));
       setText('info-addr', D.address);
+
+      const phoneEl = document.getElementById('info-phone');
+      if (phoneEl) { phoneEl.textContent = D.phone; phoneEl.href = 'tel:' + D.phone; }
+
+      if (D.hours && D.hours.length) {
+        const hoursText = D.hours.map(h =>
+          `${t(h.day)}: ${h.closed ? (lang === 'ko' ? '휴무' : (lang === 'en' ? 'Closed' : 'Geschlossen')) : h.time}`
+        ).join(' · ');
+        setText('info-hours', hoursText);
+      }
     }
 
+    /* ── FOOTER ── */
     function renderFooter() {
       setText('footer-name', D.name);
       setText('footer-copy', '© ' + new Date().getFullYear() + ' ' + D.name);
     }
 
+    /* ── CATEGORY NAV SCROLL SPY ── */
     function initScrollSpy() {
       const sections = document.querySelectorAll('.menu-category');
       const links    = document.querySelectorAll('.cat-nav-link');
+      if (!sections.length || !links.length) return;
 
       const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
@@ -810,29 +593,32 @@
             links.forEach(l => l.classList.toggle('active', l.dataset.idx === idx));
           }
         });
-      }, { rootMargin: '-25% 0px -65% 0px' });
+      }, { rootMargin: '-30% 0px -60% 0px' });
 
       sections.forEach(s => observer.observe(s));
     }
 
+    /* ── SCROLL REVEAL ── */
     function initReveal() {
       const observer = new IntersectionObserver((entries) => {
         entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
-      }, { threshold: 0.06 });
+      }, { threshold: 0.08 });
       document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
     }
 
+    /* ── RENDER ALL ── */
     function renderAll() {
       renderNav();
       renderHero();
       renderCatNav();
-      renderProducts();
-      renderShowcase();
+      renderMenu();
       renderInfo();
       renderFooter();
+      // Re-init observers after re-render
       setTimeout(() => { initReveal(); initScrollSpy(); }, 50);
     }
 
+    /* ── INIT ── */
     function init() {
       applyCSSVars();
       document.querySelectorAll('.lang-btn').forEach(b =>

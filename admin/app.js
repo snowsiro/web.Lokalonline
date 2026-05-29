@@ -990,6 +990,20 @@
     if (order.photo_urls) { try { photoUrls = JSON.parse(order.photo_urls); } catch (e) {} }
     else if (order.photo_url) { photoUrls = [order.photo_url]; }
 
+    // copyPhotosToGitHub saves photos as img/slide1.jpg, img/slide2.jpg, ...
+    // Use local paths in data.js, not Supabase Storage URLs
+    var localImgs = photoUrls.map(function(_, i) { return 'img/slide' + (i + 1) + '.jpg'; });
+    var fallbackImgs = ['img/slide1.jpg', 'img/slide2.jpg', 'img/iroom.jpg'];
+    var imgs = localImgs.length > 0 ? localImgs : fallbackImgs;
+
+    var slides = imgs.map(function(img, i) {
+      return {
+        img: img,
+        eyebrow: { de: i === 0 ? 'Herzlich Willkommen' : '', en: i === 0 ? 'Welcome' : '' },
+        title: { de: i === 0 ? (order.business_name || '') + '<br><em>Wien</em>' : '', en: i === 0 ? (order.business_name || '') + '<br><em>Vienna</em>' : '' },
+        desc: { de: i === 0 ? (order.description || '') : '', en: '' }
+      };
+    });
     var colorDefaults = {
       restaurant: { primary:'#C8302A', accent:'#C8302A', bg:'#F8F7F4', dark:'#111110', mid:'#9B9893', dim:'#5C5A57', line:'#DDDAD4' },
       cafe:        { primary:'#B8763A', accent:'#B8763A', bg:'#FAF7F2', dark:'#1C1208', mid:'#8C7B6B', dim:'#6B5C4E', line:'#E8DDD0' },
@@ -1021,11 +1035,9 @@
         { day: { de: 'Mo–Fr', en: 'Mon–Fri' }, time: '11:00–22:00' },
         { day: { de: 'Sa–So', en: 'Sat–Sun' }, time: '12:00–22:00' }
       ],
-      slides: [
-        { img: 'img/slide1.jpg', eyebrow: { de: 'Herzlich Willkommen', en: 'Welcome' }, title: { de: (order.business_name || '') + '<br><em>Wien</em>', en: (order.business_name || '') + '<br><em>Vienna</em>' }, desc: { de: order.description || '', en: '' } }
-      ],
+      slides: slides,
       about: {
-        img: photoUrls[0] || 'img/iroom.jpg',
+        img: imgs[1] || imgs[0] || 'img/iroom.jpg',
         text: { de: order.description || '', en: '' },
         highlights: [
           { de: 'Täglich frisch', en: 'Daily fresh' },
@@ -1043,12 +1055,12 @@
         { icon: '✦', title: { de: 'Wien', en: 'Vienna' }, desc: { de: 'Im Herzen der Stadt', en: 'In the heart of the city' } }
       ],
       announcementBar: { de: 'Jetzt Termin buchen — schnell & einfach online', en: 'Book your appointment online' },
-      photos: photoUrls.length > 0 ? photoUrls : ['img/slide1.jpg', 'img/slide2.jpg', 'img/iroom.jpg'],
+      photos: imgs,
       supabase: { url: SUPABASE_URL, key: SUPABASE_KEY },
       reviewSlug: slug,
-      instagramPhotos: photoUrls.slice(0, 6).concat(['img/slide1.jpg','img/slide2.jpg','img/iroom.jpg','img/food.jpg','img/slide1.jpg','img/slide2.jpg']).slice(0, 6),
+      instagramPhotos: imgs.concat(fallbackImgs).slice(0, 6),
       logo: order.logo_url ? 'img/logo.png' : '',
-      seo: { title: (order.business_name || '') + ' — Wien', description: { de: order.description || '', en: '' }, ogImage: photoUrls[0] || 'img/og-image.jpg' },
+      seo: { title: (order.business_name || '') + ' — Wien', description: { de: order.description || '', en: '' }, ogImage: imgs[0] || 'img/og-image.jpg' },
       legal: {
         type: order.legal_type || 'einzelunternehmer',
         name: order.legal_name || '',

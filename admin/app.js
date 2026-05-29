@@ -624,6 +624,21 @@
 
     document.getElementById('orderStatus').value = data.payment_status || 'pending';
     document.getElementById('orderNotes').value = data.admin_notes || '';
+    var legalType = data.legal_type || 'einzelunternehmer';
+    document.getElementById('orderLegalType').value = legalType;
+    document.getElementById('adminLegalEinzeln').style.display = legalType === 'einzelunternehmer' ? 'block' : 'none';
+    document.getElementById('adminLegalGesellschaft').style.display = legalType === 'gesellschaft' ? 'block' : 'none';
+    document.getElementById('orderGisaNumber').value = data.gisa_number || '';
+    document.getElementById('orderUidNumber').value = data.uid_number || '';
+    document.getElementById('orderLegalName').value = data.legal_name || '';
+    document.getElementById('orderLegalForm').value = data.legal_form || 'GmbH';
+    document.getElementById('orderFnNumber').value = data.fn_number || '';
+    document.getElementById('orderGeschaeftsfuehrer').value = data.geschaeftsfuehrer || '';
+    document.getElementById('orderLegalType').onchange = function() {
+      var t = this.value;
+      document.getElementById('adminLegalEinzeln').style.display = t === 'einzelunternehmer' ? 'block' : 'none';
+      document.getElementById('adminLegalGesellschaft').style.display = t === 'gesellschaft' ? 'block' : 'none';
+    };
     document.getElementById('orderSiteSlug').value = data.site_slug || '';
     var editBtn = document.getElementById('editSiteBtn');
     editBtn.style.display = data.site_slug ? 'inline-flex' : 'none';
@@ -794,10 +809,18 @@
     document.getElementById('saveOrderBtn').addEventListener('click', async function () {
       if (!currentOrderId) return;
       var slug = document.getElementById('orderSiteSlug').value.trim() || null;
+      var legalT = document.getElementById('orderLegalType').value;
       var { error } = await sb.from('orders').update({
         payment_status: document.getElementById('orderStatus').value,
         admin_notes: document.getElementById('orderNotes').value,
-        site_slug: slug
+        site_slug: slug,
+        legal_type: legalT,
+        gisa_number: document.getElementById('orderGisaNumber').value.trim() || null,
+        uid_number: document.getElementById('orderUidNumber').value.trim() || null,
+        legal_name: document.getElementById('orderLegalName').value.trim() || null,
+        legal_form: document.getElementById('orderLegalForm').value || null,
+        fn_number: document.getElementById('orderFnNumber').value.trim() || null,
+        geschaeftsfuehrer: document.getElementById('orderGeschaeftsfuehrer').value.trim() || null
       }).eq('id', currentOrderId);
       if (!error) {
         document.getElementById('editSiteBtn').style.display = slug ? 'inline-flex' : 'none';
@@ -1031,6 +1054,7 @@
         name: order.legal_name || '',
         legal_form: order.legal_form || '',
         geschaeftsfuehrer: order.geschaeftsfuehrer || '',
+        gisa_number: order.gisa_number || '',
         fn_number: order.fn_number || '',
         uid_number: order.uid_number || ''
       }

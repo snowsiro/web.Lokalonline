@@ -300,6 +300,51 @@
           <textarea id="orderNotes" placeholder="Interne Notizen…"></textarea>
         </div>
         <div class="form-group">
+          <label>Unternehmensform</label>
+          <select id="orderLegalType">
+            <option value="einzelunternehmer">Einzelunternehmer/in</option>
+            <option value="gesellschaft">GmbH / KG / OG</option>
+          </select>
+        </div>
+        <div id="adminLegalEinzeln">
+          <div class="form-group">
+            <label>GISA-Nummer</label>
+            <input type="text" id="orderGisaNumber" placeholder="z.B. 38698613" />
+          </div>
+        </div>
+        <div id="adminLegalGesellschaft" style="display:none">
+          <div class="form-row">
+            <div class="form-group">
+              <label>Firmenwortlaut</label>
+              <input type="text" id="orderLegalName" placeholder="z.B. Muster GmbH" />
+            </div>
+            <div class="form-group">
+              <label>Rechtsform</label>
+              <select id="orderLegalForm">
+                <option value="GmbH">GmbH</option>
+                <option value="KG">KG</option>
+                <option value="OG">OG</option>
+                <option value="AG">AG</option>
+                <option value="GesbR">GesbR</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Firmenbuchnummer (FN)</label>
+              <input type="text" id="orderFnNumber" placeholder="z.B. 196843a" />
+            </div>
+            <div class="form-group">
+              <label>Geschäftsführung</label>
+              <input type="text" id="orderGeschaeftsfuehrer" placeholder="z.B. Max Mustermann" />
+            </div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>UID-Nummer</label>
+          <input type="text" id="orderUidNumber" placeholder="ATU12345678" />
+        </div>
+        <div class="form-group">
           <label>Website Slug</label>
           <div style="display:flex;align-items:center;gap:6px">
             <span style="font-size:12px;color:var(--text-muted)">lokalonline.at/</span>

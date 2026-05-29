@@ -241,6 +241,15 @@
     .file-preview img { width: 40px; height: 40px; object-fit: cover; border-radius: 6px; }
     .file-preview .file-name { flex: 1; color: var(--success); font-weight: 500; word-break: break-all; }
     .file-preview .file-remove { cursor: pointer; color: var(--text-muted); font-size: 16px; line-height: 1; }
+    /* Legal type toggle */
+    .legal-type-row { display: flex; gap: 10px; margin-top: 6px; }
+    .legal-type-btn {
+      flex: 1; padding: 10px 14px; border: 2px solid var(--border);
+      border-radius: 8px; background: #fff; cursor: pointer;
+      font-size: 14px; font-weight: 500; color: var(--text);
+      transition: border-color .15s, background .15s;
+    }
+    .legal-type-btn.active { border-color: var(--orange); background: #fff8f4; color: var(--orange); }
     /* Buttons */
     .btn-row { display: flex; gap: 10px; margin-top: 24px; }
     .btn {
@@ -521,6 +530,60 @@
           <div class="field-error" id="err_contact_name">Bitte geben Sie Ihren Namen ein.</div>
         </div>
 
+        <!-- Rechtsform -->
+        <div class="form-group">
+          <label id="lbl_rechtsform">Unternehmensform <span class="req">*</span></label>
+          <div class="legal-type-row">
+            <button type="button" class="legal-type-btn active" data-type="einzelunternehmer" onclick="setLegalType('einzelunternehmer')">
+              👤 <span id="lbl_einzeln">Einzelunternehmer/in</span>
+            </button>
+            <button type="button" class="legal-type-btn" data-type="gesellschaft" onclick="setLegalType('gesellschaft')">
+              🏢 <span id="lbl_gesellschaft">GmbH / KG / OG</span>
+            </button>
+          </div>
+        </div>
+
+        <div id="legalEinzeln">
+          <div class="form-group">
+            <label id="lbl_gisa">GISA-Nummer <span class="optional-badge" id="badge_gisa">optional</span></label>
+            <input type="text" id="f_gisa_number" placeholder="z.B. 38698613" />
+          </div>
+        </div>
+
+        <div id="legalGesellschaft" style="display:none">
+          <div class="form-row">
+            <div class="form-group">
+              <label id="lbl_legal_name">Firmenwortlaut <span class="optional-badge">optional</span></label>
+              <input type="text" id="f_legal_name" placeholder="z.B. Muster GmbH" />
+            </div>
+            <div class="form-group">
+              <label id="lbl_legal_form">Rechtsform</label>
+              <select id="f_legal_form">
+                <option value="GmbH">GmbH</option>
+                <option value="KG">KG</option>
+                <option value="OG">OG</option>
+                <option value="AG">AG</option>
+                <option value="GesbR">GesbR</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label id="lbl_fn_number">Firmenbuchnummer (FN) <span class="optional-badge">optional</span></label>
+              <input type="text" id="f_fn_number" placeholder="z.B. 196843a" />
+            </div>
+            <div class="form-group">
+              <label id="lbl_geschaeftsfuehrer">Geschäftsführung <span class="optional-badge">optional</span></label>
+              <input type="text" id="f_geschaeftsfuehrer" placeholder="z.B. Max Mustermann" />
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label id="lbl_uid">UID-Nummer <span class="optional-badge" id="badge_uid">optional</span></label>
+          <input type="text" id="f_uid_number" placeholder="ATU12345678" />
+        </div>
+
         <!-- Impressum Live Preview -->
         <div class="impressum-toggle" id="impressumToggle">
           <span id="impressumToggleIcon">▶</span> <span id="lbl_impressum_toggle">Impressum &amp; Datenschutz — Vorschau</span>
@@ -677,6 +740,17 @@ So: Ruhetag"></textarea>
     var logoFile = null;
     var photoFiles = [];
     var parsedMenuItems = [];
+    var currentLegalType = 'einzelunternehmer';
+
+    function setLegalType(type) {
+      currentLegalType = type;
+      document.querySelectorAll('.legal-type-btn').forEach(function(b) {
+        b.classList.toggle('active', b.dataset.type === type);
+      });
+      document.getElementById('legalEinzeln').style.display = type === 'einzelunternehmer' ? 'block' : 'none';
+      document.getElementById('legalGesellschaft').style.display = type === 'gesellschaft' ? 'block' : 'none';
+    }
+    window.setLegalType = setLegalType;
 
     // ── Translations ───────────────────────────────────────────────
     var T = {
@@ -1142,7 +1216,14 @@ So: Ruhetag"></textarea>
           logo_url: logoUrl,
           photo_url: uploadedPhotoUrls[0] || null,
           photo_urls: uploadedPhotoUrls.length > 0 ? JSON.stringify(uploadedPhotoUrls) : null,
-          payment_status: 'pending'
+          payment_status: 'pending',
+          legal_type: currentLegalType,
+          gisa_number: document.getElementById('f_gisa_number').value.trim() || null,
+          uid_number: document.getElementById('f_uid_number').value.trim() || null,
+          legal_name: document.getElementById('f_legal_name').value.trim() || null,
+          legal_form: document.getElementById('f_legal_form').value || null,
+          fn_number: document.getElementById('f_fn_number').value.trim() || null,
+          geschaeftsfuehrer: document.getElementById('f_geschaeftsfuehrer').value.trim() || null
         };
 
         var { error } = await sb.from('orders').insert([payload]);

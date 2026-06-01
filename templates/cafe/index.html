@@ -1101,8 +1101,8 @@
     <div class="footer-bottom">
       <span id="footer-copy"></span>
       <div style="display:flex;gap:20px;">
-        <a href="/impressum.html" id="lnk-impressum">Impressum</a>
-        <a href="/datenschutz.html" id="lnk-datenschutz">Datenschutz</a>
+        <a href="impressum/" id="lnk-impressum">Impressum</a>
+        <a href="datenschutz/" id="lnk-datenschutz">Datenschutz</a>
       </div>
     </div>
   </footer>
@@ -1154,7 +1154,12 @@
 
     /* ── NAV ── */
     function renderNav() {
-      document.getElementById('nav-logo').textContent = D.name;
+      var navLogoEl = document.getElementById('nav-logo');
+      if (D.logo) {
+        navLogoEl.innerHTML = '<img src="' + D.logo + '" alt="' + D.name + '" style="height:44px;width:auto;display:block">';
+      } else {
+        navLogoEl.textContent = D.name;
+      }
 
       const links = D.nav || [];
       // Left: first half (excluding last which is CTA), Right: second half

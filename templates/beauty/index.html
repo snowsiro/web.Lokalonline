@@ -602,7 +602,7 @@ footer {
     </div>
     <div class="footer-bottom">
       <p class="footer-copy" id="footer-copy"></p>
-      <p class="footer-copy"><a href="/impressum.html">Impressum</a> · <a href="/impressum.html">Datenschutz</a></p>
+      <p class="footer-copy"><a href="impressum/">Impressum</a> · <a href="datenschutz/">Datenschutz</a></p>
     </div>
   </div>
 </footer>
@@ -665,7 +665,12 @@ function render() {
   igEl.href = 'https://instagram.com/' + igHandle; document.getElementById('tb-ig-txt').textContent = D.instagram;
 
   // Nav
-  document.getElementById('nav-logo').textContent = D.name;
+  var navLogoEl = document.getElementById('nav-logo');
+  if (D.logo) {
+    navLogoEl.innerHTML = '<img src="' + D.logo + '" alt="' + D.name + '" style="height:44px;width:auto;display:block">';
+  } else {
+    navLogoEl.textContent = D.name;
+  }
   const leftLinks = navLinks.slice(0,2);
   const rightLinks = navLinks.slice(2);
   document.getElementById('nav-left-links').innerHTML = leftLinks.map(l =>

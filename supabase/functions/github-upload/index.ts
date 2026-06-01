@@ -74,6 +74,44 @@ Deno.serve(async (req) => {
       return json({ content: decoded, sha: data.sha });
     }
 
+    // Delete all files under a folder path
+    if (action === "delete-folder") {
+      const branchRes = await fetch(
+        `https://api.github.com/repos/${GITHUB_REPO}/branches/${GITHUB_BRANCH}`,
+        { headers: { Authorization: `Bearer ${GITHUB_TOKEN}`, Accept: "application/vnd.github+json" } }
+      );
+      if (!branchRes.ok) return json({ error: "Failed to get branch" }, 500);
+      const branchData = await branchRes.json();
+      const treeSha = branchData.commit.commit.tree.sha;
+
+      const treeRes = await fetch(
+        `https://api.github.com/repos/${GITHUB_REPO}/git/trees/${treeSha}?recursive=1`,
+        { headers: { Authorization: `Bearer ${GITHUB_TOKEN}`, Accept: "application/vnd.github+json" } }
+      );
+      if (!treeRes.ok) return json({ error: "Failed to get tree" }, 500);
+      const treeData = await treeRes.json();
+
+      const prefix = body.path.replace(/\/$/, "") + "/";
+      const filesToDelete = (treeData.tree as any[]).filter(
+        (f) => f.type === "blob" && (f.path === body.path || f.path.startsWith(prefix))
+      );
+
+      if (filesToDelete.length === 0) return json({ ok: true, deleted: 0 });
+
+      for (const file of filesToDelete) {
+        await fetch(
+          `https://api.github.com/repos/${GITHUB_REPO}/contents/${file.path}`,
+          {
+            method: "DELETE",
+            headers: { Authorization: `Bearer ${GITHUB_TOKEN}`, Accept: "application/vnd.github+json", "Content-Type": "application/json" },
+            body: JSON.stringify({ message: body.message || `Delete ${file.path}`, sha: file.sha, branch: GITHUB_BRANCH }),
+          }
+        );
+      }
+
+      return json({ ok: true, deleted: filesToDelete.length });
+    }
+
     return json({ error: "Unknown action" }, 400);
   } catch (e) {
     return json({ error: e.message }, 500);

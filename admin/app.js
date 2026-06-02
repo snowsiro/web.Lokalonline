@@ -1239,7 +1239,7 @@
     } catch(e) { /* non-fatal */ }
   }
 
-  function showQrResult(slug) {
+  function showQrResult(slug, emailSent) {
     var menuUrl = 'https://lokalonline.at/' + slug + '/menu/';
 
     var linksEl = document.getElementById('qrResultLinks');
@@ -1256,6 +1256,20 @@
     var qrImgUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&margin=10&data=' + encodeURIComponent(menuUrl);
     document.getElementById('qrCodeImg').src = qrImgUrl;
     document.getElementById('qrDownloadBtn').href = qrImgUrl;
+
+    var emailNotice = document.getElementById('qrEmailNotice');
+    if (emailNotice) {
+      if (emailSent) {
+        emailNotice.textContent = '✅ Vorschau-E-Mail mit Zahlungslink wurde automatisch an den Kunden gesendet.';
+        emailNotice.style.color = '#16a34a';
+      } else if (emailSent === false) {
+        emailNotice.textContent = '⚠️ E-Mail konnte nicht gesendet werden — bitte manuell senden.';
+        emailNotice.style.color = '#dc2626';
+      } else {
+        emailNotice.textContent = '';
+      }
+      emailNotice.style.display = emailSent !== undefined ? 'block' : 'none';
+    }
 
     openModal('qrResultOverlay');
   }
@@ -1316,7 +1330,7 @@
       await copyPhotosToGitHub(slug, currentOrderData);
       await generateQrCode(slug);
 
-      // 7. Save to DB
+      // 7. Save to DB + auto-send preview email
       currentStep = 'Datenbank';
       btn.textContent = '⏳ 7/7 Speichert…';
       await sb.from('orders').update({
@@ -1328,8 +1342,31 @@
       document.getElementById('orderSiteSlug').value = slug;
       document.getElementById('editSiteBtn').style.display = 'inline-flex';
 
+      // Auto-send preview + payment email to customer
+      var emailSent = false;
+      if (currentOrderData.email) {
+        try {
+          var paymentUrl = window.STRIPE_CONFIG && window.STRIPE_CONFIG.links && window.STRIPE_CONFIG.links.basis_monthly;
+          var session = (await sb.auth.getSession()).data.session;
+          var emailRes = await fetch('https://vhnourjddnlslgabrasb.supabase.co/functions/v1/send-email', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + (session ? session.access_token : '') },
+            body: JSON.stringify({
+              type: 'site-ready',
+              to: currentOrderData.email,
+              contact_name: currentOrderData.contact_name,
+              business_name: currentOrderData.business_name,
+              site_slug: slug,
+              payment_url: paymentUrl || null
+            })
+          });
+          var emailData = await emailRes.json();
+          emailSent = emailData.ok === true;
+        } catch(e) { /* non-fatal */ }
+      }
+
       closeModal('siteGenOverlay');
-      showQrResult(slug);
+      showQrResult(slug, emailSent);
 
     } catch (e) {
       errEl.textContent = 'Fehler bei Schritt "' + currentStep + '": ' + e.message;

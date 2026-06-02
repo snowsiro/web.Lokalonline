@@ -177,6 +177,35 @@ Deno.serve(async (req) => {
       }
     }
 
+    // ── Site ready → preview + payment link to customer ─────────────
+    if (type === "site-ready") {
+      const { to, contact_name, business_name, site_slug, payment_url } = body;
+      if (!to || !site_slug) return json({ ok: false, error: "Missing to or site_slug" }, 400);
+
+      const previewUrl = `https://lokalonline.at/${site_slug}/`;
+      const html = emailBase(`
+        <h2>🎉 Ihr Website-Prototyp ist fertig!</h2>
+        <p>Hallo ${contact_name || ""},</p>
+        <p>Ihr Website-Prototyp für <strong>${business_name || ""}</strong> ist fertig. Schauen Sie sich Ihre neue Website an und lassen Sie uns wissen, was Sie denken:</p>
+        <div style="margin:24px 0;text-align:center">
+          <a class="btn" href="${previewUrl}" style="background:#C8302A;display:inline-block">Website ansehen →</a>
+          <p style="margin-top:8px;font-size:12px;color:#999">${previewUrl}</p>
+        </div>
+        ${payment_url ? `
+        <hr style="border:none;border-top:1px solid #eee;margin:28px 0">
+        <p style="color:#555;font-size:14px">Zufrieden mit dem Ergebnis? Starten Sie jetzt Ihr Abonnement und schalten Sie Ihre Website dauerhaft frei:</p>
+        <div style="margin:20px 0;background:#f9f9f9;border-radius:8px;padding:20px;text-align:center">
+          <p style="margin:0 0 4px;font-size:13px;color:#666">Monatlicher Betrag</p>
+          <p style="margin:0 0 16px;font-size:28px;font-weight:700;color:#111">€19 / Monat</p>
+          <p style="margin:0 0 16px;font-size:12px;color:#999">✅ Erste 30 Tage kostenlos · Keine Einrichtungsgebühr · Jederzeit kündbar</p>
+          <a class="btn" href="${payment_url}" style="display:inline-block">Abonnement starten →</a>
+        </div>` : ''}
+        <p style="color:#666;font-size:13px">Bei Fragen stehen wir Ihnen gerne zur Verfügung: <a href="mailto:info@lokalonline.at" style="color:#C8302A">info@lokalonline.at</a></p>
+      `);
+      const ok = await sendEmail(to, `Ihr Website-Prototyp ist fertig — ${business_name || "lokalonline.at"}`, html);
+      return json({ ok });
+    }
+
     // ── Payment link → send to customer ──────────────────────────────
     if (type === "payment-link") {
       const { to, contact_name, business_name, payment_url } = body;

@@ -1034,30 +1034,82 @@
       instagram: order.instagram ? order.instagram.replace(/^@/, '') : '',
       googleMapsUrl:   'https://maps.google.com/?q=' + encodeURIComponent(order.address || ''),
       googleMapsEmbed: '',
-      hours: [
-        { day: { de: 'Mo–Fr', en: 'Mon–Fri' }, time: '11:00–22:00' },
-        { day: { de: 'Sa–So', en: 'Sat–Sun' }, time: '12:00–22:00' }
-      ],
+      hours: (function() {
+        if (!order.hours || !order.hours.trim()) {
+          return [
+            { day: { de: 'Mo–Fr', en: 'Mon–Fri' }, time: '11:00–22:00' },
+            { day: { de: 'Sa–So', en: 'Sat–Sun' }, time: '12:00–22:00' }
+          ];
+        }
+        return order.hours.trim().split(/\n/).map(function(line) {
+          line = line.trim();
+          if (!line) return null;
+          var m = line.match(/^(.+?)[\s:–\-]+(\d.*)$/);
+          if (m) return { day: { de: m[1].trim(), en: m[1].trim() }, time: m[2].trim() };
+          return { day: { de: line, en: line }, time: '' };
+        }).filter(Boolean);
+      })(),
       slides: slides,
       about: {
         img: imgs[1] || imgs[0] || 'img/iroom.jpg',
         text: { de: order.description || '', en: '' },
-        highlights: [
-          { de: 'Täglich frisch', en: 'Daily fresh' },
-          { de: 'Persönlicher Service', en: 'Personal service' },
-          { de: 'Im Herzen Wiens', en: 'In the heart of Vienna' }
-        ]
+        highlights: (function() {
+          var byType = {
+            restaurant: [{ de: 'Täglich frisch', en: 'Daily fresh' }, { de: 'Authentische Küche', en: 'Authentic cuisine' }, { de: 'Im Herzen Wiens', en: 'In the heart of Vienna' }],
+            cafe:        [{ de: 'Hausgemachte Backwaren', en: 'Homemade pastries' }, { de: 'Premium Kaffee', en: 'Premium coffee' }, { de: 'Gemütliche Atmosphäre', en: 'Cosy atmosphere' }],
+            beauty:      [{ de: 'Erfahrene Experten', en: 'Experienced experts' }, { de: 'Nur beste Produkte', en: 'Only the best products' }, { de: 'Entspannende Atmosphäre', en: 'Relaxing atmosphere' }],
+            retail:      [{ de: 'Kuratierte Auswahl', en: 'Curated selection' }, { de: 'Persönliche Beratung', en: 'Personal advice' }, { de: 'Faire Preise', en: 'Fair prices' }]
+          };
+          return (byType[type] || byType.restaurant);
+        })()
       },
       menuUrl: 'menu/',
-      menuBand: { headline: { de: 'Unsere<br><em>Speisekarte</em>', en: 'Our<br><em>Menu</em>' }, sub: { de: '', en: '' }, cta: { de: 'Speisekarte ansehen →', en: 'View menu →' } },
+      menuBand: (function() {
+        var byType = {
+          restaurant: { headline: { de: 'Unsere<br><em>Speisekarte</em>', en: 'Our<br><em>Menu</em>' }, cta: { de: 'Speisekarte ansehen →', en: 'View menu →' } },
+          cafe:        { headline: { de: 'Unsere<br><em>Karte</em>', en: 'Our<br><em>Menu</em>' }, cta: { de: 'Karte ansehen →', en: 'View menu →' } },
+          beauty:      { headline: { de: 'Unsere<br><em>Leistungen</em>', en: 'Our<br><em>Services</em>' }, cta: { de: 'Leistungen ansehen →', en: 'View services →' } },
+          retail:      { headline: { de: 'Unser<br><em>Sortiment</em>', en: 'Our<br><em>Collections</em>' }, cta: { de: 'Sortiment ansehen →', en: 'View collections →' } }
+        };
+        var m = byType[type] || byType.restaurant;
+        return { headline: m.headline, sub: { de: '', en: '' }, cta: m.cta };
+      })(),
       services: [],
       categories: [],
-      highlights: [
-        { icon: '✦', title: { de: 'Qualität', en: 'Quality' }, desc: { de: 'Höchste Qualität', en: 'Highest quality' } },
-        { icon: '✦', title: { de: 'Service', en: 'Service' }, desc: { de: 'Persönlicher Service', en: 'Personal service' } },
-        { icon: '✦', title: { de: 'Wien', en: 'Vienna' }, desc: { de: 'Im Herzen der Stadt', en: 'In the heart of the city' } }
-      ],
-      announcementBar: { de: 'Jetzt Termin buchen — schnell & einfach online', en: 'Book your appointment online' },
+      highlights: (function() {
+        var byType = {
+          restaurant: [
+            { icon: '🍽️', title: { de: 'Authentische Küche', en: 'Authentic cuisine' }, desc: { de: order.description || 'Frische Zutaten, täglich zubereitet', en: 'Fresh ingredients, prepared daily' } },
+            { icon: '🥂', title: { de: 'Besondere Atmosphäre', en: 'Special atmosphere' }, desc: { de: 'Genießen Sie Ihre Zeit bei uns', en: 'Enjoy your time with us' } },
+            { icon: '📍', title: { de: 'Im Herzen Wiens', en: 'In the heart of Vienna' }, desc: { de: order.address || 'Wien', en: order.address || 'Vienna' } }
+          ],
+          cafe: [
+            { icon: '☕', title: { de: 'Bester Kaffee', en: 'Best coffee' }, desc: { de: 'Sorgfältig ausgewählte Bohnen', en: 'Carefully selected beans' } },
+            { icon: '🥐', title: { de: 'Hausgemacht', en: 'Homemade' }, desc: { de: 'Frisch gebacken jeden Morgen', en: 'Freshly baked every morning' } },
+            { icon: '📍', title: { de: 'Im Herzen Wiens', en: 'In the heart of Vienna' }, desc: { de: order.address || 'Wien', en: order.address || 'Vienna' } }
+          ],
+          beauty: [
+            { icon: '✨', title: { de: 'Expertenbehandlungen', en: 'Expert treatments' }, desc: { de: 'Professionelle Pflege für Ihr Wohlbefinden', en: 'Professional care for your wellbeing' } },
+            { icon: '🌸', title: { de: 'Premium Produkte', en: 'Premium products' }, desc: { de: 'Nur die besten Marken', en: 'Only the best brands' } },
+            { icon: '📞', title: { de: 'Jetzt Termin buchen', en: 'Book appointment now' }, desc: { de: order.phone || 'Rufen Sie uns an', en: order.phone || 'Give us a call' } }
+          ],
+          retail: [
+            { icon: '🛍️', title: { de: 'Kuratiertes Sortiment', en: 'Curated selection' }, desc: { de: order.description || 'Hochwertige Produkte', en: order.description || 'High-quality products' } },
+            { icon: '💬', title: { de: 'Persönliche Beratung', en: 'Personal advice' }, desc: { de: 'Wir helfen Ihnen gerne weiter', en: 'We are happy to help' } },
+            { icon: '📍', title: { de: 'Im Herzen Wiens', en: 'In the heart of Vienna' }, desc: { de: order.address || 'Wien', en: order.address || 'Vienna' } }
+          ]
+        };
+        return byType[type] || byType.restaurant;
+      })(),
+      announcementBar: (function() {
+        var byType = {
+          restaurant: { de: 'Jetzt Tisch reservieren — ' + (order.phone || 'Tel. auf der Website'), en: 'Reserve a table now — ' + (order.phone || 'see phone on website') },
+          cafe:        { de: 'Willkommen — Täglich frisch für Sie', en: 'Welcome — Fresh for you every day' },
+          beauty:      { de: 'Jetzt Termin buchen — ' + (order.phone || 'Tel. auf der Website'), en: 'Book your appointment — ' + (order.phone || 'see phone on website') },
+          retail:      { de: 'Besuchen Sie uns — ' + (order.address || 'Wien'), en: 'Visit us — ' + (order.address || 'Vienna') }
+        };
+        return byType[type] || byType.restaurant;
+      })(),
       photos: imgs,
       supabase: { url: SUPABASE_URL, key: SUPABASE_KEY },
       reviewSlug: slug,

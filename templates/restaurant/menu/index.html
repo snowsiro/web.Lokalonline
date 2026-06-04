@@ -346,6 +346,62 @@
     }
     .footer-links a:hover { color: rgba(255,255,255,.6); }
 
+    /* ── ALLERGEN BADGES ── */
+    .item-allergens {
+      margin-top: 8px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+    }
+    .allergen-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 22px; height: 22px;
+      font-size: 10px;
+      font-weight: 700;
+      font-family: var(--font-body);
+      background: rgba(200,48,42,.12);
+      color: var(--primary);
+      border: 1px solid rgba(200,48,42,.25);
+      border-radius: 4px;
+      cursor: default;
+    }
+
+    /* ── ALLERGEN LEGEND ── */
+    #allergen-legend {
+      padding: 40px 10vw;
+      background: rgba(255,255,255,.02);
+      border-top: 1px solid rgba(255,255,255,.06);
+    }
+    .allergen-legend-title {
+      font-size: 11px;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,.3);
+      margin-bottom: 20px;
+    }
+    .allergen-legend-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(195px, 1fr));
+      gap: 8px 24px;
+      margin-bottom: 20px;
+    }
+    .allergen-legend-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 12px;
+      color: rgba(255,255,255,.45);
+    }
+    .allergen-disclaimer {
+      font-size: 12px;
+      color: rgba(255,255,255,.25);
+      line-height: 1.65;
+      border-top: 1px solid rgba(255,255,255,.06);
+      padding-top: 16px;
+    }
+
     /* ── SCROLL REVEAL ── */
     .reveal {
       opacity: 0;
@@ -364,6 +420,7 @@
       #cat-nav { padding: 0 6vw; }
       #menu-content { padding: 0 6vw 80px; }
       .menu-item { padding: 20px 16px; }
+      #allergen-legend { padding: 32px 6vw; }
       #info-band { padding: 40px 6vw; flex-direction: column; gap: 28px; }
       #menu-footer { padding: 32px 6vw; flex-direction: column; align-items: flex-start; }
     }
@@ -403,6 +460,9 @@
 
   <!-- MENU CONTENT -->
   <main id="menu-content"></main>
+
+  <!-- ALLERGEN LEGEND -->
+  <section id="allergen-legend"></section>
 
   <!-- INFO BAND -->
   <section id="info-band">
@@ -450,6 +510,23 @@
     const D  = window.SITE_DATA;
     const MD = window.MENU_DATA;
     let lang = localStorage.getItem('lang') || 'de';
+
+    const ALLERGENS = {
+      A: { de: 'Glutenhaltiges Getreide', en: 'Gluten' },
+      B: { de: 'Krebstiere',              en: 'Crustaceans' },
+      C: { de: 'Eier',                    en: 'Eggs' },
+      D: { de: 'Fisch',                   en: 'Fish' },
+      E: { de: 'Erdnüsse',               en: 'Peanuts' },
+      F: { de: 'Soja',                    en: 'Soy' },
+      G: { de: 'Milch / Laktose',         en: 'Milk / Lactose' },
+      H: { de: 'Schalenfrüchte',         en: 'Tree Nuts' },
+      L: { de: 'Sellerie',               en: 'Celery' },
+      M: { de: 'Senf',                    en: 'Mustard' },
+      N: { de: 'Sesam',                   en: 'Sesame' },
+      O: { de: 'Schwefeldioxid / Sulfite', en: 'Sulphites' },
+      P: { de: 'Lupinen',                en: 'Lupin' },
+      R: { de: 'Weichtiere',             en: 'Molluscs' }
+    };
 
     /* ── UTILS ── */
     function t(obj) {
@@ -540,12 +617,19 @@
         const items = cat.items.map(item => {
           const altLang = lang === 'en' ? 'de' : (lang === 'ko' ? 'de' : 'en');
           const altName = item.name[altLang] && item.name[altLang] !== t(item.name) ? item.name[altLang] : '';
+          const badges = (item.allergens && item.allergens.length)
+            ? `<div class="item-allergens">${item.allergens.map(a => {
+                const label = ALLERGENS[a] ? (ALLERGENS[a][lang] || ALLERGENS[a].de) : a;
+                return `<span class="allergen-badge" title="${label}">${a}</span>`;
+              }).join('')}</div>`
+            : '';
           return `
             <div class="menu-item">
               <div class="item-text">
                 <div class="item-name">${t(item.name)}</div>
                 ${altName ? `<div class="item-name-alt">${altName}</div>` : ''}
                 <div class="item-desc">${t(item.desc)}</div>
+                ${badges}
               </div>
               <div class="item-price">${item.price}</div>
             </div>`;
@@ -560,6 +644,26 @@
             <div class="menu-items">${items}</div>
           </section>`;
       }).join('');
+    }
+
+    /* ── ALLERGEN LEGEND ── */
+    function renderAllergenLegend() {
+      const el = document.getElementById('allergen-legend');
+      if (!el) return;
+      const isKo = lang === 'ko', isEn = lang === 'en';
+      const title = isKo ? '알레르기 정보' : (isEn ? 'Allergen Information' : 'Allergeninformation');
+      const disclaimer = isKo
+        ? '알레르기 유발 성분에 대한 자세한 정보는 직원에게 문의하세요. 모든 가격은 부가세 포함입니다. 오류 및 변경 사항이 있을 수 있습니다.'
+        : (isEn
+          ? 'For detailed allergen information please ask our staff. All prices include VAT. Subject to change without notice.'
+          : 'Detaillierte Allergeninformationen erhalten Sie auf Anfrage beim Personal. Alle Preise inkl. MwSt. Irrtümer und Änderungen vorbehalten.');
+      const rows = Object.entries(ALLERGENS).map(([code, names]) =>
+        `<div class="allergen-legend-row"><span class="allergen-badge">${code}</span><span>${names[lang] || names.de}</span></div>`
+      ).join('');
+      el.innerHTML = `
+        <div class="allergen-legend-title">${title}</div>
+        <div class="allergen-legend-grid">${rows}</div>
+        <div class="allergen-disclaimer">${disclaimer}</div>`;
     }
 
     /* ── INFO BAND ── */
@@ -618,9 +722,9 @@
       renderHero();
       renderCatNav();
       renderMenu();
+      renderAllergenLegend();
       renderInfo();
       renderFooter();
-      // Re-init observers after re-render
       setTimeout(() => { initReveal(); initScrollSpy(); }, 50);
     }
 

@@ -256,6 +256,26 @@
       content: '⚠ ';
       font-size: 10px;
     }
+    .item-allergens {
+      margin-top: 8px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+    }
+    .allergen-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 22px; height: 22px;
+      font-size: 10px;
+      font-weight: 700;
+      font-family: var(--font-body);
+      background: rgba(184,118,58,.1);
+      color: var(--primary);
+      border: 1px solid rgba(184,118,58,.3);
+      border-radius: 4px;
+      cursor: default;
+    }
 
     .item-right {
       flex-shrink: 0;
@@ -270,16 +290,37 @@
 
     /* ── ALLERGEN NOTE ── */
     #allergen-note {
-      padding: 32px 10vw;
-      background: rgba(184,118,58,.06);
+      padding: 36px 10vw;
+      background: rgba(184,118,58,.05);
       border-top: 1px solid rgba(184,118,58,.15);
       border-bottom: 1px solid rgba(184,118,58,.15);
     }
-
-    .allergen-note-text {
+    .allergen-legend-title {
+      font-size: 11px;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: var(--mid);
+      margin-bottom: 16px;
+    }
+    .allergen-legend-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(195px, 1fr));
+      gap: 8px 24px;
+      margin-bottom: 20px;
+    }
+    .allergen-legend-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
       font-size: 12px;
       color: var(--mid);
-      max-width: 640px;
+    }
+    .allergen-disclaimer {
+      font-size: 12px;
+      color: var(--mid);
+      line-height: 1.65;
+      border-top: 1px solid rgba(184,118,58,.15);
+      padding-top: 16px;
     }
 
     /* ── INFO STRIP ── */
@@ -360,6 +401,7 @@
       #cat-nav { padding: 0 6vw; }
       #menu-content { padding: 0 6vw 80px; }
       #allergen-note { padding: 28px 6vw; }
+      .allergen-legend-grid { grid-template-columns: 1fr 1fr; }
       #info-strip { padding: 48px 6vw; }
       #menu-footer { padding: 24px 6vw; }
     }
@@ -400,9 +442,7 @@
   <main id="menu-content"></main>
 
   <!-- ALLERGEN NOTE -->
-  <div id="allergen-note">
-    <p class="allergen-note-text" id="allergen-text"></p>
-  </div>
+  <div id="allergen-note"></div>
 
   <!-- INFO STRIP -->
   <section id="info-strip">
@@ -441,6 +481,23 @@
     const D  = window.SITE_DATA;
     const MD = window.MENU_DATA;
     let lang = localStorage.getItem('lang') || 'de';
+
+    const ALLERGENS = {
+      A: { de: 'Glutenhaltiges Getreide', en: 'Gluten' },
+      B: { de: 'Krebstiere',              en: 'Crustaceans' },
+      C: { de: 'Eier',                    en: 'Eggs' },
+      D: { de: 'Fisch',                   en: 'Fish' },
+      E: { de: 'Erdnüsse',               en: 'Peanuts' },
+      F: { de: 'Soja',                    en: 'Soy' },
+      G: { de: 'Milch / Laktose',         en: 'Milk / Lactose' },
+      H: { de: 'Schalenfrüchte',         en: 'Tree Nuts' },
+      L: { de: 'Sellerie',               en: 'Celery' },
+      M: { de: 'Senf',                    en: 'Mustard' },
+      N: { de: 'Sesam',                   en: 'Sesame' },
+      O: { de: 'Schwefeldioxid / Sulfite', en: 'Sulphites' },
+      P: { de: 'Lupinen',                en: 'Lupin' },
+      R: { de: 'Weichtiere',             en: 'Molluscs' }
+    };
 
     function t(obj) {
       if (!obj) return '';
@@ -505,9 +562,15 @@
 
       content.innerHTML = MD.categories.map((cat, i) => {
         const items = cat.items.map(item => {
-          const allergenHtml = item.allergen
-            ? `<div class="item-allergen">${t(item.allergen)}</div>`
-            : '';
+          let allergenHtml = '';
+          if (item.allergens && item.allergens.length) {
+            allergenHtml = `<div class="item-allergens">${item.allergens.map(a => {
+              const label = ALLERGENS[a] ? (ALLERGENS[a][lang] || ALLERGENS[a].de) : a;
+              return `<span class="allergen-badge" title="${label}">${a}</span>`;
+            }).join('')}</div>`;
+          } else if (item.allergen) {
+            allergenHtml = `<div class="item-allergen">${t(item.allergen)}</div>`;
+          }
           return `
             <div class="menu-item reveal">
               <div class="item-left">
@@ -533,10 +596,20 @@
     }
 
     function renderAllergenNote() {
-      setText('allergen-text', lang === 'en'
-        ? 'Allergen information is available on request. Items marked with ⚠ contain common allergens. All prices include VAT.'
-        : 'Allergeninformationen erhalten Sie auf Anfrage. Mit ⚠ markierte Artikel enthalten häufige Allergene. Alle Preise inkl. MwSt.'
-      );
+      const el = document.getElementById('allergen-note');
+      if (!el) return;
+      const isEn = lang === 'en';
+      const title = isEn ? 'Allergen Information' : 'Allergeninformation';
+      const disclaimer = isEn
+        ? 'For detailed allergen information please ask our staff. All prices include VAT. Subject to change without notice.'
+        : 'Detaillierte Allergeninformationen erhalten Sie auf Anfrage beim Personal. Alle Preise inkl. MwSt. Irrtümer und Änderungen vorbehalten.';
+      const rows = Object.entries(ALLERGENS).map(([code, names]) =>
+        `<div class="allergen-legend-row"><span class="allergen-badge">${code}</span><span>${names[lang] || names.de}</span></div>`
+      ).join('');
+      el.innerHTML = `
+        <div class="allergen-legend-title">${title}</div>
+        <div class="allergen-legend-grid">${rows}</div>
+        <div class="allergen-disclaimer">${disclaimer}</div>`;
     }
 
     function renderInfo() {

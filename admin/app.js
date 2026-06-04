@@ -779,7 +779,7 @@
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer ' + session.access_token
+          'Authorization': 'Bearer ' + (session ? session.access_token : '')
         },
         body: JSON.stringify({
           type: 'payment-link',
@@ -1176,6 +1176,25 @@
           service:     { de: 'Jetzt Termin buchen — ' + (order.phone || 'Tel. auf der Website'), en: 'Book your appointment — ' + (order.phone || 'see phone on website') }
         };
         return byType[type] || byType.restaurant;
+      })(),
+      nav: (function() {
+        // restaurant expects D.nav.links [{href, de, en}]; cafe expects D.nav [{href, label:{de,en}}]
+        var byType = {
+          restaurant: { links: [
+            { href: '#about',       de: 'Über uns',      en: 'About' },
+            { href: '#photos',      de: 'Galerie',        en: 'Gallery' },
+            { href: '#hours',       de: 'Öffnungszeiten', en: 'Hours' },
+            { href: '#reservation', de: 'Reservierung',   en: 'Reserve' }
+          ]},
+          cafe: [
+            { href: '#specials', label: { de: 'Spezialitäten', en: 'Specials' } },
+            { href: '#about',    label: { de: 'Über uns',       en: 'About' } },
+            { href: '#drinks',   label: { de: 'Getränke',       en: 'Drinks' } },
+            { href: '#photos',   label: { de: 'Galerie',        en: 'Gallery' } },
+            { href: '#reservation', label: { de: 'Reservierung', en: 'Reserve' } }
+          ]
+        };
+        return byType[type] || null;
       })(),
       photos: imgs,
       supabase: { url: SUPABASE_URL, key: SUPABASE_KEY },

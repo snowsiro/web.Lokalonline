@@ -1053,9 +1053,10 @@ So: Ruhetag"></textarea>
       document.getElementById('f_notes').placeholder = t.ph_notes;
 
       // Select options
-      ['placeholder','cafe','restaurant','asian','bakery','bar','nail','hair','retail','fastfood','other'].forEach(function(k) {
+      ['placeholder','cafe','restaurant','asian','bakery','bar','nail','hair','retail','fastfood',
+       'physio','yoga','arzt','fahrschule','reinigung','foto','anwalt','tierarzt','service','other'].forEach(function(k) {
         var el = document.getElementById('opt_'+k);
-        if (el) el.textContent = t['opt_'+k];
+        if (el && t['opt_'+k]) el.textContent = t['opt_'+k];
       });
 
       // Errors

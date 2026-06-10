@@ -746,6 +746,7 @@ So: Ruhetag"></textarea>
     var SB_URL = 'https://vhnourjddnlslgabrasb.supabase.co';
     var SB_KEY = 'sb_publishable_y5l1cAZXoAj8xaSVXUkBfw_Pk9pxb6H';
     var sb = supabase.createClient(SB_URL, SB_KEY);
+    var formLoadedAt = Date.now();
 
     var currentLang = localStorage.getItem('lang') || 'de';
     var currentStep = 1;
@@ -814,6 +815,7 @@ So: Ruhetag"></textarea>
         backHome: '← Zurück zur Startseite',
         submitting: 'Wird gesendet…',
         submitError: 'Es ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut.',
+        rateLimit: 'Zu viele Anfragen. Bitte versuchen Sie es in einer Stunde erneut.',
         uploadWarning: 'Hinweis: Ein oder mehrere Dateien konnten nicht hochgeladen werden. Ihre Anfrage wurde trotzdem gesendet — laden Sie die Dateien später per E-Mail nach.',
         lbl_maps_tip: 'Tipp: Daten direkt aus Google Maps übernehmen',
         maps_tip_s1: 'Google Maps öffnen → Ihren Betrieb suchen',
@@ -905,6 +907,7 @@ So: Ruhetag"></textarea>
         backHome: '← Back to homepage',
         submitting: 'Sending…',
         submitError: 'An error occurred. Please try again.',
+        rateLimit: 'Too many requests. Please try again in an hour.',
         uploadWarning: 'Note: One or more files could not be uploaded. Your request was still sent — you can send the files later by email.',
         lbl_maps_tip: 'Tip: Get your details from Google Maps',
         maps_tip_s1: 'Open Google Maps → search for your business',
@@ -1189,8 +1192,8 @@ So: Ruhetag"></textarea>
       btn.disabled = true;
       btn.innerHTML = '<span class="btn-spinner"></span>' + T[currentLang].submitting;
 
-      // Honeypot check — bots fill hidden fields, humans don't
-      if (document.getElementById('hp_website').value) {
+      // Honeypot + timing check — bots fill hidden fields or submit instantly
+      if (document.getElementById('hp_website').value || (Date.now() - formLoadedAt) < 3000) {
         await new Promise(function(r) { setTimeout(r, 1200); });
         document.getElementById('orderCard').style.display = 'none';
         document.getElementById('progressWrap').style.display = 'none';
@@ -1305,7 +1308,7 @@ So: Ruhetag"></textarea>
         });
 
       } catch (e) {
-        errEl.textContent = T[currentLang].submitError + ' (' + e.message + ')';
+        errEl.textContent = /rate_limit/.test(e.message) ? T[currentLang].rateLimit : T[currentLang].submitError + ' (' + e.message + ')';
         errEl.style.display = 'block';
         btn.disabled = false;
         btn.textContent = T[currentLang].btnSubmit;

@@ -647,6 +647,8 @@
     var editBtn = document.getElementById('editSiteBtn');
     editBtn.style.display = data.site_slug ? 'inline-flex' : 'none';
     document.getElementById('editLinksBtn').style.display = data.site_slug ? 'inline-flex' : 'none';
+    document.getElementById('previewSiteBtn').style.display = data.site_slug ? 'inline-flex' : 'none';
+    document.getElementById('generateSiteBtn').textContent = data.site_slug ? '🔄 Neu generieren' : '🌐 Website erstellen';
     openModal('orderOverlay');
 
     loadOrderMessages(id);
@@ -805,6 +807,12 @@
       openSiteGenerator(currentOrderData);
     });
 
+    document.getElementById('previewSiteBtn').addEventListener('click', function () {
+      var slug = document.getElementById('orderSiteSlug').value.trim();
+      if (!slug) { showToast('Bitte zuerst einen Slug eingeben und speichern.'); return; }
+      window.open('https://lokalonline.at/' + slug + '/', '_blank');
+    });
+
     document.getElementById('editSiteBtn').addEventListener('click', function () {
       var slug = document.getElementById('orderSiteSlug').value.trim();
       if (!slug) { showToast('Bitte zuerst einen Slug eingeben und speichern.'); return; }
@@ -828,6 +836,8 @@
       if (!error) {
         document.getElementById('editSiteBtn').style.display = slug ? 'inline-flex' : 'none';
         document.getElementById('editLinksBtn').style.display = slug ? 'inline-flex' : 'none';
+        document.getElementById('previewSiteBtn').style.display = slug ? 'inline-flex' : 'none';
+        document.getElementById('generateSiteBtn').textContent = slug ? '🔄 Neu generieren' : '🌐 Website erstellen';
         closeModal('orderOverlay');
         showToast('Gespeichert');
         loadOrders();
@@ -969,8 +979,8 @@
 
   window.openSiteGenerator = function (order) {
     currentOrderData = order;
-    var autoSlug = slugify(order.business_name);
-    document.getElementById('siteSlug').value = autoSlug;
+    // Bei bestehender Site denselben Slug behalten (Neu-Generierung), sonst aus Name ableiten.
+    document.getElementById('siteSlug').value = order.site_slug || slugify(order.business_name);
     document.getElementById('siteGenError').style.display = 'none';
     // Reset template selection
     document.querySelectorAll('.template-card').forEach(function (c) { c.classList.remove('active'); });
@@ -1117,6 +1127,29 @@
     return byType[tone] || byType[Object.keys(byType)[0]];
   }
 
+  // Fotos nach Kundenrolle gruppieren (hero/innen/speisen/rest), ausgerichtet an photo_urls.
+  function classifyPhotos(order) {
+    var urls = [];
+    if (order.photo_urls) { try { urls = JSON.parse(order.photo_urls); } catch (e) {} }
+    else if (order.photo_url) { urls = [order.photo_url]; }
+    if (!Array.isArray(urls)) urls = [];
+    var roles = [];
+    if (order.photo_roles) { try { roles = JSON.parse(order.photo_roles); } catch (e) {} }
+    if (!Array.isArray(roles)) roles = [];
+
+    var hero = [], innen = [], speisen = [], rest = [];
+    urls.forEach(function (u, i) {
+      var r = roles[i] || '';
+      if (r === 'hero') hero.push(u);
+      else if (r === 'innen') innen.push(u);
+      else if (r === 'speisen') speisen.push(u);
+      else rest.push(u);
+    });
+    // Slides bevorzugen Titelbilder, sonst alle Fotos.
+    return { urls: urls, hero: hero, innen: innen, speisen: speisen, rest: rest,
+             slideUrls: hero.length ? hero : urls };
+  }
+
   function fillTpl(str, order) {
     return String(str || '')
       .replace(/\{name\}/g, order.business_name || '')
@@ -1170,9 +1203,14 @@
       ? order.description : fillTpl(preset.about, order);
     var introDe   = fillTpl(preset.intro, order);
 
-    // Slides aus hochgeladenen Fotos (img/slide1..N) + Preset-Texten.
+    // Fotos nach Rolle: Titelbilder → Slider, Innen → Über-uns, Speisen/Rest → Galerie.
+    var pc = classifyPhotos(order);
+    var galleryUrls = pc.speisen.concat(pc.rest, pc.innen, pc.hero);
+    if (galleryUrls.length === 0) galleryUrls = photoUrls;
+
+    // Slides aus den Titelbildern (img/slide1..N, von copyPhotosToGitHub erzeugt) + Preset-Texten.
     var slideImgs = [];
-    for (var si = 0; si < photoUrls.length && si < 3; si++) slideImgs.push('img/slide' + (si + 1) + '.jpg');
+    for (var si = 0; si < pc.slideUrls.length && si < 3; si++) slideImgs.push('img/slide' + (si + 1) + '.jpg');
     if (slideImgs.length === 0) slideImgs = ['img/slide1.jpg', 'img/slide2.jpg', 'img/slide3.jpg'];
     var slides = slideImgs.map(function (img, i) {
       var s = preset.slides[i % preset.slides.length];
@@ -1215,7 +1253,7 @@
       slides: slides,
       introText: { de: introDe, en: '' },
       about: {
-        img: photoUrls[0] || 'img/iroom.jpg',
+        img: pc.innen[0] || pc.hero[0] || photoUrls[0] || 'img/iroom.jpg',
         text: { de: aboutDe, en: '' },
         highlights: highlights.length ? highlights : [
           { de: 'Täglich frisch', en: 'Daily fresh' },
@@ -1229,11 +1267,11 @@
       categories: [],
       highlights: highlights.slice(0, 3).map(function (h) { return { icon: '✦', title: h, desc: { de: '', en: '' } }; }),
       announcementBar: { de: '', en: '' },
-      photos: photoUrls.length > 0 ? photoUrls : ['img/slide1.jpg', 'img/slide2.jpg', 'img/iroom.jpg'],
+      photos: galleryUrls.length > 0 ? galleryUrls : ['img/slide1.jpg', 'img/slide2.jpg', 'img/iroom.jpg'],
       supabase: { url: SUPABASE_URL, key: SUPABASE_KEY },
       reviewSlug: slug,
-      instagramPhotos: photoUrls.slice(0, 6).concat(['img/slide1.jpg','img/slide2.jpg','img/iroom.jpg','img/food.jpg','img/slide1.jpg','img/slide2.jpg']).slice(0, 6),
-      seo: { title: name + ' — Wien', description: { de: taglineDe, en: '' }, ogImage: photoUrls[0] || 'img/og-image.jpg' },
+      instagramPhotos: galleryUrls.slice(0, 6).concat(['img/slide1.jpg','img/slide2.jpg','img/iroom.jpg','img/food.jpg','img/slide1.jpg','img/slide2.jpg']).slice(0, 6),
+      seo: { title: name + ' — Wien', description: { de: taglineDe, en: '' }, ogImage: pc.hero[0] || photoUrls[0] || 'img/og-image.jpg' },
       legal: {
         type: order.legal_type || 'einzelunternehmer',
         name: order.legal_name || '',
@@ -1636,12 +1674,10 @@
 
     if (order.logo_url) await copyOne(order.logo_url, slug + '/img/logo.png');
 
-    var photoUrls = [];
-    if (order.photo_urls) { try { photoUrls = JSON.parse(order.photo_urls); } catch (e) {} }
-    else if (order.photo_url) { photoUrls = [order.photo_url]; }
-
-    for (var i = 0; i < photoUrls.length && i < 6; i++) {
-      await copyOne(photoUrls[i], slug + '/img/slide' + (i + 1) + '.jpg');
+    // Nur die Titelbilder als slide1..N (deckungsgleich mit generateDataJs).
+    var pc = classifyPhotos(order);
+    for (var i = 0; i < pc.slideUrls.length && i < 3; i++) {
+      await copyOne(pc.slideUrls[i], slug + '/img/slide' + (i + 1) + '.jpg');
     }
   }
 
@@ -1805,6 +1841,8 @@
       document.getElementById('orderSiteSlug').value = slug;
       document.getElementById('editSiteBtn').style.display = 'inline-flex';
       document.getElementById('editLinksBtn').style.display = 'inline-flex';
+      document.getElementById('previewSiteBtn').style.display = 'inline-flex';
+      document.getElementById('generateSiteBtn').textContent = '🔄 Neu generieren';
 
       closeModal('siteGenOverlay');
       showQrResult(slug);

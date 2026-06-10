@@ -765,6 +765,7 @@ So: Ruhetag"></textarea>
     var currentStep = 1;
     var logoFile = null;
     var photoFiles = [];
+    var photoRoles = [];
     var parsedMenuItems = [];
 
     // ── Translations ───────────────────────────────────────────────
@@ -839,8 +840,13 @@ So: Ruhetag"></textarea>
         menuUploadText: 'Speisekarte-Foto hochladen (AI liest Menü aus)',
         menuUploadHint: 'JPG, PNG · wird automatisch analysiert',
         menuAiLoadingText: 'AI analysiert Ihre Speisekarte…',
-        menuParsedTitle: 'Erkannte Gerichte',
-        menuParsedResetText: 'Neu hochladen',
+        menuParsedTitle: 'Gerichte (bearbeitbar)',
+        menuParsedResetText: 'Foto neu',
+        lbl_tone: 'Stil Ihrer Website',
+        lbl_tone_hint: 'Bestimmt den Tonfall der Texte auf Ihrer Website.',
+        lbl_menu_add: 'Gericht hinzufügen',
+        lbl_menu_manual: 'Speisekarte ohne Foto eingeben',
+        photoRoles: { '': 'Automatisch', 'hero': 'Titelbild', 'innen': 'Innenraum', 'speisen': 'Speisen/Produkte' },
         lbl_legal_type: 'Unternehmensform',
         lbl_einzelunternehmer: 'Einzelunternehmer / Einzelkaufmann',
         lbl_gesellschaft: 'Gesellschaft (GmbH, KG, OG …)',
@@ -931,8 +937,13 @@ So: Ruhetag"></textarea>
         menuUploadText: 'Upload menu photo (AI reads it automatically)',
         menuUploadHint: 'JPG, PNG · analysed automatically',
         menuAiLoadingText: 'AI is analysing your menu…',
-        menuParsedTitle: 'Detected dishes',
-        menuParsedResetText: 'Upload again',
+        menuParsedTitle: 'Dishes (editable)',
+        menuParsedResetText: 'New photo',
+        lbl_tone: 'Style of your website',
+        lbl_tone_hint: 'Sets the tone of the texts on your website.',
+        lbl_menu_add: 'Add dish',
+        lbl_menu_manual: 'Enter menu without a photo',
+        photoRoles: { '': 'Automatic', 'hero': 'Hero image', 'innen': 'Interior', 'speisen': 'Food/Products' },
         lbl_legal_type: 'Business entity type',
         lbl_einzelunternehmer: 'Sole trader (Einzelunternehmer)',
         lbl_gesellschaft: 'Company (GmbH, KG, OG …)',
@@ -1057,6 +1068,11 @@ So: Ruhetag"></textarea>
       document.getElementById('menuAiLoadingText').textContent = t.menuAiLoadingText;
       document.getElementById('menuParsedTitle').textContent = t.menuParsedTitle;
       document.getElementById('menuParsedResetText').textContent = t.menuParsedResetText;
+      document.getElementById('lbl_tone').textContent = t.lbl_tone;
+      document.getElementById('lbl_tone_hint').textContent = t.lbl_tone_hint;
+      document.getElementById('lbl_menu_add').textContent = t.lbl_menu_add;
+      document.getElementById('lbl_menu_manual').textContent = t.lbl_menu_manual;
+      if (window._renderPhotoGrid) window._renderPhotoGrid();
 
       // Impressum toggle
       document.getElementById('lbl_impressum_toggle').textContent = t.lbl_impressum_toggle;
@@ -1166,10 +1182,21 @@ So: Ruhetag"></textarea>
           var wrap = document.createElement('div'); wrap.className = 'photo-thumb-wrap';
           var img = document.createElement('img'); img.src = URL.createObjectURL(file);
           var rm = document.createElement('div'); rm.className = 'photo-thumb-remove'; rm.textContent = '✕';
-          rm.addEventListener('click', function () { photoFiles.splice(idx, 1); renderGrid(); updateLabel(); });
-          wrap.appendChild(img); wrap.appendChild(rm); grid.appendChild(wrap);
+          rm.addEventListener('click', function () { photoFiles.splice(idx, 1); photoRoles.splice(idx, 1); renderGrid(); updateLabel(); });
+          var sel = document.createElement('select');
+          sel.className = 'photo-thumb-role';
+          sel.style.cssText = 'width:100%;margin-top:4px;padding:4px 6px;border:1px solid var(--border);border-radius:6px;font-size:11px;outline:none;background:#fff';
+          var opts = (T[currentLang] && T[currentLang].photoRoles) || { '':'Automatisch','hero':'Titelbild','innen':'Innenraum','speisen':'Speisen/Produkte' };
+          Object.keys(opts).forEach(function (val) {
+            var o = document.createElement('option'); o.value = val; o.textContent = opts[val];
+            if ((photoRoles[idx] || '') === val) o.selected = true;
+            sel.appendChild(o);
+          });
+          sel.addEventListener('change', function () { photoRoles[idx] = sel.value; });
+          wrap.appendChild(img); wrap.appendChild(rm); wrap.appendChild(sel); grid.appendChild(wrap);
         });
       }
+      window._renderPhotoGrid = renderGrid;
       function updateLabel() {
         document.getElementById('photoUploadLabel').style.display = photoFiles.length >= 5 ? 'none' : '';
       }
@@ -1179,7 +1206,7 @@ So: Ruhetag"></textarea>
           if (photoFiles.length >= 5) return;
           if (!f.type.match(/^image\//)) { rejected++; return; }
           if (f.size > 10 * 1024 * 1024) { rejected++; return; }
-          photoFiles.push(f);
+          photoFiles.push(f); photoRoles.push('');
         });
         if (rejected > 0) {
           alert(rejected + (currentLang === 'en'
@@ -1219,6 +1246,7 @@ So: Ruhetag"></textarea>
         var orderId = crypto.randomUUID ? crypto.randomUUID() : (Date.now().toString(36) + Math.random().toString(36).slice(2));
         var logoUrl = null;
         var uploadedPhotoUrls = [];
+        var uploadedPhotoRoles = [];
 
         var uploadFailed = false;
         if (logoFile) {
@@ -1232,7 +1260,10 @@ So: Ruhetag"></textarea>
           var pFile = photoFiles[pi];
           var pPath = orderId + '/photo_' + (pi + 1) + '.' + pFile.name.split('.').pop();
           var pRes = await sb.storage.from('uploads').upload(pPath, pFile, { upsert: true });
-          if (!pRes.error) uploadedPhotoUrls.push(sb.storage.from('uploads').getPublicUrl(pPath).data.publicUrl);
+          if (!pRes.error) {
+            uploadedPhotoUrls.push(sb.storage.from('uploads').getPublicUrl(pPath).data.publicUrl);
+            uploadedPhotoRoles.push(photoRoles[pi] || '');
+          }
           else uploadFailed = true;
         }
 
@@ -1267,6 +1298,7 @@ So: Ruhetag"></textarea>
           logo_url: logoUrl,
           photo_url: uploadedPhotoUrls[0] || null,
           photo_urls: uploadedPhotoUrls.length > 0 ? JSON.stringify(uploadedPhotoUrls) : null,
+          photo_roles: uploadedPhotoRoles.some(function (r) { return r; }) ? JSON.stringify(uploadedPhotoRoles) : null,
           payment_status: 'pending'
         };
 

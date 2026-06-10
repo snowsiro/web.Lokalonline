@@ -646,6 +646,7 @@
     document.getElementById('orderSiteSlug').value = data.site_slug || '';
     var editBtn = document.getElementById('editSiteBtn');
     editBtn.style.display = data.site_slug ? 'inline-flex' : 'none';
+    document.getElementById('editLinksBtn').style.display = data.site_slug ? 'inline-flex' : 'none';
     openModal('orderOverlay');
 
     loadOrderMessages(id);
@@ -810,6 +811,12 @@
       openFileEditor(slug);
     });
 
+    document.getElementById('editLinksBtn').addEventListener('click', function () {
+      var slug = document.getElementById('orderSiteSlug').value.trim();
+      if (!slug) { showToast('Bitte zuerst einen Slug eingeben und speichern.'); return; }
+      openLinkEditor(slug);
+    });
+
     document.getElementById('saveOrderBtn').addEventListener('click', async function () {
       if (!currentOrderId) return;
       var slug = document.getElementById('orderSiteSlug').value.trim() || null;
@@ -820,6 +827,7 @@
       }).eq('id', currentOrderId);
       if (!error) {
         document.getElementById('editSiteBtn').style.display = slug ? 'inline-flex' : 'none';
+        document.getElementById('editLinksBtn').style.display = slug ? 'inline-flex' : 'none';
         closeModal('orderOverlay');
         showToast('Gespeichert');
         loadOrders();
@@ -1322,6 +1330,113 @@
     btn.disabled = false; btn.textContent = '💾 Speichern & deployen';
   });
 
+  // ── Link Editor (Linkseite ohne Code bearbeiten) ──────────────────
+  var linkEditorSlug = null;
+  var linkEditorHtml = '';
+  var linkEditorLinks = [];
+
+  async function openLinkEditor(slug) {
+    linkEditorSlug = slug;
+    linkEditorHtml = '';
+    linkEditorLinks = [];
+    var errEl = document.getElementById('linkEditorError');
+    var rowsEl = document.getElementById('linkEditorRows');
+    var infoEl = document.getElementById('linkEditorInfo');
+    errEl.style.display = 'none';
+    rowsEl.innerHTML = '<div style="color:var(--text-muted);font-size:13px">⏳ Lade…</div>';
+    infoEl.textContent = 'lokalonline.at/' + slug + '/link/';
+    openModal('linkEditorOverlay');
+
+    try {
+      var session = (await sb.auth.getSession()).data.session;
+      var token = session ? session.access_token : '';
+      var res = await fetch(EDGE_FN, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+        body: JSON.stringify({ action: 'get-file', path: slug + '/link/index.html' })
+      });
+      var data = await res.json();
+      if (data.error) throw new Error(data.error);
+      linkEditorHtml = data.content;
+
+      var doc = new DOMParser().parseFromString(linkEditorHtml, 'text/html');
+      var anchors = doc.querySelectorAll('a.link-btn');
+      anchors.forEach(function (a) {
+        var labelEl = a.querySelector('.label');
+        linkEditorLinks.push({
+          label: labelEl ? labelEl.textContent.trim() : a.textContent.trim(),
+          href: a.getAttribute('href') || ''
+        });
+      });
+
+      if (linkEditorLinks.length === 0) {
+        rowsEl.innerHTML = '<div style="color:var(--text-muted);font-size:13px">Keine Links gefunden (a.link-btn).</div>';
+        return;
+      }
+
+      rowsEl.innerHTML = linkEditorLinks.map(function (l, i) {
+        return '<div style="margin-bottom:14px">' +
+          '<label style="display:block;font-size:12px;font-weight:600;margin-bottom:4px">' + esc(l.label) + '</label>' +
+          '<input type="text" class="link-editor-input" data-idx="' + i + '" value="' + esc(l.href) + '"' +
+          ' style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:8px;font-size:13px;font-family:monospace;outline:none" />' +
+          '</div>';
+      }).join('');
+    } catch (e) {
+      rowsEl.innerHTML = '';
+      errEl.textContent = 'Fehler beim Laden: ' + e.message;
+      errEl.style.display = 'block';
+    }
+  }
+
+  document.getElementById('linkEditorSave').addEventListener('click', async function () {
+    if (!linkEditorSlug || !linkEditorHtml) return;
+    var errEl = document.getElementById('linkEditorError');
+    var btn = document.getElementById('linkEditorSave');
+    errEl.style.display = 'none';
+
+    var inputs = document.querySelectorAll('.link-editor-input');
+    var html = linkEditorHtml;
+    var changed = false;
+
+    for (var i = 0; i < inputs.length; i++) {
+      var idx = parseInt(inputs[i].getAttribute('data-idx'), 10);
+      var oldHref = linkEditorLinks[idx].href;
+      var newHref = inputs[i].value.trim();
+      if (newHref === oldHref) continue;
+      if (!/^(https?:\/\/|mailto:|tel:|\/)/.test(newHref)) {
+        errEl.textContent = 'Ungültige URL bei "' + linkEditorLinks[idx].label + '" — muss mit https://, mailto:, tel: oder / beginnen.';
+        errEl.style.display = 'block';
+        return;
+      }
+      var oldAttr = 'href="' + oldHref + '"';
+      var newAttr = 'href="' + newHref.replace(/"/g, '%22') + '"';
+      if (html.indexOf(oldAttr) === -1) {
+        // DOMParser decodes entities — try the HTML-encoded variant (& → &amp;)
+        oldAttr = 'href="' + oldHref.replace(/&/g, '&amp;') + '"';
+      }
+      if (html.indexOf(oldAttr) === -1) {
+        errEl.textContent = 'Link "' + linkEditorLinks[idx].label + '" nicht gefunden — bitte Datei-Editor verwenden.';
+        errEl.style.display = 'block';
+        return;
+      }
+      html = html.replace(oldAttr, newAttr);
+      changed = true;
+    }
+
+    if (!changed) { closeModal('linkEditorOverlay'); return; }
+
+    btn.disabled = true; btn.textContent = '⏳ Speichert…';
+    try {
+      await uploadFile(linkEditorSlug + '/link/index.html', html);
+      closeModal('linkEditorOverlay');
+      showToast('✅ Linkseite gespeichert!');
+    } catch (e) {
+      errEl.textContent = 'Fehler: ' + e.message;
+      errEl.style.display = 'block';
+    }
+    btn.disabled = false; btn.textContent = '💾 Speichern & deployen';
+  });
+
   // ── Copy photos from Supabase Storage to GitHub ───────────────────
   async function copyPhotosToGitHub(slug, order) {
     var session = (await sb.auth.getSession()).data.session;
@@ -1489,6 +1604,7 @@
       currentOrderData.site_slug = slug;
       document.getElementById('orderSiteSlug').value = slug;
       document.getElementById('editSiteBtn').style.display = 'inline-flex';
+      document.getElementById('editLinksBtn').style.display = 'inline-flex';
 
       closeModal('siteGenOverlay');
       showQrResult(slug);

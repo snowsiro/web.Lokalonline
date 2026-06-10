@@ -104,14 +104,15 @@ create policy "admin_all_reviews" on public.reviews
   using (auth.email() = 'info@lokalonline.at')
   with check (auth.email() = 'info@lokalonline.at');
 
--- Public can read approved reviews (for display on customer sites)
+-- Public can read ONLY approved reviews (display on customer sites)
 drop policy if exists "public_read_reviews" on public.reviews;
 create policy "public_read_reviews" on public.reviews
   for select to anon
-  using (true);
+  using (approved = true);
 
--- Authenticated users can insert reviews
+-- Visitors may submit reviews, but never self-approve — admin moderates.
 drop policy if exists "client_insert_review" on public.reviews;
-create policy "client_insert_review" on public.reviews
-  for insert to authenticated
-  with check (true);
+drop policy if exists "anon_insert_review" on public.reviews;
+create policy "anon_insert_review" on public.reviews
+  for insert to anon
+  with check (approved = false);

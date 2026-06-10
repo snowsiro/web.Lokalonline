@@ -836,11 +836,8 @@ footer {
     btn.disabled=true; btn.style.opacity='0.4';
     try{
       var dateStr=date?date.replace('-','. ')+'.':new Date().toLocaleDateString('de-AT',{year:'numeric',month:'long'});
-      var {error}=await sb.from('reviews').insert([{client_slug:CLIENT_SLUG,name:name,text:text,stars:stars,date:dateStr,approved:true}]);
+      var {error}=await sb.from('reviews').insert([{client_slug:CLIENT_SLUG,name:name,text:text,stars:stars,date:dateStr,approved:false}]);
       if(error) throw error;
-      var noMsg=document.getElementById('noReviews');
-      if(noMsg) noMsg.remove();
-      document.getElementById('reviewsGrid').prepend(renderCard({name:name,text:text,stars:stars,date:dateStr}));
       ['rvName','rvText','rvDate'].forEach(function(id){document.getElementById(id).value='';});
       window._stars=0; document.querySelectorAll('.star-btn').forEach(function(b){b.classList.remove('on');});
       showToast(window.T[window.currentLang].toast_rev);
@@ -890,7 +887,7 @@ const T = {
     footer_desc:'Seouler Straßenküche mit Herz — mitten in Wien.',
     fc1:'Navigation', fc2:'Kontakt', fc_menu:'Speisekarte ↗',
     map_btn:'In Google Maps öffnen →',
-    toast_rev:'Vielen Dank für Ihre Bewertung!',
+    toast_rev:'Vielen Dank! Ihre Bewertung wird nach kurzer Prüfung veröffentlicht.',
     toast_err:'Bitte füllen Sie alle Pflichtfelder aus.',
     no_reviews:'Noch keine Bewertungen. Seien Sie der Erste!',
   },
@@ -930,7 +927,7 @@ const T = {
     footer_desc:'Seoul street food with heart — right in Vienna.',
     fc1:'Navigation', fc2:'Contact', fc_menu:'Menu ↗',
     map_btn:'Open in Google Maps →',
-    toast_rev:'Thank you for your review!',
+    toast_rev:'Thank you! Your review will appear after a short review.',
     toast_err:'Please fill in all required fields.',
     no_reviews:'No reviews yet. Be the first!',
   },
@@ -970,7 +967,7 @@ const T = {
     footer_desc:'마음을 담은 서울 길거리 음식 — 빈 한복판에서.',
     fc1:'바로가기', fc2:'연락처', fc_menu:'메뉴판 ↗',
     map_btn:'구글 지도로 열기 →',
-    toast_rev:'리뷰를 남겨주셔서 감사합니다!',
+    toast_rev:'감사합니다! 검토 후 게시됩니다.',
     toast_err:'필수 항목을 모두 입력해주세요.',
     no_reviews:'아직 리뷰가 없어요. 첫 번째 리뷰를 남겨주세요!',
   }

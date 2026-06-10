@@ -10,6 +10,14 @@ const CORS = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, stripe-signature",
 };
 
+// Constant-time string comparison to avoid timing attacks.
+function timingSafeEqual(a: string, b: string): boolean {
+  if (a.length !== b.length) return false;
+  let diff = 0;
+  for (let i = 0; i < a.length; i++) diff |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  return diff === 0;
+}
+
 // Verify Stripe webhook signature manually (no SDK needed)
 async function verifyStripeSignature(payload: string, sigHeader: string, secret: string): Promise<boolean> {
   const parts = sigHeader.split(",").reduce((acc, part) => {
@@ -22,6 +30,10 @@ async function verifyStripeSignature(payload: string, sigHeader: string, secret:
   const signature = parts["v1"];
   if (!timestamp || !signature) return false;
 
+  // Reject events outside a 5-minute window to prevent replay attacks.
+  const ts = parseInt(timestamp, 10);
+  if (isNaN(ts) || Math.abs(Math.floor(Date.now() / 1000) - ts) > 300) return false;
+
   const signedPayload = `${timestamp}.${payload}`;
   const key = await crypto.subtle.importKey(
     "raw",
@@ -32,7 +44,7 @@ async function verifyStripeSignature(payload: string, sigHeader: string, secret:
   );
   const sig = await crypto.subtle.sign("HMAC", key, new TextEncoder().encode(signedPayload));
   const expected = Array.from(new Uint8Array(sig)).map(b => b.toString(16).padStart(2, "0")).join("");
-  return expected === signature;
+  return timingSafeEqual(expected, signature);
 }
 
 // Get Stripe customer email (fetch from Stripe API if needed)
@@ -61,14 +73,19 @@ Deno.serve(async (req) => {
     const rawBody = await req.text();
     const sigHeader = req.headers.get("stripe-signature") || "";
 
-    if (STRIPE_WEBHOOK_SECRET) {
-      const valid = await verifyStripeSignature(rawBody, sigHeader, STRIPE_WEBHOOK_SECRET);
-      if (!valid) {
-        return new Response(JSON.stringify({ error: "Invalid signature" }), {
-          status: 400,
-          headers: { ...CORS, "Content-Type": "application/json" },
-        });
-      }
+    // Fail closed: never process an unverified webhook.
+    if (!STRIPE_WEBHOOK_SECRET) {
+      return new Response(JSON.stringify({ error: "Webhook secret not configured" }), {
+        status: 500,
+        headers: { ...CORS, "Content-Type": "application/json" },
+      });
+    }
+    const valid = await verifyStripeSignature(rawBody, sigHeader, STRIPE_WEBHOOK_SECRET);
+    if (!valid) {
+      return new Response(JSON.stringify({ error: "Invalid signature" }), {
+        status: 400,
+        headers: { ...CORS, "Content-Type": "application/json" },
+      });
     }
 
     const event = JSON.parse(rawBody);

@@ -3,11 +3,32 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY") || "";
 const ADMIN_EMAIL    = "info@lokalonline.at";
 const FROM_EMAIL     = "lokalonline.at <noreply@lokalonline.at>";
+const SUPABASE_URL_AUTH  = Deno.env.get("SUPABASE_URL") || "";
+const SUPABASE_ANON_KEY  = Deno.env.get("SUPABASE_ANON_KEY") || "";
 
 const CORS = {
-  "Access-Control-Allow-Origin":  "*",
+  "Access-Control-Allow-Origin":  "https://lokalonline.at",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
+
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+function esc(s: unknown): string {
+  return String(s ?? "").replace(/[&<>"']/g, (c) =>
+    ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c] as string));
+}
+
+// Verify the request carries a valid JWT belonging to the admin account.
+async function isAdmin(req: Request): Promise<boolean> {
+  const token = (req.headers.get("Authorization") || "").replace(/^Bearer\s+/i, "");
+  if (!token) return false;
+  const r = await fetch(`${SUPABASE_URL_AUTH}/auth/v1/user`, {
+    headers: { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${token}` },
+  });
+  if (!r.ok) return false;
+  const user = await r.json().catch(() => null);
+  return user?.email === ADMIN_EMAIL;
+}
 
 function json(data: unknown, status = 200) {
   return new Response(JSON.stringify(data), {
@@ -77,13 +98,13 @@ Deno.serve(async (req) => {
       // 1. Admin notification
       const adminHtml = emailBase(`
         <h2>📋 Neue Bestellung eingegangen</h2>
-        <div class="info-row"><span class="label">Betrieb</span><span class="value">${o.business_name || "—"}</span></div>
-        <div class="info-row"><span class="label">Kontakt</span><span class="value">${o.contact_name || o.name || "—"}</span></div>
-        <div class="info-row"><span class="label">E-Mail</span><span class="value">${o.email || "—"}</span></div>
-        <div class="info-row"><span class="label">Telefon</span><span class="value">${o.phone || "—"}</span></div>
-        <div class="info-row"><span class="label">Branche</span><span class="value">${o.business_type || "—"}</span></div>
-        <div class="info-row"><span class="label">Adresse</span><span class="value">${o.address || "—"}</span></div>
-        <p style="margin-top:16px;color:#666;font-size:13px">${o.description || ""}</p>
+        <div class="info-row"><span class="label">Betrieb</span><span class="value">${esc(o.business_name) || "—"}</span></div>
+        <div class="info-row"><span class="label">Kontakt</span><span class="value">${esc(o.contact_name || o.name) || "—"}</span></div>
+        <div class="info-row"><span class="label">E-Mail</span><span class="value">${esc(o.email) || "—"}</span></div>
+        <div class="info-row"><span class="label">Telefon</span><span class="value">${esc(o.phone) || "—"}</span></div>
+        <div class="info-row"><span class="label">Branche</span><span class="value">${esc(o.business_type) || "—"}</span></div>
+        <div class="info-row"><span class="label">Adresse</span><span class="value">${esc(o.address) || "—"}</span></div>
+        <p style="margin-top:16px;color:#666;font-size:13px">${esc(o.description)}</p>
         <a class="btn" href="https://lokalonline.at/admin/">Im Dashboard ansehen →</a>
       `);
       await sendEmail(ADMIN_EMAIL, `Neue Bestellung: ${o.business_name || o.email}`, adminHtml);
@@ -92,11 +113,11 @@ Deno.serve(async (req) => {
       if (o.email) {
         const customerHtml = emailBase(`
           <h2>✅ Ihre Anfrage ist bei uns eingegangen!</h2>
-          <p>Hallo ${o.contact_name || ""},</p>
+          <p>Hallo ${esc(o.contact_name)},</p>
           <p>vielen Dank für Ihre Anfrage. Wir haben Ihre Bestellung erhalten und melden uns <strong>innerhalb von 24 Stunden</strong> bei Ihnen.</p>
-          <div class="info-row"><span class="label">Betrieb</span><span class="value">${o.business_name || "—"}</span></div>
-          <div class="info-row"><span class="label">Branche</span><span class="value">${o.business_type || "—"}</span></div>
-          <div class="info-row"><span class="label">Adresse</span><span class="value">${o.address || "—"}</span></div>
+          <div class="info-row"><span class="label">Betrieb</span><span class="value">${esc(o.business_name) || "—"}</span></div>
+          <div class="info-row"><span class="label">Branche</span><span class="value">${esc(o.business_type) || "—"}</span></div>
+          <div class="info-row"><span class="label">Adresse</span><span class="value">${esc(o.address) || "—"}</span></div>
           <p style="margin-top:20px;color:#666;font-size:13px">Bei Fragen können Sie uns jederzeit unter <a href="mailto:info@lokalonline.at" style="color:#C8302A">info@lokalonline.at</a> erreichen.</p>
           <a class="btn" href="https://lokalonline.at/portal/">Bestellstatus ansehen →</a>
         `);
@@ -118,8 +139,8 @@ Deno.serve(async (req) => {
 
       const html = emailBase(`
         <h2>🎉 Ihre Website ist fertig!</h2>
-        <p>Hallo ${o.contact_name || ""},</p>
-        <p>großartige Neuigkeiten — Ihre Website für <strong>${o.business_name || ""}</strong> ist jetzt live und einsatzbereit!</p>
+        <p>Hallo ${esc(o.contact_name)},</p>
+        <p>großartige Neuigkeiten — Ihre Website für <strong>${esc(o.business_name)}</strong> ist jetzt live und einsatzbereit!</p>
         ${o.site_slug ? `
         <div style="margin:24px 0">
           <div class="info-row"><span class="label">Website</span><span class="value"><a href="https://lokalonline.at/${o.site_slug}/" style="color:#C8302A">lokalonline.at/${o.site_slug}/</a></span></div>
@@ -140,11 +161,12 @@ Deno.serve(async (req) => {
 
       if (isFromClient) {
         // Client sent message → notify admin
+        const safeAtt = /^https:\/\//.test(m.attachment_url || "") ? m.attachment_url : "";
         const html = emailBase(`
           <h2>💬 Neue Nachricht von Kunde</h2>
-          <div class="info-row"><span class="label">Von</span><span class="value">${m.sender_name || "Kunde"}</span></div>
-          <div class="info-row"><span class="label">Nachricht</span><span class="value">${m.content || "(Dateianhang)"}</span></div>
-          ${m.attachment_url ? `<div class="info-row"><span class="label">Anhang</span><span class="value"><a href="${m.attachment_url}">${m.attachment_name || "Datei öffnen"}</a></span></div>` : ""}
+          <div class="info-row"><span class="label">Von</span><span class="value">${esc(m.sender_name) || "Kunde"}</span></div>
+          <div class="info-row"><span class="label">Nachricht</span><span class="value">${esc(m.content) || "(Dateianhang)"}</span></div>
+          ${safeAtt ? `<div class="info-row"><span class="label">Anhang</span><span class="value"><a href="${esc(safeAtt)}">${esc(m.attachment_name) || "Datei öffnen"}</a></span></div>` : ""}
           <a class="btn" href="https://lokalonline.at/admin/">Im Dashboard ansehen →</a>
         `);
         const ok = await sendEmail(ADMIN_EMAIL, `Neue Nachricht von ${m.sender_name || "Kunde"}`, html);
@@ -167,9 +189,9 @@ Deno.serve(async (req) => {
           <h2>💬 Neue Nachricht von lokalonline.at</h2>
           <p>Sie haben eine neue Nachricht bezüglich Ihrer Website erhalten.</p>
           <div style="background:#f5f5f5;border-radius:8px;padding:16px;margin:16px 0;font-size:14px;color:#333">
-            ${m.content || "(Dateianhang)"}
+            ${esc(m.content) || "(Dateianhang)"}
           </div>
-          ${m.attachment_url ? `<p><a href="${m.attachment_url}">📎 ${m.attachment_name || "Anhang öffnen"}</a></p>` : ""}
+          ${/^https:\/\//.test(m.attachment_url || "") ? `<p><a href="${esc(m.attachment_url)}">📎 ${esc(m.attachment_name) || "Anhang öffnen"}</a></p>` : ""}
           <a class="btn" href="https://lokalonline.at/portal/">Im Portal ansehen →</a>
         `);
         const ok = await sendEmail(order.email, "Neue Nachricht von lokalonline.at", html);
@@ -177,21 +199,25 @@ Deno.serve(async (req) => {
       }
     }
 
-    // ── Payment link → send to customer ──────────────────────────────
+    // ── Payment link → send to customer (admin only) ─────────────────
     if (type === "payment-link") {
+      if (!(await isAdmin(req))) return json({ error: "Unauthorized" }, 401);
       const { to, contact_name, business_name, payment_url } = body;
       if (!to || !payment_url) return json({ ok: false, error: "Missing to or payment_url" }, 400);
+      if (!EMAIL_RE.test(to)) return json({ ok: false, error: "Invalid recipient" }, 400);
+      if (!/^https:\/\//.test(payment_url)) return json({ ok: false, error: "Invalid payment_url" }, 400);
 
       const html = emailBase(`
         <h2>💳 Ihre Rechnung ist bereit</h2>
-        <p>Hallo ${contact_name || ""},</p>
-        <p>Ihre Website für <strong>${business_name || ""}</strong> ist fertig vorbereitet. Bitte schließen Sie jetzt die Zahlung ab, damit wir Ihren Auftritt freischalten können.</p>
+        <p>Hallo ${esc(contact_name)},</p>
+        <p>Ihre Website für <strong>${esc(business_name)}</strong> ist fertig vorbereitet. Bitte schließen Sie jetzt die Zahlung ab, damit wir Ihren Auftritt freischalten können.</p>
         <div style="margin:24px 0;background:#f9f9f9;border-radius:8px;padding:20px;text-align:center">
           <p style="margin:0 0 4px;font-size:13px;color:#666">Monatlicher Betrag</p>
           <p style="margin:0 0 16px;font-size:28px;font-weight:700;color:#111">€19 / Monat</p>
           <a class="btn" href="${payment_url}" style="display:inline-block">Jetzt bezahlen →</a>
         </div>
         <p style="color:#666;font-size:13px">Keine Einrichtungsgebühr · Jederzeit kündbar · Bei Fragen: <a href="mailto:info@lokalonline.at" style="color:#C8302A">info@lokalonline.at</a></p>
+        <p style="color:#999;font-size:12px;margin-top:8px">Mit der Zahlung kommt der Vertrag zustande. Es gelten unsere <a href="https://lokalonline.at/agb.html" style="color:#999">AGB</a> und die <a href="https://lokalonline.at/agb.html#widerruf" style="color:#999">Widerrufsbelehrung</a>.</p>
       `);
       const ok = await sendEmail(to, `Zahlungslink für Ihre Website — ${business_name || "lokalonline.at"}`, html);
       return json({ ok });

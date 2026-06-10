@@ -15,16 +15,13 @@
   <meta property="og:locale" content="de_AT" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:image" content="https://lokalonline.at/og-image.png" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/fonts.css" />
   <link rel="stylesheet" href="css/style.css?v=4" />
   <link rel="icon" type="image/x-icon" href="/favicon.ico" />
   <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
   <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
   <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8585641581004243"
-     crossorigin="anonymous"></script>
+  <!-- Google AdSense wird erst nach Cookie-Einwilligung geladen (siehe Consent-Banner) -->
 </head>
 <body>
 
@@ -381,12 +378,59 @@
         <p>lokalonline.at · Wien, Österreich</p>
         <p><a href="mailto:info@lokalonline.at">info@lokalonline.at</a></p>
         <p><a href="/impressum.html" data-de="Impressum & Datenschutz" data-en="Imprint & Privacy">Impressum &amp; Datenschutz</a></p>
+        <p><a href="/agb.html" data-de="AGB" data-en="Terms">AGB</a></p>
       </div>
     </div>
     <div class="footer-bottom">
       <p>© <span id="year"></span> lokalonline.at — <span data-de="Alle Rechte vorbehalten" data-en="All rights reserved">Alle Rechte vorbehalten</span></p>
     </div>
   </footer>
+
+  <!-- ░░ Cookie-Consent-Banner ░░ -->
+  <div id="cookieBanner" style="display:none;position:fixed;left:0;right:0;bottom:0;z-index:9999;background:#111;color:#fff;padding:20px 24px;box-shadow:0 -2px 16px rgba(0,0,0,.2)">
+    <div style="max-width:900px;margin:0 auto;display:flex;flex-wrap:wrap;align-items:center;gap:16px;justify-content:space-between">
+      <p style="margin:0;font-size:14px;line-height:1.6;flex:1 1 320px">
+        <span data-de="Wir verwenden nur technisch notwendige Funktionen. Mit Ihrer Einwilligung setzen wir zusätzlich Werbe-Cookies (Google AdSense). Mehr dazu in unserer "
+              data-en="We only use technically necessary functions. With your consent we additionally set advertising cookies (Google AdSense). More in our ">Wir verwenden nur technisch notwendige Funktionen. Mit Ihrer Einwilligung setzen wir zusätzlich Werbe-Cookies (Google AdSense). Mehr dazu in unserer </span><a href="/impressum.html#datenschutz" style="color:#fff;text-decoration:underline">Datenschutzerklärung</a>.
+      </p>
+      <div style="display:flex;gap:10px;flex:0 0 auto">
+        <button id="cookieDecline" style="padding:10px 18px;border:1px solid #555;background:transparent;color:#fff;border-radius:8px;font-weight:600;cursor:pointer" data-de="Nur notwendige" data-en="Necessary only">Nur notwendige</button>
+        <button id="cookieAccept" style="padding:10px 18px;border:none;background:#C8302A;color:#fff;border-radius:8px;font-weight:600;cursor:pointer" data-de="Alle akzeptieren" data-en="Accept all">Alle akzeptieren</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var KEY = 'cookie-consent';
+      var ADS_CLIENT = 'ca-pub-8585641581004243';
+      function loadAds() {
+        if (window.__adsLoaded) return;
+        window.__adsLoaded = true;
+        var s = document.createElement('script');
+        s.async = true;
+        s.crossOrigin = 'anonymous';
+        s.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=' + ADS_CLIENT;
+        document.head.appendChild(s);
+      }
+      var banner = document.getElementById('cookieBanner');
+      var choice = localStorage.getItem(KEY);
+      if (choice === 'all') {
+        loadAds();
+      } else if (!choice) {
+        banner.style.display = 'block';
+      }
+      document.getElementById('cookieAccept').addEventListener('click', function () {
+        localStorage.setItem(KEY, 'all');
+        banner.style.display = 'none';
+        loadAds();
+      });
+      document.getElementById('cookieDecline').addEventListener('click', function () {
+        localStorage.setItem(KEY, 'necessary');
+        banner.style.display = 'none';
+      });
+    })();
+  </script>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <script src="js/stripe-config.js?v=3"></script>

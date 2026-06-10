@@ -989,6 +989,160 @@
     openModal('siteGenOverlay');
   };
 
+  // ── Kuratierte Text-Presets (kostenloser Ersatz für KI-Texte) ──────
+  // Pro Branche × Stil; {name}/{type} werden eingesetzt.
+  var COPY_PRESETS = {
+    restaurant: {
+      herzlich: {
+        tagline: 'Herzliche Küche im Herzen Wiens',
+        intro: 'Bei {name} dreht sich alles um Genuss, Gastfreundschaft und frische Zutaten. Wir freuen uns darauf, Sie bei uns begrüßen zu dürfen.',
+        about: 'Was als kleine Idee begann, ist heute ein Ort, an dem sich Gäste wie zuhause fühlen. Jedes Gericht bei {name} wird mit Sorgfalt und Leidenschaft zubereitet — frisch, ehrlich und mit Liebe zum Detail.',
+        slides: [
+          { eyebrow: 'Herzlich Willkommen', title: '{name}<br><em>Wien</em>', desc: 'Gutes Essen in gemütlicher Atmosphäre' },
+          { eyebrow: 'Unsere Küche', title: 'Frisch &amp;<br><em>Hausgemacht</em>', desc: 'Täglich frisch für Sie zubereitet' },
+          { eyebrow: 'Ambiente', title: 'Gemütlich &amp;<br><em>Herzlich</em>', desc: 'Ein Ort zum Wohlfühlen' }
+        ],
+        highlights: ['Täglich frisch gekocht', 'Herzliche Gastfreundschaft', 'Im Herzen Wiens', 'Hausgemachte Spezialitäten']
+      },
+      traditionell: {
+        tagline: 'Authentische Küche mit Tradition',
+        intro: 'Bei {name} pflegen wir traditionelle Rezepte und echtes Handwerk. Schmecken Sie den Unterschied, den Erfahrung macht.',
+        about: '{name} steht für Beständigkeit und Qualität. Nach überlieferten Rezepten und mit ausgewählten Zutaten bewahren wir den authentischen Geschmack — Gericht für Gericht.',
+        slides: [
+          { eyebrow: 'Willkommen', title: '{name}<br><em>seit jeher</em>', desc: 'Traditionelle Küche, ehrlich zubereitet' },
+          { eyebrow: 'Handwerk', title: 'Echte<br><em>Rezepte</em>', desc: 'Nach überlieferter Art zubereitet' },
+          { eyebrow: 'Qualität', title: 'Ausgewählte<br><em>Zutaten</em>', desc: 'Sorgfalt in jedem Detail' }
+        ],
+        highlights: ['Traditionelle Rezepte', 'Ausgewählte Zutaten', 'Echtes Handwerk', 'Seit Jahren bewährt']
+      },
+      modern: {
+        tagline: 'Moderne Küche, klare Aromen',
+        intro: '{name} verbindet zeitgemäße Küche mit besten Produkten. Reduziert, kreativ und kompromisslos im Geschmack.',
+        about: 'Bei {name} denken wir Küche neu: saisonale Produkte, klare Aromen und eine Atmosphäre, die zum Verweilen einlädt. Genuss auf der Höhe der Zeit.',
+        slides: [
+          { eyebrow: 'Willkommen', title: '{name}<br><em>Wien</em>', desc: 'Zeitgemäße Küche, klar und kreativ' },
+          { eyebrow: 'Konzept', title: 'Saisonal &amp;<br><em>Kreativ</em>', desc: 'Beste Produkte, modern interpretiert' },
+          { eyebrow: 'Erlebnis', title: 'Geschmack<br><em>neu gedacht</em>', desc: 'Ein Ort für Genießer' }
+        ],
+        highlights: ['Saisonale Produkte', 'Kreative Küche', 'Klares Konzept', 'Modernes Ambiente']
+      }
+    },
+    cafe: {
+      herzlich: {
+        tagline: 'Ihr Wohnzimmer in Wien',
+        intro: 'Bei {name} treffen sich guter Kaffee, frische Mehlspeisen und herzliche Gespräche. Kommen Sie vorbei und bleiben Sie ein wenig.',
+        about: '{name} ist ein Ort zum Ankommen — bei einer guten Tasse Kaffee und hausgemachten Köstlichkeiten. Wir freuen uns auf Ihren Besuch.',
+        slides: [
+          { eyebrow: 'Herzlich Willkommen', title: '{name}<br><em>Wien</em>', desc: 'Kaffee, Kuchen & gute Gespräche' },
+          { eyebrow: 'Hausgemacht', title: 'Frisch &amp;<br><em>Süß</em>', desc: 'Täglich frische Mehlspeisen' },
+          { eyebrow: 'Wohlfühlen', title: 'Gemütlich &amp;<br><em>Herzlich</em>', desc: 'Ihr Lieblingsplatz in der Stadt' }
+        ],
+        highlights: ['Frisch gerösteter Kaffee', 'Hausgemachte Mehlspeisen', 'Gemütliche Atmosphäre', 'Herzlicher Service']
+      },
+      modern: {
+        tagline: 'Specialty Coffee in Wien',
+        intro: 'Bei {name} gibt es Specialty Coffee, frische Backwaren und einen Ort, an dem man gerne verweilt.',
+        about: '{name} steht für besten Kaffee und ein modernes, einladendes Ambiente. Sorgfältig ausgewählte Bohnen, frisch zubereitet.',
+        slides: [
+          { eyebrow: 'Willkommen', title: '{name}<br><em>Wien</em>', desc: 'Specialty Coffee & frische Backwaren' },
+          { eyebrow: 'Kaffee', title: 'Beste<br><em>Bohnen</em>', desc: 'Sorgfältig ausgewählt & frisch zubereitet' },
+          { eyebrow: 'Ambiente', title: 'Modern &amp;<br><em>Einladend</em>', desc: 'Ein Ort zum Verweilen' }
+        ],
+        highlights: ['Specialty Coffee', 'Frische Backwaren', 'Modernes Ambiente', 'Zum Verweilen']
+      },
+      traditionell: {
+        tagline: 'Wiener Kaffeehaus-Kultur',
+        intro: 'Bei {name} lebt die Wiener Kaffeehaus-Tradition: gute Melange, klassische Mehlspeisen und Zeit für ein gutes Gespräch.',
+        about: '{name} pflegt die echte Wiener Kaffeehaus-Kultur — mit klassischen Spezialitäten und einer Atmosphäre, in der die Zeit ein wenig langsamer vergeht.',
+        slides: [
+          { eyebrow: 'Willkommen', title: '{name}<br><em>Wien</em>', desc: 'Wiener Kaffeehaus-Kultur' },
+          { eyebrow: 'Klassisch', title: 'Melange &amp;<br><em>Mehlspeisen</em>', desc: 'Wiener Spezialitäten' },
+          { eyebrow: 'Tradition', title: 'Zeit zum<br><em>Genießen</em>', desc: 'Wie es sich gehört' }
+        ],
+        highlights: ['Wiener Tradition', 'Klassische Mehlspeisen', 'Gute Melange', 'Zeit zum Verweilen']
+      }
+    },
+    beauty: {
+      herzlich: {
+        tagline: 'Zeit für Sie',
+        intro: 'Bei {name} nehmen wir uns Zeit für Sie. Lassen Sie sich verwöhnen und fühlen Sie sich rundum wohl.',
+        about: '{name} ist Ihr Ort zum Entspannen und Schönfühlen. Mit Können und Herz kümmern wir uns um Ihr Wohlbefinden.',
+        slides: [
+          { eyebrow: 'Willkommen', title: '{name}<br><em>Wien</em>', desc: 'Zeit für Ihr Wohlbefinden' },
+          { eyebrow: 'Verwöhnen', title: 'Schön &amp;<br><em>Entspannt</em>', desc: 'Lassen Sie sich verwöhnen' },
+          { eyebrow: 'Service', title: 'Mit Herz &amp;<br><em>Können</em>', desc: 'Persönliche Betreuung' }
+        ],
+        highlights: ['Persönliche Beratung', 'Mit Herz & Können', 'Zum Wohlfühlen', 'Im Herzen Wiens']
+      },
+      modern: {
+        tagline: 'Beauty auf der Höhe der Zeit',
+        intro: 'Bei {name} verbinden wir moderne Techniken mit einem klaren Sinn für Stil. Für Ihren perfekten Look.',
+        about: '{name} steht für zeitgemäße Beauty und gepflegtes Design. Mit aktuellen Techniken bringen wir Ihren Stil zur Geltung.',
+        slides: [
+          { eyebrow: 'Willkommen', title: '{name}<br><em>Wien</em>', desc: 'Beauty auf der Höhe der Zeit' },
+          { eyebrow: 'Stil', title: 'Modern &amp;<br><em>Gepflegt</em>', desc: 'Ihr perfekter Look' },
+          { eyebrow: 'Technik', title: 'Aktuell &amp;<br><em>Präzise</em>', desc: 'Mit modernen Methoden' }
+        ],
+        highlights: ['Moderne Techniken', 'Klarer Stil', 'Persönliche Beratung', 'Gepflegtes Ambiente']
+      }
+    },
+    retail: {
+      modern: {
+        tagline: 'Ausgewählt für Sie',
+        intro: 'Bei {name} finden Sie sorgfältig ausgewählte Produkte und persönliche Beratung. Schauen Sie vorbei.',
+        about: '{name} steht für ein kuratiertes Sortiment und ehrliche Beratung. Wir nehmen uns Zeit, das Richtige für Sie zu finden.',
+        slides: [
+          { eyebrow: 'Willkommen', title: '{name}<br><em>Wien</em>', desc: 'Ausgewählt für Sie' },
+          { eyebrow: 'Sortiment', title: 'Kuratiert &amp;<br><em>Besonders</em>', desc: 'Mit Sorgfalt ausgewählt' },
+          { eyebrow: 'Service', title: 'Persönlich &amp;<br><em>Ehrlich</em>', desc: 'Beratung, die weiterhilft' }
+        ],
+        highlights: ['Kuratiertes Sortiment', 'Persönliche Beratung', 'Ausgewählte Produkte', 'Im Herzen Wiens']
+      },
+      herzlich: {
+        tagline: 'Ihr Geschäft um die Ecke',
+        intro: 'Bei {name} werden Sie persönlich beraten und finden Produkte, die wir selbst lieben. Wir freuen uns auf Sie.',
+        about: '{name} ist Ihr Geschäft mit persönlicher Note. Wir kennen unsere Produkte und beraten Sie ehrlich und herzlich.',
+        slides: [
+          { eyebrow: 'Willkommen', title: '{name}<br><em>Wien</em>', desc: 'Ihr Geschäft um die Ecke' },
+          { eyebrow: 'Auswahl', title: 'Mit Liebe<br><em>ausgewählt</em>', desc: 'Produkte, die wir selbst lieben' },
+          { eyebrow: 'Service', title: 'Persönlich &amp;<br><em>Herzlich</em>', desc: 'Beratung mit Herz' }
+        ],
+        highlights: ['Persönliche Beratung', 'Mit Liebe ausgewählt', 'Herzlicher Service', 'Im Herzen Wiens']
+      }
+    }
+  };
+
+  function getCopyPreset(type, tone) {
+    var byType = COPY_PRESETS[type] || COPY_PRESETS.restaurant;
+    return byType[tone] || byType[Object.keys(byType)[0]];
+  }
+
+  function fillTpl(str, order) {
+    return String(str || '')
+      .replace(/\{name\}/g, order.business_name || '')
+      .replace(/\{type\}/g, order.business_type || '');
+  }
+
+  // Freitext-Öffnungszeiten ("Mo-Fr 11:00-22:00") best effort in Tabelle parsen.
+  function parseHours(raw) {
+    if (!raw) return null;
+    var timeRe = /(\d{1,2}([:.]\d{2})?\s*[-–—]\s*\d{1,2}([:.]\d{2})?(\s*Uhr)?)/;
+    var rows = [];
+    raw.split(/[\n;]/).forEach(function (line) {
+      line = line.trim();
+      if (!line) return;
+      var m = line.match(timeRe);
+      if (m) {
+        var time = m[0].replace(/\s*Uhr/i, '').replace(/\s+/g, '').replace(/\./g, ':');
+        var day = line.slice(0, m.index).replace(/[:\-–—,\s]+$/, '').trim();
+        rows.push({ day: { de: day || '', en: day || '' }, time: time });
+      } else {
+        rows.push({ day: { de: line, en: line }, time: '' });
+      }
+    });
+    return rows.length ? rows : null;
+  }
+
   function generateDataJs(type, slug, order) {
     var photoUrls = [];
     if (order.photo_urls) { try { photoUrls = JSON.parse(order.photo_urls); } catch (e) {} }
@@ -1007,31 +1161,63 @@
       retail:      { heading:'Space Grotesk',      body:'Inter' }
     };
 
+    var preset = getCopyPreset(type, order.tone || 'herzlich');
+    var name = order.business_name || '';
+
+    // Texte: Kundenbeschreibung hat Vorrang, sonst kuratiertes Preset.
+    var taglineDe = order.description ? order.description : fillTpl(preset.tagline, order);
+    var aboutDe   = order.description && order.description.length > 60
+      ? order.description : fillTpl(preset.about, order);
+    var introDe   = fillTpl(preset.intro, order);
+
+    // Slides aus hochgeladenen Fotos (img/slide1..N) + Preset-Texten.
+    var slideImgs = [];
+    for (var si = 0; si < photoUrls.length && si < 3; si++) slideImgs.push('img/slide' + (si + 1) + '.jpg');
+    if (slideImgs.length === 0) slideImgs = ['img/slide1.jpg', 'img/slide2.jpg', 'img/slide3.jpg'];
+    var slides = slideImgs.map(function (img, i) {
+      var s = preset.slides[i % preset.slides.length];
+      return {
+        img: img,
+        eyebrow: { de: s.eyebrow, en: '' },
+        title:   { de: fillTpl(s.title, order), en: '' },
+        desc:    { de: s.desc, en: '' }
+      };
+    });
+
+    var highlights = (preset.highlights || []).map(function (h) { return { de: h, en: '' }; });
+    var parsedHours = parseHours(order.hours);
+
     var D = {
       template: type,
       slug: slug,
-      name: order.business_name || '',
-      tagline: { de: order.description || '', en: '' },
+      name: name,
+      tagline: { de: taglineDe, en: '' },
       type:    { de: order.business_type || '', en: '' },
       colors:  colorDefaults[type] || colorDefaults.restaurant,
       fonts:   fontDefaults[type]  || fontDefaults.restaurant,
+      nav: { links: [
+        { de: 'Start', en: 'Home', href: '#top' },
+        { de: 'Über uns', en: 'About', href: '#about' },
+        { de: 'Speisekarte', en: 'Menu', href: 'menu/' },
+        { de: 'Öffnungszeiten', en: 'Hours', href: '#hours' },
+        { de: 'Kontakt', en: 'Contact', href: '#contact' }
+      ] },
       address: order.address || '',
       phone:   order.phone   || '',
       email:   order.email   || '',
       instagram: order.instagram ? order.instagram.replace(/^@/, '') : '',
       googleMapsUrl:   'https://maps.google.com/?q=' + encodeURIComponent(order.address || ''),
       googleMapsEmbed: '',
-      hours: [
+      hours: parsedHours || [
         { day: { de: 'Mo–Fr', en: 'Mon–Fri' }, time: '11:00–22:00' },
         { day: { de: 'Sa–So', en: 'Sat–Sun' }, time: '12:00–22:00' }
       ],
-      slides: [
-        { img: 'img/slide1.jpg', eyebrow: { de: 'Herzlich Willkommen', en: 'Welcome' }, title: { de: (order.business_name || '') + '<br><em>Wien</em>', en: (order.business_name || '') + '<br><em>Vienna</em>' }, desc: { de: order.description || '', en: '' } }
-      ],
+      slides: slides,
+      introText: { de: introDe, en: '' },
       about: {
         img: photoUrls[0] || 'img/iroom.jpg',
-        text: { de: order.description || '', en: '' },
-        highlights: [
+        text: { de: aboutDe, en: '' },
+        highlights: highlights.length ? highlights : [
           { de: 'Täglich frisch', en: 'Daily fresh' },
           { de: 'Persönlicher Service', en: 'Personal service' },
           { de: 'Im Herzen Wiens', en: 'In the heart of Vienna' }
@@ -1041,17 +1227,13 @@
       menuBand: { headline: { de: 'Unsere<br><em>Speisekarte</em>', en: 'Our<br><em>Menu</em>' }, sub: { de: '', en: '' }, cta: { de: 'Speisekarte ansehen →', en: 'View menu →' } },
       services: [],
       categories: [],
-      highlights: [
-        { icon: '✦', title: { de: 'Qualität', en: 'Quality' }, desc: { de: 'Höchste Qualität', en: 'Highest quality' } },
-        { icon: '✦', title: { de: 'Service', en: 'Service' }, desc: { de: 'Persönlicher Service', en: 'Personal service' } },
-        { icon: '✦', title: { de: 'Wien', en: 'Vienna' }, desc: { de: 'Im Herzen der Stadt', en: 'In the heart of the city' } }
-      ],
-      announcementBar: { de: 'Jetzt Termin buchen — schnell & einfach online', en: 'Book your appointment online' },
+      highlights: highlights.slice(0, 3).map(function (h) { return { icon: '✦', title: h, desc: { de: '', en: '' } }; }),
+      announcementBar: { de: '', en: '' },
       photos: photoUrls.length > 0 ? photoUrls : ['img/slide1.jpg', 'img/slide2.jpg', 'img/iroom.jpg'],
       supabase: { url: SUPABASE_URL, key: SUPABASE_KEY },
       reviewSlug: slug,
       instagramPhotos: photoUrls.slice(0, 6).concat(['img/slide1.jpg','img/slide2.jpg','img/iroom.jpg','img/food.jpg','img/slide1.jpg','img/slide2.jpg']).slice(0, 6),
-      seo: { title: (order.business_name || '') + ' — Wien', description: { de: order.description || '', en: '' }, ogImage: photoUrls[0] || 'img/og-image.jpg' },
+      seo: { title: name + ' — Wien', description: { de: taglineDe, en: '' }, ogImage: photoUrls[0] || 'img/og-image.jpg' },
       legal: {
         type: order.legal_type || 'einzelunternehmer',
         name: order.legal_name || '',
@@ -1464,14 +1646,32 @@
   }
 
   function generateMenuDataJs(type, slug, order) {
-    var services = [];
-    if (order.services) { try { services = JSON.parse(order.services); } catch(e) {} }
+    // Strukturierte Speisekarte aus dem Bestellformular (OCR oder manuell).
+    var items = [];
+    if (order.menu_items) { try { items = JSON.parse(order.menu_items); } catch(e) {} }
+    if (!Array.isArray(items)) items = [];
+    // Fallback: altes services-Feld
+    if (items.length === 0 && order.services) {
+      try { items = JSON.parse(order.services); } catch(e) {}
+    }
 
     var categories = [];
-    if (services.length > 0) {
-      categories = [{ name: { de: 'Angebot', en: 'Offerings' }, items: services.map(function(s) {
-        return { name: { de: s.name || '', en: s.name || '' }, desc: { de: s.description || '', en: s.description || '' }, price: s.price || '' };
-      }) }];
+    if (items.length > 0) {
+      // Optional nach item.category gruppieren, sonst eine Kategorie.
+      var byCat = {};
+      var order_ = [];
+      items.forEach(function (it) {
+        var cat = (it.category || '').trim() || '__';
+        if (!byCat[cat]) { byCat[cat] = []; order_.push(cat); }
+        byCat[cat].push({
+          name: { de: it.name || '', en: it.name || '' },
+          desc: { de: it.desc || it.description || '', en: it.desc || it.description || '' },
+          price: it.price || ''
+        });
+      });
+      categories = order_.map(function (cat) {
+        return { name: cat === '__' ? { de: 'Speisekarte', en: 'Menu' } : { de: cat, en: cat }, items: byCat[cat] };
+      });
     }
 
     var menuLabels = {

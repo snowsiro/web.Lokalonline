@@ -674,7 +674,18 @@ So: Ruhetag"></textarea>
           <div class="photo-grid" id="photoGrid"></div>
         </div>
 
-        <!-- Menu Upload with AI Parsing -->
+        <!-- Style chooser -->
+        <div class="form-group">
+          <label id="lbl_tone">Stil Ihrer Website</label>
+          <select id="f_tone" style="width:100%;padding:11px 12px;border:1px solid var(--border);border-radius:10px;font-size:14px;outline:none;background:#fff">
+            <option value="herzlich">Herzlich & einladend</option>
+            <option value="traditionell">Traditionell & bodenständig</option>
+            <option value="modern">Modern & klar</option>
+          </select>
+          <span class="upload-hint" id="lbl_tone_hint" style="display:block;margin-top:6px">Bestimmt den Tonfall der Texte auf Ihrer Website.</span>
+        </div>
+
+        <!-- Menu Upload with AI Parsing + manual editing -->
         <div class="form-group" id="menuUploadGroup">
           <label id="lbl_menu_photo">📋 <span id="lbl_menu_photo_text">Speisekarte</span> <span class="optional-badge" id="badge_menu">optional</span></label>
           <label class="file-upload-label" id="menuUploadLabel">
@@ -688,14 +699,16 @@ So: Ruhetag"></textarea>
               <div class="ai-progress-wrap"><div class="ai-progress-fill" id="aiProgressFill"></div></div>
               <div class="ai-status-text" id="menuAiLoadingText">AI analysiert Ihre Speisekarte…</div>
             </div>
-            <div class="menu-parsed-box" id="menuAiResult" style="display:none">
-              <div class="menu-parsed-header">
-                <span id="menuParsedTitle">Erkannte Gerichte</span>
-                <button class="menu-parsed-reset" id="menuParsedReset" type="button">✕ <span id="menuParsedResetText">Neu hochladen</span></button>
-              </div>
-              <div id="menuParsedList"></div>
-            </div>
           </div>
+          <div class="menu-parsed-box" id="menuAiResult" style="display:none">
+            <div class="menu-parsed-header">
+              <span id="menuParsedTitle">Gerichte (bearbeitbar)</span>
+              <button class="menu-parsed-reset" id="menuParsedReset" type="button">✕ <span id="menuParsedResetText">Foto neu</span></button>
+            </div>
+            <div id="menuParsedList"></div>
+            <button type="button" id="menuAddItem" style="margin-top:8px;background:none;border:1px dashed var(--border);border-radius:8px;padding:8px 12px;font-size:13px;color:var(--primary);cursor:pointer;width:100%">+ <span id="lbl_menu_add">Gericht hinzufügen</span></button>
+          </div>
+          <button type="button" id="menuManualStart" style="margin-top:8px;background:none;border:none;font-size:13px;color:var(--primary);cursor:pointer;text-decoration:underline">✏️ <span id="lbl_menu_manual">Speisekarte ohne Foto eingeben</span></button>
         </div>
 
         <div class="notice-box" id="noticeBox">
@@ -1244,15 +1257,12 @@ So: Ruhetag"></textarea>
           instagram: document.getElementById('f_instagram').value.trim() || null,
           website: document.getElementById('f_website').value.trim() || null,
           hours: document.getElementById('f_hours').value.trim() || null,
-          notes: (function () {
-            var n = document.getElementById('f_notes').value.trim();
-            if (parsedMenuItems.length > 0) {
-              var menuText = '\n\n[AI-Speisekarte]\n' + parsedMenuItems.map(function (item) {
-                return item.name + (item.price ? ' — ' + item.price : '');
-              }).join('\n');
-              return (n ? n + menuText : menuText.trim());
-            }
-            return n || null;
+          notes: document.getElementById('f_notes').value.trim() || null,
+          tone: document.getElementById('f_tone').value,
+          menu_items: (function () {
+            if (window._syncMenuItems) window._syncMenuItems();
+            var clean = parsedMenuItems.filter(function (it) { return (it.name || '').trim(); });
+            return clean.length > 0 ? JSON.stringify(clean) : null;
           })(),
           logo_url: logoUrl,
           photo_url: uploadedPhotoUrls[0] || null,
@@ -1357,14 +1367,54 @@ So: Ruhetag"></textarea>
         return items;
       }
 
+      function esc(s) { return String(s == null ? '' : s).replace(/</g, '&lt;').replace(/"/g, '&quot;'); }
+
+      // Editierbare Gericht-Zeilen (Name + Preis), inkl. Entfernen.
       function renderItems(items) {
-        listEl.innerHTML = items.map(function (item) {
-          return '<div class="menu-parsed-item"><span class="item-name">' +
-            item.name.replace(/</g, '&lt;') + '</span>' +
-            (item.price ? '<span class="item-price">' + item.price.replace(/</g, '&lt;') + '</span>' : '') +
+        listEl.innerHTML = items.map(function (item, i) {
+          return '<div class="menu-parsed-item" style="display:flex;gap:6px;align-items:center;margin-bottom:6px">' +
+            '<input type="text" class="mi-name" data-i="' + i + '" value="' + esc(item.name) + '" placeholder="Gericht" style="flex:1;padding:7px 9px;border:1px solid var(--border);border-radius:7px;font-size:13px;outline:none" />' +
+            '<input type="text" class="mi-price" data-i="' + i + '" value="' + esc(item.price) + '" placeholder="€ 0,00" style="width:84px;padding:7px 9px;border:1px solid var(--border);border-radius:7px;font-size:13px;outline:none" />' +
+            '<button type="button" class="mi-del" data-i="' + i + '" style="background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:16px;padding:0 4px">✕</button>' +
             '</div>';
         }).join('');
       }
+
+      // Werte aus den Eingabefeldern zurück ins Array schreiben.
+      function syncFromInputs() {
+        listEl.querySelectorAll('.mi-name').forEach(function (el) {
+          var i = +el.getAttribute('data-i');
+          if (parsedMenuItems[i]) parsedMenuItems[i].name = el.value.trim();
+        });
+        listEl.querySelectorAll('.mi-price').forEach(function (el) {
+          var i = +el.getAttribute('data-i');
+          if (parsedMenuItems[i]) parsedMenuItems[i].price = el.value.trim();
+        });
+      }
+
+      function showResult() {
+        aiStatus.style.display = 'none';
+        aiResult.style.display = 'block';
+      }
+
+      listEl.addEventListener('input', syncFromInputs);
+      listEl.addEventListener('click', function (e) {
+        var del = e.target.closest('.mi-del');
+        if (!del) return;
+        syncFromInputs();
+        parsedMenuItems.splice(+del.getAttribute('data-i'), 1);
+        renderItems(parsedMenuItems);
+      });
+      document.getElementById('menuAddItem').addEventListener('click', function () {
+        syncFromInputs();
+        parsedMenuItems.push({ name: '', price: '' });
+        renderItems(parsedMenuItems);
+      });
+      document.getElementById('menuManualStart').addEventListener('click', function () {
+        if (parsedMenuItems.length === 0) parsedMenuItems.push({ name: '', price: '' });
+        renderItems(parsedMenuItems);
+        showResult();
+      });
 
       function reset() {
         parsedMenuItems = [];
@@ -1375,6 +1425,8 @@ So: Ruhetag"></textarea>
         fillEl.style.width = '0';
         uploadLabel.style.display = '';
       }
+      // Vor dem Absenden Eingaben übernehmen.
+      window._syncMenuItems = syncFromInputs;
 
       fileInput.addEventListener('change', function () {
         var file = fileInput.files[0];
@@ -1429,7 +1481,7 @@ So: Ruhetag"></textarea>
           renderItems(parsedMenuItems);
           setTimeout(function () {
             aiLoading.style.display = 'none';
-            aiResult.style.display = 'block';
+            showResult();
           }, 200);
         }).catch(function () {
           reset();

@@ -137,8 +137,8 @@
     infoGrid.innerHTML =
       infoItem('Name', esc(data.name)) +
       infoItem('E-Mail', '<a href="mailto:' + esc(data.email) + '" style="color:var(--primary)">' + esc(data.email) + '</a>') +
-      infoItem('Betrieb', data.business || '—') +
-      infoItem('Telefon', data.phone || '—') +
+      infoItem('Betrieb', esc(data.business) || '—') +
+      infoItem('Telefon', esc(data.phone) || '—') +
       infoItem('Plan', data.plan_interest ? planLabel(data.plan_interest) : '—') +
       infoItem('Eingegangen', formatDate(data.created_at));
 
@@ -602,16 +602,16 @@
     var infoGrid = document.getElementById('orderInfo');
     infoGrid.innerHTML =
       infoItem('Betriebsname', esc(data.business_name)) +
-      infoItem('Ansprechperson', data.contact_name || '—') +
-      infoItem('Branche', data.business_type || '—') +
-      infoItem('Kurzbeschreibung', data.description || '—') +
-      infoItem('Adresse', data.address || '—') +
-      infoItem('Telefon', data.phone || '—') +
+      infoItem('Ansprechperson', esc(data.contact_name) || '—') +
+      infoItem('Branche', esc(data.business_type) || '—') +
+      infoItem('Kurzbeschreibung', esc(data.description) || '—') +
+      infoItem('Adresse', esc(data.address) || '—') +
+      infoItem('Telefon', esc(data.phone) || '—') +
       infoItem('E-Mail', '<a href="mailto:' + esc(data.email) + '" style="color:var(--primary)">' + esc(data.email) + '</a>') +
-      infoItem('Instagram', data.instagram || '—') +
-      infoItem('Website', data.website || '—') +
+      infoItem('Instagram', esc(data.instagram) || '—') +
+      infoItem('Website', esc(data.website) || '—') +
       infoItem('Öffnungszeiten', data.hours ? '<pre style="font-size:12px;white-space:pre-wrap">' + esc(data.hours) + '</pre>' : '—') +
-      infoItem('Wünsche', data.notes || '—') +
+      infoItem('Wünsche', esc(data.notes) || '—') +
       infoItem('Eingegangen', formatDate(data.created_at));
 
     var filesWrap = document.getElementById('orderFilesWrap');

@@ -3,9 +3,12 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 const GITHUB_TOKEN  = Deno.env.get("GITHUB_TOKEN") || "";
 const GITHUB_REPO   = "snowsiro/Lokalonline";
 const GITHUB_BRANCH = "main";
+const SUPABASE_URL  = Deno.env.get("SUPABASE_URL") || "";
+const SUPABASE_ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY") || "";
+const ADMIN_EMAIL   = "info@lokalonline.at";
 
 const CORS = {
-  "Access-Control-Allow-Origin":  "*",
+  "Access-Control-Allow-Origin":  "https://lokalonline.at",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
@@ -14,6 +17,25 @@ function json(data, status = 200) {
     status,
     headers: { ...CORS, "Content-Type": "application/json" },
   });
+}
+
+// Verify the request carries a valid JWT belonging to the admin account.
+async function isAdmin(req: Request): Promise<boolean> {
+  const token = (req.headers.get("Authorization") || "").replace(/^Bearer\s+/i, "");
+  if (!token) return false;
+  const r = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
+    headers: { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${token}` },
+  });
+  if (!r.ok) return false;
+  const user = await r.json().catch(() => null);
+  return user?.email === ADMIN_EMAIL;
+}
+
+// Restrict writes to customer site folders / known asset paths — never workflows, configs, etc.
+function isAllowedPath(path: unknown): boolean {
+  if (typeof path !== "string" || !path) return false;
+  if (path.includes("..")) return false;
+  return /^[a-z0-9-]+\/[a-zA-Z0-9._\/-]+$/.test(path);
 }
 
 async function putFile(path: string, base64Content: string, message: string) {
@@ -46,18 +68,22 @@ async function putFile(path: string, base64Content: string, message: string) {
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: CORS });
 
+  if (!(await isAdmin(req))) return json({ error: "Unauthorized" }, 401);
+
   try {
     const body = await req.json();
     const { action } = body;
 
     // Upload a text/binary file by base64 content
     if (action === "put-file") {
+      if (!isAllowedPath(body.path)) return json({ error: "Invalid path" }, 400);
       const ok = await putFile(body.path, body.content, body.message || "Update file");
       return json({ ok, url: `https://lokalonline.at/${body.path}` });
     }
 
     // Fetch a binary file from a URL and upload to GitHub
     if (action === "copy-from-url") {
+      if (!isAllowedPath(body.dest_path)) return json({ error: "Invalid path" }, 400);
       const imgRes = await fetch(body.source_url);
       if (!imgRes.ok) return json({ error: "Failed to fetch source: " + body.source_url }, 400);
       const buffer = await imgRes.arrayBuffer();

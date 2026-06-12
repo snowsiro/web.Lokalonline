@@ -103,7 +103,10 @@ Deno.serve(async (req) => {
       );
       if (res.status === 404) return json({ error: "File not found" }, 404);
       const data = await res.json();
-      const decoded = atob(data.content.replace(/\n/g, ""));
+      // GitHub liefert base64; korrekt als UTF-8 dekodieren (sonst Umlaut-Mojibake).
+      const bin = atob(data.content.replace(/\n/g, ""));
+      const bytes = Uint8Array.from(bin, (c) => c.charCodeAt(0));
+      const decoded = new TextDecoder("utf-8").decode(bytes);
       return json({ content: decoded, sha: data.sha });
     }
 

@@ -143,9 +143,9 @@ Deno.serve(async (req) => {
         <p>großartige Neuigkeiten — Ihre Website für <strong>${esc(o.business_name)}</strong> ist jetzt live und einsatzbereit!</p>
         ${o.site_slug ? `
         <div style="margin:24px 0">
-          <div class="info-row"><span class="label">Website</span><span class="value"><a href="https://lokalonline.at/${o.site_slug}/" style="color:#C8302A">lokalonline.at/${o.site_slug}/</a></span></div>
-          <div class="info-row"><span class="label">Speisekarte</span><span class="value"><a href="https://lokalonline.at/${o.site_slug}/menu/" style="color:#C8302A">lokalonline.at/${o.site_slug}/menu/</a></span></div>
-          <div class="info-row"><span class="label">Linkseite</span><span class="value"><a href="https://lokalonline.at/${o.site_slug}/link/" style="color:#C8302A">lokalonline.at/${o.site_slug}/link/</a></span></div>
+          <div class="info-row"><span class="label">Website</span><span class="value"><a href="https://lokalonline.at/${esc(o.site_slug)}/" style="color:#C8302A">lokalonline.at/${esc(o.site_slug)}/</a></span></div>
+          <div class="info-row"><span class="label">Speisekarte</span><span class="value"><a href="https://lokalonline.at/${esc(o.site_slug)}/menu/" style="color:#C8302A">lokalonline.at/${esc(o.site_slug)}/menu/</a></span></div>
+          <div class="info-row"><span class="label">Linkseite</span><span class="value"><a href="https://lokalonline.at/${esc(o.site_slug)}/link/" style="color:#C8302A">lokalonline.at/${esc(o.site_slug)}/link/</a></span></div>
         </div>` : ""}
         <p style="color:#666;font-size:13px">Bei Fragen oder Änderungswünschen stehen wir Ihnen jederzeit zur Verfügung.</p>
         <a class="btn" href="https://lokalonline.at/portal/">Im Kundenportal ansehen →</a>
@@ -178,9 +178,10 @@ Deno.serve(async (req) => {
         const SUPABASE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || "";
 
         const orderRes = await fetch(
-          `${SUPABASE_URL}/rest/v1/orders?id=eq.${m.order_id}&select=email,business_name`,
+          `${SUPABASE_URL}/rest/v1/orders?id=eq.${encodeURIComponent(m.order_id)}&select=email,business_name`,
           { headers: { "apikey": SUPABASE_KEY, "Authorization": `Bearer ${SUPABASE_KEY}` } }
         );
+        if (!orderRes.ok) return json({ ok: false, error: "DB fetch failed" });
         const orders = await orderRes.json();
         const order = orders[0];
         if (!order?.email) return json({ ok: false, error: "Order email not found" });

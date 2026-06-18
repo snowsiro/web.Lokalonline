@@ -375,7 +375,7 @@
   async function buildReviewCard(client) {
     if (!client.page_url) return '';
 
-    // page_url 마지막 세그먼트를 slug로 사용 (예: lokalonline.at/yori2 → yori2)
+    // page_url 마지막 세그먼트를 slug로 사용 (예: web.lokalonline.at/yori2 → yori2)
     var slug = client.page_url.replace(/\/$/, '').split('/').pop();
     if (!slug) return '';
 

@@ -209,7 +209,7 @@ admin_notes, status
 
 ## QR 코드
 - 라이브러리: qrcode.js (jsdelivr CDN, 외부 API 의존 없음)
-- 연결 URL: `https://lokalonline.at/{slug}/menu/`
+- 연결 URL: `https://web.lokalonline.at/{slug}/menu/`
 - 저장 위치: `{slug}/img/qr-menu.png` (GitHub)
 - 어드민 완료 팝업에서 바로 확인 + 다운로드 가능
 

@@ -42,7 +42,7 @@
 ### Card 1
 - Icon: 🌐
 - Title: Professionelle Website
-- Text: Moderne, mobilfreundliche Website unter Ihrer eigenen Adresse — z.B. lokalonline.at/ihr-cafe. Fertig in 24 Stunden.
+- Text: Moderne, mobilfreundliche Website unter Ihrer eigenen Adresse — z.B. web.lokalonline.at/ihr-cafe. Fertig in 24 Stunden.
 
 ### Card 2 (Featured / Popular)
 - Badge: Beliebt
@@ -108,7 +108,7 @@
 - Note: Keine Einrichtungsgebühr · Jederzeit kündbar
 - Features:
   - Professionelle Einzelseiten-Website
-  - Eigene Adresse (lokalonline.at/ihr-betrieb)
+  - Eigene Adresse (web.lokalonline.at/ihr-betrieb)
   - Mobilfreundliches Design
   - Digitale Speisekarte + QR-Code
   - SNS Profilseite (Link-in-Bio)

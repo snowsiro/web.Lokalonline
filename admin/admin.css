@@ -277,7 +277,9 @@ input, select, textarea { font-family: inherit; }
   width: 100%;
   max-width: 520px;
   max-height: 90vh;
-  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
   transform: translateY(16px);
   transition: transform 0.2s;
 }
@@ -302,13 +304,14 @@ input, select, textarea { font-family: inherit; }
   border-radius: 4px;
 }
 .modal-close:hover { background: var(--bg); color: var(--text); }
-.modal-body { padding: 24px; }
+.modal-body { padding: 24px; flex: 1 1 auto; overflow-y: auto; }
 .modal-footer {
   padding: 16px 24px;
   border-top: 1px solid var(--border);
   display: flex;
   gap: 8px;
   justify-content: flex-end;
+  flex-shrink: 0;
 }
 .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 

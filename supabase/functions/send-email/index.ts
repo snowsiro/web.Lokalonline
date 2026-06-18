@@ -7,7 +7,7 @@ const SUPABASE_URL_AUTH  = Deno.env.get("SUPABASE_URL") || "";
 const SUPABASE_ANON_KEY  = Deno.env.get("SUPABASE_ANON_KEY") || "";
 
 const CORS = {
-  "Access-Control-Allow-Origin":  "https://lokalonline.at",
+  "Access-Control-Allow-Origin":  "https://web.lokalonline.at",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
@@ -105,7 +105,7 @@ Deno.serve(async (req) => {
         <div class="info-row"><span class="label">Branche</span><span class="value">${esc(o.business_type) || "—"}</span></div>
         <div class="info-row"><span class="label">Adresse</span><span class="value">${esc(o.address) || "—"}</span></div>
         <p style="margin-top:16px;color:#666;font-size:13px">${esc(o.description)}</p>
-        <a class="btn" href="https://lokalonline.at/admin/">Im Dashboard ansehen →</a>
+        <a class="btn" href="https://web.lokalonline.at/admin/">Im Dashboard ansehen →</a>
       `);
       await sendEmail(ADMIN_EMAIL, `Neue Bestellung: ${o.business_name || o.email}`, adminHtml);
 
@@ -119,7 +119,7 @@ Deno.serve(async (req) => {
           <div class="info-row"><span class="label">Branche</span><span class="value">${esc(o.business_type) || "—"}</span></div>
           <div class="info-row"><span class="label">Adresse</span><span class="value">${esc(o.address) || "—"}</span></div>
           <p style="margin-top:20px;color:#666;font-size:13px">Bei Fragen können Sie uns jederzeit unter <a href="mailto:info@lokalonline.at" style="color:#C8302A">info@lokalonline.at</a> erreichen.</p>
-          <a class="btn" href="https://lokalonline.at/portal/">Bestellstatus ansehen →</a>
+          <a class="btn" href="https://web.lokalonline.at/portal/">Bestellstatus ansehen →</a>
         `);
         await sendEmail(o.email, "Ihre Anfrage bei lokalonline.at — Bestätigung", customerHtml);
       }
@@ -143,12 +143,12 @@ Deno.serve(async (req) => {
         <p>großartige Neuigkeiten — Ihre Website für <strong>${esc(o.business_name)}</strong> ist jetzt live und einsatzbereit!</p>
         ${o.site_slug ? `
         <div style="margin:24px 0">
-          <div class="info-row"><span class="label">Website</span><span class="value"><a href="https://lokalonline.at/${esc(o.site_slug)}/" style="color:#C8302A">lokalonline.at/${esc(o.site_slug)}/</a></span></div>
-          <div class="info-row"><span class="label">Speisekarte</span><span class="value"><a href="https://lokalonline.at/${esc(o.site_slug)}/menu/" style="color:#C8302A">lokalonline.at/${esc(o.site_slug)}/menu/</a></span></div>
-          <div class="info-row"><span class="label">Linkseite</span><span class="value"><a href="https://lokalonline.at/${esc(o.site_slug)}/link/" style="color:#C8302A">lokalonline.at/${esc(o.site_slug)}/link/</a></span></div>
+          <div class="info-row"><span class="label">Website</span><span class="value"><a href="https://web.lokalonline.at/${esc(o.site_slug)}/" style="color:#C8302A">web.lokalonline.at/${esc(o.site_slug)}/</a></span></div>
+          <div class="info-row"><span class="label">Speisekarte</span><span class="value"><a href="https://web.lokalonline.at/${esc(o.site_slug)}/menu/" style="color:#C8302A">web.lokalonline.at/${esc(o.site_slug)}/menu/</a></span></div>
+          <div class="info-row"><span class="label">Linkseite</span><span class="value"><a href="https://web.lokalonline.at/${esc(o.site_slug)}/link/" style="color:#C8302A">web.lokalonline.at/${esc(o.site_slug)}/link/</a></span></div>
         </div>` : ""}
         <p style="color:#666;font-size:13px">Bei Fragen oder Änderungswünschen stehen wir Ihnen jederzeit zur Verfügung.</p>
-        <a class="btn" href="https://lokalonline.at/portal/">Im Kundenportal ansehen →</a>
+        <a class="btn" href="https://web.lokalonline.at/portal/">Im Kundenportal ansehen →</a>
       `);
       const ok = await sendEmail(o.email, `Ihre Website ist live — ${o.business_name || "lokalonline.at"}`, html);
       return json({ ok });
@@ -167,7 +167,7 @@ Deno.serve(async (req) => {
           <div class="info-row"><span class="label">Von</span><span class="value">${esc(m.sender_name) || "Kunde"}</span></div>
           <div class="info-row"><span class="label">Nachricht</span><span class="value">${esc(m.content) || "(Dateianhang)"}</span></div>
           ${safeAtt ? `<div class="info-row"><span class="label">Anhang</span><span class="value"><a href="${esc(safeAtt)}">${esc(m.attachment_name) || "Datei öffnen"}</a></span></div>` : ""}
-          <a class="btn" href="https://lokalonline.at/admin/">Im Dashboard ansehen →</a>
+          <a class="btn" href="https://web.lokalonline.at/admin/">Im Dashboard ansehen →</a>
         `);
         const ok = await sendEmail(ADMIN_EMAIL, `Neue Nachricht von ${m.sender_name || "Kunde"}`, html);
         return json({ ok });
@@ -193,7 +193,7 @@ Deno.serve(async (req) => {
             ${esc(m.content) || "(Dateianhang)"}
           </div>
           ${/^https:\/\//.test(m.attachment_url || "") ? `<p><a href="${esc(m.attachment_url)}">📎 ${esc(m.attachment_name) || "Anhang öffnen"}</a></p>` : ""}
-          <a class="btn" href="https://lokalonline.at/portal/">Im Portal ansehen →</a>
+          <a class="btn" href="https://web.lokalonline.at/portal/">Im Portal ansehen →</a>
         `);
         const ok = await sendEmail(order.email, "Neue Nachricht von lokalonline.at", html);
         return json({ ok });
@@ -218,7 +218,7 @@ Deno.serve(async (req) => {
           <a class="btn" href="${payment_url}" style="display:inline-block">Jetzt bezahlen →</a>
         </div>
         <p style="color:#666;font-size:13px">Keine Einrichtungsgebühr · Jederzeit kündbar · Bei Fragen: <a href="mailto:info@lokalonline.at" style="color:#C8302A">info@lokalonline.at</a></p>
-        <p style="color:#999;font-size:12px;margin-top:8px">Mit der Zahlung kommt der Vertrag zustande. Es gelten unsere <a href="https://lokalonline.at/agb.html" style="color:#999">AGB</a> und die <a href="https://lokalonline.at/agb.html#widerruf" style="color:#999">Widerrufsbelehrung</a>.</p>
+        <p style="color:#999;font-size:12px;margin-top:8px">Mit der Zahlung kommt der Vertrag zustande. Es gelten unsere <a href="https://web.lokalonline.at/agb.html" style="color:#999">AGB</a> und die <a href="https://web.lokalonline.at/agb.html#widerruf" style="color:#999">Widerrufsbelehrung</a>.</p>
       `);
       const ok = await sendEmail(to, `Zahlungslink für Ihre Website — ${business_name || "lokalonline.at"}`, html);
       return json({ ok });

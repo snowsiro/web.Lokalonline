@@ -2,4 +2,4 @@ User-agent: *
 Disallow: /admin/
 Disallow: /portal/
 
-Sitemap: https://lokalonline.at/sitemap.xml
+Sitemap: https://web.lokalonline.at/sitemap.xml

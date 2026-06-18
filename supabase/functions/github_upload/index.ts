@@ -8,7 +8,7 @@ const SUPABASE_ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY") || "";
 const ADMIN_EMAIL   = "info@lokalonline.at";
 
 const CORS = {
-  "Access-Control-Allow-Origin":  "https://lokalonline.at",
+  "Access-Control-Allow-Origin":  "https://web.lokalonline.at",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
@@ -78,7 +78,7 @@ Deno.serve(async (req) => {
     if (action === "put-file") {
       if (!isAllowedPath(body.path)) return json({ error: "Invalid path" }, 400);
       const ok = await putFile(body.path, body.content, body.message || "Update file");
-      return json({ ok, url: `https://lokalonline.at/${body.path}` });
+      return json({ ok, url: `https://web.lokalonline.at/${body.path}` });
     }
 
     // Fetch a binary file from a URL and upload to GitHub
@@ -92,7 +92,7 @@ Deno.serve(async (req) => {
       for (let i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
       const base64 = btoa(binary);
       const ok = await putFile(body.dest_path, base64, body.message || "Upload image");
-      return json({ ok, url: `https://lokalonline.at/${body.dest_path}` });
+      return json({ ok, url: `https://web.lokalonline.at/${body.dest_path}` });
     }
 
     // Get file content from GitHub

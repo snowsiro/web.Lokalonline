@@ -100,7 +100,7 @@
 
       var { error } = await sbClient.auth.signInWithOtp({
         email: email,
-        options: { emailRedirectTo: 'https://lokalonline.at/portal/dashboard.html' }
+        options: { emailRedirectTo: 'https://web.lokalonline.at/portal/dashboard.html' }
       });
 
       if (error) {
@@ -125,7 +125,7 @@
       resendAuthBtn.textContent = '…';
       await sbClient.auth.signInWithOtp({
         email: email,
-        options: { emailRedirectTo: 'https://lokalonline.at/portal/dashboard.html' }
+        options: { emailRedirectTo: 'https://web.lokalonline.at/portal/dashboard.html' }
       });
       resendAuthBtn.textContent = currentLang === 'en' ? 'Sent ✓' : 'Gesendet ✓';
       setTimeout(function () {

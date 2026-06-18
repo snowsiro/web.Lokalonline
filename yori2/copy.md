@@ -6,7 +6,7 @@
 
 - **Title:** Yori2 — Korean Restaurant Wien
 - **Description:** Authentisches koreanisches Restaurant im Herzen Wiens. Täglich frische Küche, Reservierung möglich.
-- **URL:** lokalonline.at/yori2/
+- **URL:** web.lokalonline.at/yori2/
 - **OG Image:** yori2/img/og-image.jpg
 
 ---

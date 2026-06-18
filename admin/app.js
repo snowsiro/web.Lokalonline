@@ -553,7 +553,7 @@
 
     tbody.innerHTML = allData.map(function (o) {
       var slug = esc(o.site_slug);
-      var base = 'https://lokalonline.at/' + slug;
+      var base = 'https://web.lokalonline.at/' + slug;
       return '<tr>' +
         '<td><strong>' + esc(o.business_name) + '</strong><br><span style="font-size:11px;color:var(--text-muted)">' + (o.business_type || '') + '</span></td>' +
         '<td><code style="font-size:12px;background:var(--bg);padding:2px 6px;border-radius:4px">' + slug + '</code></td>' +
@@ -810,7 +810,7 @@
     document.getElementById('previewSiteBtn').addEventListener('click', function () {
       var slug = document.getElementById('orderSiteSlug').value.trim();
       if (!slug) { showToast('Bitte zuerst einen Slug eingeben und speichern.'); return; }
-      window.open('https://lokalonline.at/' + slug + '/', '_blank');
+      window.open('https://web.lokalonline.at/' + slug + '/', '_blank');
     });
 
     document.getElementById('editSiteBtn').addEventListener('click', function () {
@@ -974,7 +974,7 @@
     content.innerHTML =
       '<div style="margin-bottom:4px">📄 <code>' + slug + '/index.html</code> ← templates/' + selectedTemplate + '</div>' +
       '<div style="margin-bottom:4px">📄 <code>' + slug + '/data.js</code> ← Bestelldaten</div>' +
-      '<div style="margin-top:8px;color:#16a34a;font-weight:600">🔗 lokalonline.at/' + slug + '/</div>';
+      '<div style="margin-top:8px;color:#16a34a;font-weight:600">🔗 web.lokalonline.at/' + slug + '/</div>';
   }
 
   window.openSiteGenerator = function (order) {
@@ -1499,7 +1499,7 @@
     var infoEl = document.getElementById('fileEditorInfo');
     errEl.style.display = 'none';
     contentEl.value = '⏳ Lade…';
-    infoEl.textContent = 'lokalonline.at/' + editingSlug + '/' + file;
+    infoEl.textContent = 'web.lokalonline.at/' + editingSlug + '/' + file;
 
     try {
       var session = (await sb.auth.getSession()).data.session;
@@ -1564,7 +1564,7 @@
     var infoEl = document.getElementById('linkEditorInfo');
     errEl.style.display = 'none';
     rowsEl.innerHTML = '<div style="color:var(--text-muted);font-size:13px">⏳ Lade…</div>';
-    infoEl.textContent = 'lokalonline.at/' + slug + '/link/';
+    infoEl.textContent = 'web.lokalonline.at/' + slug + '/link/';
     openModal('linkEditorOverlay');
 
     try {
@@ -1732,8 +1732,8 @@
     var mapsUrl = 'https://maps.google.com/?q=' + encodeURIComponent(address);
 
     var links = [];
-    links.push({ icon: '🌐', label: 'Website', url: 'https://lokalonline.at/' + slug + '/' });
-    links.push({ icon: '📋', label: 'Speisekarte / Leistungen', url: 'https://lokalonline.at/' + slug + '/menu/' });
+    links.push({ icon: '🌐', label: 'Website', url: 'https://web.lokalonline.at/' + slug + '/' });
+    links.push({ icon: '📋', label: 'Speisekarte / Leistungen', url: 'https://web.lokalonline.at/' + slug + '/menu/' });
     if (phone) links.push({ icon: '📞', label: phone, url: 'tel:' + phone.replace(/\s/g,'') });
     if (instagram) links.push({ icon: '📸', label: '@' + instagram, url: 'https://instagram.com/' + instagram });
     if (address) links.push({ icon: '📍', label: address, url: mapsUrl });
@@ -1746,7 +1746,7 @@
   }
 
   async function generateQrCode(slug) {
-    var menuUrl = 'https://lokalonline.at/' + slug + '/menu/';
+    var menuUrl = 'https://web.lokalonline.at/' + slug + '/menu/';
     var apiUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=400x400&margin=10&data=' + encodeURIComponent(menuUrl);
     var imgRes = await fetch(apiUrl);
     if (!imgRes.ok) throw new Error('QR-API nicht erreichbar (' + imgRes.status + ')');
@@ -1759,13 +1759,13 @@
   }
 
   function showQrResult(slug) {
-    var menuUrl = 'https://lokalonline.at/' + slug + '/menu/';
+    var menuUrl = 'https://web.lokalonline.at/' + slug + '/menu/';
 
     var linksEl = document.getElementById('qrResultLinks');
     linksEl.innerHTML = [
-      { label: '🌐 Website', url: 'https://lokalonline.at/' + slug + '/' },
+      { label: '🌐 Website', url: 'https://web.lokalonline.at/' + slug + '/' },
       { label: '📋 Menü', url: menuUrl },
-      { label: '🔗 Link Page', url: 'https://lokalonline.at/' + slug + '/link/' }
+      { label: '🔗 Link Page', url: 'https://web.lokalonline.at/' + slug + '/link/' }
     ].map(function(l) {
       return '<a href="' + l.url + '" target="_blank" class="btn btn-outline btn-sm">' + l.label + '</a>';
     }).join('');
@@ -1834,7 +1834,7 @@
       btn.textContent = '⏳ 7/7 Speichert…';
       await sb.from('orders').update({
         site_slug: slug,
-        admin_notes: (currentOrderData.admin_notes ? currentOrderData.admin_notes + '\n' : '') + 'Site: lokalonline.at/' + slug + '/'
+        admin_notes: (currentOrderData.admin_notes ? currentOrderData.admin_notes + '\n' : '') + 'Site: web.lokalonline.at/' + slug + '/'
       }).eq('id', currentOrderData.id);
 
       currentOrderData.site_slug = slug;

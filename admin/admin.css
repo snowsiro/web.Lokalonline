@@ -309,6 +309,7 @@ input, select, textarea { font-family: inherit; }
   padding: 16px 24px;
   border-top: 1px solid var(--border);
   display: flex;
+  flex-wrap: wrap;
   gap: 8px;
   justify-content: flex-end;
   flex-shrink: 0;

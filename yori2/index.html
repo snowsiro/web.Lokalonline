@@ -792,7 +792,8 @@ footer {
       <label class="form-lbl" data-i="f_guests">Personenanzahl</label>
       <select class="form-select" id="resGuests">
         <option>1 Person</option><option>2 Personen</option><option>3 Personen</option>
-        <option>4 Personen</option><option>5–8 Personen</option><option>9+ Personen</option>
+        <option>4 Personen</option><option>5 Personen</option><option>6 Personen</option>
+        <option>7 Personen</option><option>8 Personen</option><option>9 Personen</option><option>10 Personen</option>
       </select>
     </div>
     <div class="form-group"><label class="form-lbl" data-i="f_note">Anmerkungen</label><textarea class="form-textarea" id="resNote" placeholder="Allergien, Sonderwünsche …"></textarea></div>
@@ -986,11 +987,12 @@ const T = {
     footer_desc:'Koreanische Küche mit Herz und Seele — mitten in Wien.',
     fc1:'Navigation', fc2:'Kontakt', fc_menu:'Speisekarte ↗',
     map_btn:'In Google Maps öffnen →',
-    toast_res:'Ihre Anfrage wurde gesendet!',
+    toast_res:'Reservierung eingegangen! Wir bestätigen sie in Kürze.',
     toast_rev:'Vielen Dank! Ihre Bewertung wird nach kurzer Prüfung veröffentlicht.',
     toast_err:'Bitte füllen Sie alle Pflichtfelder aus.',
+    toast_resfail:'Reservierung nicht möglich. Bitte wählen Sie eine andere Zeit.',
     no_reviews:'Noch keine Bewertungen. Seien Sie der Erste!',
-    closed_day:'Montag und Sonntag sind Ruhetage.',
+    closed_day:'An diesem Tag haben wir geschlossen. Bitte wählen Sie ein anderes Datum.',
   },
   en: {
     nav_menu:'Menu', nav_info:'Hours', nav_location:'Location',
@@ -1035,11 +1037,12 @@ const T = {
     footer_desc:'Korean cuisine with heart and soul — right in Vienna.',
     fc1:'Navigation', fc2:'Contact', fc_menu:'Menu ↗',
     map_btn:'Open in Google Maps →',
-    toast_res:'Your enquiry has been sent!',
+    toast_res:'Reservation received! We will confirm it shortly.',
     toast_rev:'Thank you! Your review will appear after a short review.',
     toast_err:'Please fill in all required fields.',
+    toast_resfail:'Reservation not possible. Please choose another time.',
     no_reviews:'No reviews yet. Be the first!',
-    closed_day:'Closed on Mondays and Sundays.',
+    closed_day:'We are closed on this date. Please choose another date.',
   },
   ko: {
     nav_menu:'메뉴', nav_info:'영업시간', nav_location:'오시는 길',
@@ -1084,11 +1087,12 @@ const T = {
     footer_desc:'비엔나 한복판에서 정성껏 만드는 한국 요리.',
     fc1:'바로가기', fc2:'연락처', fc_menu:'메뉴판 ↗',
     map_btn:'구글 지도로 열기 →',
-    toast_res:'예약 문의가 접수되었습니다!',
+    toast_res:'예약이 접수되었습니다! 곧 확인 후 확정해 드릴게요.',
     toast_rev:'감사합니다! 검토 후 게시됩니다.',
     toast_err:'필수 항목을 모두 입력해주세요.',
+    toast_resfail:'예약이 불가능합니다. 다른 시간을 선택해 주세요.',
     no_reviews:'아직 리뷰가 없어요. 첫 번째 리뷰를 남겨주세요!',
-    closed_day:'월요일과 일요일은 휴무입니다.',
+    closed_day:'이 날짜는 휴무입니다. 다른 날짜를 선택해 주세요.',
   }
 };
 let currentLang='de'; window.T=T; window.currentLang='de';
@@ -1127,9 +1131,13 @@ hero.addEventListener('touchend',e=>{const d=e.changedTouches[0].clientX-startX;
 window.addEventListener('scroll',()=>{document.getElementById('mainNav').classList.toggle('scrolled',scrollY>60);});
 const observer=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting) e.target.classList.add('visible');});},{threshold:0.08});
 document.querySelectorAll('.fade-in, .intro-cell').forEach(el=>observer.observe(el));
-document.getElementById('resDate').addEventListener('input',function(){
-  const d=new Date(this.value); const day=d.getDay();
-  if(day===0||day===1){this.value=''; showToast(T[currentLang].closed_day);}
+document.getElementById('resDate').addEventListener('change',async function(){
+  const date=this.value; if(!date) return;
+  // Ruhetage/Feiertage kommen aus der Jaresi-Verfügbarkeit (nicht mehr fix Mo/So)
+  try{
+    const a=await fetch('https://jaresi.lokalonline.at/api/public/yori2/availability?date='+encodeURIComponent(date)).then(r=>r.json());
+    if(a.closed){ this.value=''; showToast(T[currentLang].closed_day); }
+  }catch(e){}
 });
 document.getElementById('resDate').min=new Date().toISOString().split('T')[0];
 window._stars=0;
@@ -1158,7 +1166,7 @@ async function submitReservation(){
       document.getElementById('resDate').value=''; document.getElementById('resTime').selectedIndex=0;
       showToast(T[currentLang].toast_res);
     } else {
-      showToast(data.error||T[currentLang].toast_err);
+      showToast(T[currentLang].toast_resfail);
     }
   } catch(e){showToast('Verbindungsfehler.');}
   btn.disabled=false; btn.style.opacity='1';

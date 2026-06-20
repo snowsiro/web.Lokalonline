@@ -1146,14 +1146,19 @@ async function submitReservation(){
   if(!name||!tel||!email||!date||!time){showToast(T[currentLang].toast_err);return;}
   const btn=document.querySelector('.form-submit'); btn.disabled=true; btn.style.opacity='0.4';
   try{
-    const res=await fetch('https://formspree.io/f/mdabrzga',{
-      method:'POST', headers:{'Content-Type':'application/json','Accept':'application/json'},
-      body:JSON.stringify({name,tel,email,date,time,guests,note,_replyto:email,_subject:`Reservierungsanfrage — ${name} — ${date}`})
+    // Reservierung direkt in der Jaresi-Tischverwaltung anlegen (statt E-Mail)
+    const res=await fetch('https://jaresi.lokalonline.at/api/public/yori2/reservations',{
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({customerName:name, phone:tel, email, date, time, partySize:parseInt(guests,10)||2, notes:note, channel:'website'})
     });
+    const data=await res.json().catch(()=>({}));
     if(res.ok){
+      if(data.depositUrl){ location.href=data.depositUrl; return; }
       ['resName','resTel','resEmail','resNote'].forEach(id=>document.getElementById(id).value='');
       document.getElementById('resDate').value=''; document.getElementById('resTime').selectedIndex=0;
       showToast(T[currentLang].toast_res);
+    } else {
+      showToast(data.error||T[currentLang].toast_err);
     }
   } catch(e){showToast('Verbindungsfehler.');}
   btn.disabled=false; btn.style.opacity='1';

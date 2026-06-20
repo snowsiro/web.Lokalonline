@@ -770,10 +770,34 @@ footer {
     </div>
   </div>
   <div class="res-form fade-in fd1">
-    <!-- Jaresi Tischreservierung — Buchungen landen direkt in der Tischverwaltung (ersetzt das frühere E-Mail-Formular) -->
-    <iframe src="https://jaresi.lokalonline.at/book/yori2?accent=%23C8392B"
-      title="Tisch reservieren" loading="lazy"
-      style="width:100%;height:820px;border:0;border-radius:14px;background:var(--warm);box-shadow:0 6px 28px rgba(0,0,0,.06);"></iframe>
+    <div class="form-row">
+      <div class="form-group"><label class="form-lbl" data-i="f_name">Name *</label><input type="text" class="form-input" id="resName" placeholder="Max Mustermann"></div>
+      <div class="form-group"><label class="form-lbl" data-i="f_tel">Telefon *</label><input type="tel" class="form-input" id="resTel" placeholder="+43 …"></div>
+    </div>
+    <div class="form-group"><label class="form-lbl" data-i="f_email">E-Mail *</label><input type="email" class="form-input" id="resEmail" placeholder="beispiel@email.com"></div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-lbl" data-i="f_date">Datum *</label><input type="date" class="form-input" id="resDate"></div>
+      <div class="form-group">
+        <label class="form-lbl" data-i="f_time">Uhrzeit *</label>
+        <select class="form-select" id="resTime">
+          <option value="" data-i="f_time_ph">Bitte wählen</option>
+          <option>11:00</option><option>11:30</option><option>12:00</option><option>12:30</option>
+          <option>13:00</option><option>13:30</option><option>14:00</option>
+          <option>17:00</option><option>17:30</option><option>18:00</option><option>18:30</option>
+          <option>19:00</option><option>19:30</option><option>20:00</option><option>20:30</option><option>21:00</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-lbl" data-i="f_guests">Personenanzahl</label>
+      <select class="form-select" id="resGuests">
+        <option>1 Person</option><option>2 Personen</option><option>3 Personen</option>
+        <option>4 Personen</option><option>5–8 Personen</option><option>9+ Personen</option>
+      </select>
+    </div>
+    <div class="form-group"><label class="form-lbl" data-i="f_note">Anmerkungen</label><textarea class="form-textarea" id="resNote" placeholder="Allergien, Sonderwünsche …"></textarea></div>
+    <p style="font-size:11px;color:var(--mid);" data-i="f_required">* Pflichtfelder</p>
+    <button class="form-submit" onclick="submitReservation()" data-i="f_submit">Anfrage senden</button>
   </div>
 </section>
 
@@ -951,6 +975,10 @@ const T = {
     res_label:'Reservierung',
     res_headline:'Tisch reservieren<br>oder anfragen',
     res_note:'Für Gruppen, besondere Anlässe oder wenn Sie sichergehen möchten — senden Sie uns Ihre Anfrage.',
+    f_name:'Name', f_tel:'Telefon', f_date:'Datum', f_time:'Uhrzeit',
+    f_email:'E-Mail',
+    f_time_ph:'Bitte wählen', f_guests:'Personenanzahl',
+    f_note:'Anmerkungen', f_submit:'Anfrage senden', f_required:'* Pflichtfelder',
     rev_label:'Bewertungen', rev_title:'Was unsere Gäste sagen',
     wr_title:'Bewertung schreiben',
     wr_name:'Name', wr_date:'Monat', wr_text:'Kommentar', wr_submit:'Bewertung absenden',
@@ -958,9 +986,11 @@ const T = {
     footer_desc:'Koreanische Küche mit Herz und Seele — mitten in Wien.',
     fc1:'Navigation', fc2:'Kontakt', fc_menu:'Speisekarte ↗',
     map_btn:'In Google Maps öffnen →',
+    toast_res:'Ihre Anfrage wurde gesendet!',
     toast_rev:'Vielen Dank! Ihre Bewertung wird nach kurzer Prüfung veröffentlicht.',
     toast_err:'Bitte füllen Sie alle Pflichtfelder aus.',
     no_reviews:'Noch keine Bewertungen. Seien Sie der Erste!',
+    closed_day:'Montag und Sonntag sind Ruhetage.',
   },
   en: {
     nav_menu:'Menu', nav_info:'Hours', nav_location:'Location',
@@ -994,6 +1024,10 @@ const T = {
     res_label:'Reservation',
     res_headline:'Book a table<br>or enquire',
     res_note:'For groups, special occasions or peace of mind — send us your enquiry.',
+    f_name:'Name', f_tel:'Phone', f_date:'Date', f_time:'Time',
+    f_email:'E-Mail',
+    f_time_ph:'Please select', f_guests:'Guests',
+    f_note:'Notes', f_submit:'Send Enquiry', f_required:'* Required',
     rev_label:'Reviews', rev_title:'What our guests say',
     wr_title:'Write a review',
     wr_name:'Name', wr_date:'Month', wr_text:'Comment', wr_submit:'Submit',
@@ -1001,9 +1035,11 @@ const T = {
     footer_desc:'Korean cuisine with heart and soul — right in Vienna.',
     fc1:'Navigation', fc2:'Contact', fc_menu:'Menu ↗',
     map_btn:'Open in Google Maps →',
+    toast_res:'Your enquiry has been sent!',
     toast_rev:'Thank you! Your review will appear after a short review.',
     toast_err:'Please fill in all required fields.',
     no_reviews:'No reviews yet. Be the first!',
+    closed_day:'Closed on Mondays and Sundays.',
   },
   ko: {
     nav_menu:'메뉴', nav_info:'영업시간', nav_location:'오시는 길',
@@ -1037,6 +1073,10 @@ const T = {
     res_label:'예약',
     res_headline:'예약 및<br>문의',
     res_note:'단체 예약, 특별한 자리 또는 자리 확보를 원하시면 문의해 주세요.',
+    f_name:'이름', f_tel:'연락처', f_date:'날짜', f_time:'시간',
+    f_email:'이메일',
+    f_time_ph:'선택해주세요', f_guests:'인원',
+    f_note:'요청사항', f_submit:'예약 문의 보내기', f_required:'* 필수 항목',
     rev_label:'리뷰', rev_title:'손님들의 이야기',
     wr_title:'리뷰 작성하기',
     wr_name:'이름', wr_date:'방문 월', wr_text:'리뷰 내용', wr_submit:'리뷰 등록하기',
@@ -1044,9 +1084,11 @@ const T = {
     footer_desc:'비엔나 한복판에서 정성껏 만드는 한국 요리.',
     fc1:'바로가기', fc2:'연락처', fc_menu:'메뉴판 ↗',
     map_btn:'구글 지도로 열기 →',
+    toast_res:'예약 문의가 접수되었습니다!',
     toast_rev:'감사합니다! 검토 후 게시됩니다.',
     toast_err:'필수 항목을 모두 입력해주세요.',
     no_reviews:'아직 리뷰가 없어요. 첫 번째 리뷰를 남겨주세요!',
+    closed_day:'월요일과 일요일은 휴무입니다.',
   }
 };
 let currentLang='de'; window.T=T; window.currentLang='de';
@@ -1085,9 +1127,37 @@ hero.addEventListener('touchend',e=>{const d=e.changedTouches[0].clientX-startX;
 window.addEventListener('scroll',()=>{document.getElementById('mainNav').classList.toggle('scrolled',scrollY>60);});
 const observer=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting) e.target.classList.add('visible');});},{threshold:0.08});
 document.querySelectorAll('.fade-in, .intro-cell').forEach(el=>observer.observe(el));
+document.getElementById('resDate').addEventListener('input',function(){
+  const d=new Date(this.value); const day=d.getDay();
+  if(day===0||day===1){this.value=''; showToast(T[currentLang].closed_day);}
+});
+document.getElementById('resDate').min=new Date().toISOString().split('T')[0];
 window._stars=0;
 function selectStar(n){window._stars=n; document.querySelectorAll('.star-btn').forEach((b,i)=>b.classList.toggle('on',i<n));}
 function showToast(msg){const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),3400);}
+async function submitReservation(){
+  const name=document.getElementById('resName').value.trim();
+  const tel=document.getElementById('resTel').value.trim();
+  const email=document.getElementById('resEmail').value.trim();
+  const date=document.getElementById('resDate').value;
+  const time=document.getElementById('resTime').value;
+  const guests=document.getElementById('resGuests').value;
+  const note=document.getElementById('resNote').value.trim();
+  if(!name||!tel||!email||!date||!time){showToast(T[currentLang].toast_err);return;}
+  const btn=document.querySelector('.form-submit'); btn.disabled=true; btn.style.opacity='0.4';
+  try{
+    const res=await fetch('https://formspree.io/f/mdabrzga',{
+      method:'POST', headers:{'Content-Type':'application/json','Accept':'application/json'},
+      body:JSON.stringify({name,tel,email,date,time,guests,note,_replyto:email,_subject:`Reservierungsanfrage — ${name} — ${date}`})
+    });
+    if(res.ok){
+      ['resName','resTel','resEmail','resNote'].forEach(id=>document.getElementById(id).value='');
+      document.getElementById('resDate').value=''; document.getElementById('resTime').selectedIndex=0;
+      showToast(T[currentLang].toast_res);
+    }
+  } catch(e){showToast('Verbindungsfehler.');}
+  btn.disabled=false; btn.style.opacity='1';
+}
 function submitReview(){window.submitReviewDB();}
 (function(){
   var h=document.getElementById('navHamburger');

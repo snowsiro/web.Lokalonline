@@ -991,6 +991,9 @@ const T = {
     toast_rev:'Vielen Dank! Ihre Bewertung wird nach kurzer Prüfung veröffentlicht.',
     toast_err:'Bitte füllen Sie alle Pflichtfelder aus.',
     toast_resfail:'Reservierung nicht möglich. Bitte wählen Sie eine andere Zeit.',
+    toast_resretry:'Reservierung wird gesendet… einen Moment bitte, der Server wird aktiviert.',
+    toast_resmail:'Verbindung verzögert. Wir öffnen eine vorausgefüllte E-Mail — bitte nur noch senden.',
+    mail_intro:'Reservierungsanfrage über die Website (Server war nicht erreichbar). Bitte folgende Reservierung vormerken:',
     no_reviews:'Noch keine Bewertungen. Seien Sie der Erste!',
     closed_day:'An diesem Tag haben wir geschlossen. Bitte wählen Sie ein anderes Datum.',
   },
@@ -1041,6 +1044,9 @@ const T = {
     toast_rev:'Thank you! Your review will appear after a short review.',
     toast_err:'Please fill in all required fields.',
     toast_resfail:'Reservation not possible. Please choose another time.',
+    toast_resretry:'Sending your reservation… one moment please, the server is waking up.',
+    toast_resmail:'Connection delayed. We are opening a pre-filled e-mail — please just hit send.',
+    mail_intro:'Reservation enquiry via the website (the server was unreachable). Please note the following reservation:',
     no_reviews:'No reviews yet. Be the first!',
     closed_day:'We are closed on this date. Please choose another date.',
   },
@@ -1091,6 +1097,9 @@ const T = {
     toast_rev:'감사합니다! 검토 후 게시됩니다.',
     toast_err:'필수 항목을 모두 입력해주세요.',
     toast_resfail:'예약이 불가능합니다. 다른 시간을 선택해 주세요.',
+    toast_resretry:'예약을 전송 중입니다… 서버를 깨우는 중이니 잠시만 기다려 주세요.',
+    toast_resmail:'서버 연결이 지연되고 있어요. 예약 내용을 담은 이메일을 열어드릴게요 — 전송만 눌러주세요.',
+    mail_intro:'홈페이지를 통한 예약 문의입니다(서버 연결 불가). 아래 내용으로 예약 부탁드립니다:',
     no_reviews:'아직 리뷰가 없어요. 첫 번째 리뷰를 남겨주세요!',
     closed_day:'이 날짜는 휴무입니다. 다른 날짜를 선택해 주세요.',
   }
@@ -1153,23 +1162,59 @@ async function submitReservation(){
   const note=document.getElementById('resNote').value.trim();
   if(!name||!tel||!email||!date||!time){showToast(T[currentLang].toast_err);return;}
   const btn=document.querySelector('.form-submit'); btn.disabled=true; btn.style.opacity='0.4';
-  try{
-    // Reservierung direkt in der Jaresi-Tischverwaltung anlegen (statt E-Mail)
-    const res=await fetch('https://jaresi.lokalonline.at/api/public/yori2/reservations',{
-      method:'POST', headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({customerName:name, phone:tel, email, date, time, partySize:parseInt(guests,10)||2, notes:note, channel:'website'})
-    });
-    const data=await res.json().catch(()=>({}));
-    if(res.ok){
-      if(data.depositUrl){ location.href=data.depositUrl; return; }
-      ['resName','resTel','resEmail','resNote'].forEach(id=>document.getElementById(id).value='');
-      document.getElementById('resDate').value=''; document.getElementById('resTime').selectedIndex=0;
-      showToast(T[currentLang].toast_res);
-    } else {
-      showToast(T[currentLang].toast_resfail);
+  const payload={customerName:name, phone:tel, email, date, time, partySize:parseInt(guests,10)||2, notes:note, channel:'website'};
+  // Render (Free-Plan) schläft nach Inaktivität — der erste Request kann fehlschlagen
+  // oder 5xx liefern, während der Server aufwacht (~1 Min). Mit Backoff erneut
+  // versuchen, statt die Reservierung zu verlieren; klappt es gar nicht → E-Mail-Fallback.
+  const delays=[2000,3000,5000,8000,12000,20000,30000]; // ~80s deckt den Cold-Start ab
+  for(let attempt=0; attempt<=delays.length; attempt++){
+    try{
+      // Reservierung direkt in der Jaresi-Tischverwaltung anlegen (statt E-Mail)
+      const res=await fetch('https://jaresi.lokalonline.at/api/public/yori2/reservations',{
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body:JSON.stringify(payload)
+      });
+      if(res.status>=500) throw new Error('server waking ('+res.status+')'); // 502/503/504 → wiederholen
+      const data=await res.json().catch(()=>({}));
+      if(res.ok){
+        if(data.depositUrl){ location.href=data.depositUrl; return; }
+        ['resName','resTel','resEmail','resNote'].forEach(id=>document.getElementById(id).value='');
+        document.getElementById('resDate').value=''; document.getElementById('resTime').selectedIndex=0;
+        showToast(T[currentLang].toast_res);
+      } else {
+        // 4xx → echte Ablehnung (ausgebucht/geschlossen/ungültig) — nicht wiederholen
+        showToast(data.error || T[currentLang].toast_resfail);
+      }
+      btn.disabled=false; btn.style.opacity='1';
+      return;
+    } catch(e){
+      if(attempt<delays.length){
+        showToast(T[currentLang].toast_resretry);
+        await new Promise(r=>setTimeout(r,delays[attempt]));
+      }
     }
-  } catch(e){showToast('Verbindungsfehler.');}
+  }
+  // Alle Versuche fehlgeschlagen → per E-Mail absichern, damit nichts verloren geht
   btn.disabled=false; btn.style.opacity='1';
+  reservationEmailFallback(payload);
+}
+// Letzte Rettung, wenn Jaresi nicht erreichbar ist: die Reservierung als
+// vorausgefüllte E-Mail an das Lokal übergeben (statische Seite, kein eigenes Backend).
+function reservationEmailFallback(p){
+  const L=T[currentLang];
+  showToast(L.toast_resmail);
+  const subject=encodeURIComponent('Reservierung Yori2 — '+p.date+' '+p.time);
+  const body=encodeURIComponent(
+    L.mail_intro+'\n\n'+
+    L.f_name+': '+p.customerName+'\n'+
+    L.f_tel+': '+p.phone+'\n'+
+    L.f_email+': '+p.email+'\n'+
+    L.f_date+': '+p.date+'\n'+
+    L.f_time+': '+p.time+'\n'+
+    L.f_guests+': '+p.partySize+'\n'+
+    L.f_note+': '+(p.notes||'-')+'\n'
+  );
+  location.href='mailto:yori2wien@gmail.com?subject='+subject+'&body='+body;
 }
 function submitReview(){window.submitReviewDB();}
 (function(){

@@ -798,6 +798,10 @@ footer {
     </div>
     <div class="form-group"><label class="form-lbl" data-i="f_note">Anmerkungen</label><textarea class="form-textarea" id="resNote" placeholder="Allergien, Sonderwünsche …"></textarea></div>
     <p style="font-size:11px;color:var(--mid);" data-i="f_required">* Pflichtfelder</p>
+    <label class="form-consent" style="display:flex;gap:8px;align-items:flex-start;font-size:11px;color:var(--mid);line-height:1.5;cursor:pointer;margin-bottom:14px;">
+      <input type="checkbox" id="resConsent" style="margin-top:2px;flex-shrink:0;">
+      <span data-i="f_consent">Ja, ich möchte nach meinem Besuch eine Bewertungs-/Feedback-Anfrage per E-Mail erhalten (optional, jederzeit widerrufbar).</span>
+    </label>
     <button class="form-submit" onclick="submitReservation()" data-i="f_submit">Anfrage senden</button>
   </div>
 </section>
@@ -980,6 +984,7 @@ const T = {
     f_email:'E-Mail',
     f_time_ph:'Bitte wählen', f_guests:'Personenanzahl',
     f_note:'Anmerkungen', f_submit:'Anfrage senden', f_required:'* Pflichtfelder',
+    f_consent:'Ja, ich möchte nach meinem Besuch eine Bewertungs-/Feedback-Anfrage per E-Mail erhalten (optional, jederzeit widerrufbar).',
     rev_label:'Bewertungen', rev_title:'Was unsere Gäste sagen',
     wr_title:'Bewertung schreiben',
     wr_name:'Name', wr_date:'Monat', wr_text:'Kommentar', wr_submit:'Bewertung absenden',
@@ -1033,6 +1038,7 @@ const T = {
     f_email:'E-Mail',
     f_time_ph:'Please select', f_guests:'Guests',
     f_note:'Notes', f_submit:'Send Enquiry', f_required:'* Required',
+    f_consent:"Yes, I'd like to receive a review/feedback request by email after my visit (optional, you can opt out anytime).",
     rev_label:'Reviews', rev_title:'What our guests say',
     wr_title:'Write a review',
     wr_name:'Name', wr_date:'Month', wr_text:'Comment', wr_submit:'Submit',
@@ -1086,6 +1092,7 @@ const T = {
     f_email:'이메일',
     f_time_ph:'선택해주세요', f_guests:'인원',
     f_note:'요청사항', f_submit:'예약 문의 보내기', f_required:'* 필수 항목',
+    f_consent:'방문 후 리뷰/피드백 요청 이메일을 받는 데 동의합니다 (선택, 언제든 철회 가능).',
     rev_label:'리뷰', rev_title:'손님들의 이야기',
     wr_title:'리뷰 작성하기',
     wr_name:'이름', wr_date:'방문 월', wr_text:'리뷰 내용', wr_submit:'리뷰 등록하기',
@@ -1160,9 +1167,10 @@ async function submitReservation(){
   const time=document.getElementById('resTime').value;
   const guests=document.getElementById('resGuests').value;
   const note=document.getElementById('resNote').value.trim();
+  const consent=document.getElementById('resConsent').checked;
   if(!name||!tel||!email||!date||!time){showToast(T[currentLang].toast_err);return;}
   const btn=document.querySelector('.form-submit'); btn.disabled=true; btn.style.opacity='0.4';
-  const payload={customerName:name, phone:tel, email, date, time, partySize:parseInt(guests,10)||2, notes:note, channel:'website'};
+  const payload={customerName:name, phone:tel, email, date, time, partySize:parseInt(guests,10)||2, notes:note, marketingConsent:consent, channel:'website'};
   // Render (Free-Plan) schläft nach Inaktivität — der erste Request kann fehlschlagen
   // oder 5xx liefern, während der Server aufwacht (~1 Min). Mit Backoff erneut
   // versuchen, statt die Reservierung zu verlieren; klappt es gar nicht → E-Mail-Fallback.
@@ -1180,6 +1188,7 @@ async function submitReservation(){
         if(data.depositUrl){ location.href=data.depositUrl; return; }
         ['resName','resTel','resEmail','resNote'].forEach(id=>document.getElementById(id).value='');
         document.getElementById('resDate').value=''; document.getElementById('resTime').selectedIndex=0;
+        document.getElementById('resConsent').checked=false;
         showToast(T[currentLang].toast_res);
       } else {
         // 4xx → echte Ablehnung (ausgebucht/geschlossen/ungültig) — nicht wiederholen

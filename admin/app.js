@@ -1476,6 +1476,21 @@
 
   function esc(s) { return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
+  // Prüft, ob eine Datei im Repo fehlt. Nur ein eindeutiges „nicht gefunden"
+  // zählt als fehlend — bei Unsicherheit wird nichts angelegt, damit eine
+  // vorhandene Datei niemals überschrieben wird.
+  async function isFileMissing(path) {
+    var session = (await sb.auth.getSession()).data.session;
+    var token = session ? session.access_token : '';
+    var res = await fetch(EDGE_FN, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+      body: JSON.stringify({ action: 'get-file', path: path })
+    });
+    var data = await res.json().catch(function () { return {}; });
+    return res.status === 404 || data.error === 'File not found';
+  }
+
   async function uploadFile(path, content, rawBase64) {
     var session = (await sb.auth.getSession()).data.session;
     var token = session ? session.access_token : '';
@@ -1589,6 +1604,13 @@
 
   // Linkseite ohne Links: Einfügepunkt im Link-Container suchen.
   function parseEmptyLinkPage(html) {
+    // Sieht der DOM Links, die der Regex nicht gefunden hat, wäre jede
+    // Bearbeitung falsch (neue Links kämen zusätzlich zu den alten).
+    var doc = new DOMParser().parseFromString(html, 'text/html');
+    if (doc.querySelector('a.link-btn')) return null;
+    var container = doc.querySelector('#links, .links');
+    if (!container || container.querySelector('a')) return null;
+
     var m = /<div\b[^>]*(?:id="links"|class="[^"]*\blinks\b[^"]*")[^>]*>/i.exec(html);
     if (!m) return null;
     var closeIndent = (html.slice(0, m.index).match(/[ \t]*$/) || [''])[0];
@@ -1907,10 +1929,10 @@
     if (address) links.push({ icon: '📍', label: address, url: mapsUrl });
 
     var linksHtml = links.map(function(l) {
-      return '<a href="' + l.url + '" class="link-btn" target="_blank"><span class="link-icon">' + l.icon + '</span><span>' + l.label + '</span></a>';
+      return '<a href="' + esc(l.url) + '" class="link-btn" target="_blank"><span class="link-icon">' + esc(l.icon) + '</span><span>' + esc(l.label) + '</span></a>';
     }).join('\n      ');
 
-    return '<!DOCTYPE html>\n<html lang="de">\n<head>\n<meta charset="UTF-8">\n<meta name="viewport" content="width=device-width,initial-scale=1">\n<title>' + name + '</title>\n<style>\n*{box-sizing:border-box;margin:0;padding:0}\nbody{min-height:100vh;background:#0a0a0a;display:flex;align-items:center;justify-content:center;font-family:system-ui,sans-serif;padding:24px}\n.card{width:100%;max-width:400px}\n.logo{width:80px;height:80px;border-radius:50%;object-fit:cover;margin:0 auto 16px;display:block;background:#222}\n.name{color:#fff;font-size:22px;font-weight:700;text-align:center;margin-bottom:4px}\n.sub{color:rgba(255,255,255,.45);font-size:14px;text-align:center;margin-bottom:32px}\n.link-btn{display:flex;align-items:center;gap:14px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:#fff;text-decoration:none;padding:16px 20px;border-radius:12px;margin-bottom:10px;font-size:15px;transition:background .2s,border-color .2s}\n.link-btn:hover{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.25)}\n.link-icon{font-size:20px;flex-shrink:0;width:28px;text-align:center}\n.footer{text-align:center;margin-top:28px;font-size:11px;color:rgba(255,255,255,.2)}\n</style>\n</head>\n<body>\n<div class="card">\n  <img class="logo" src="img/logo.png" onerror="this.style.display=\'none\'">\n  <div class="name">' + name + '</div>\n  <div class="sub" id="subtext">Wien</div>\n  <div id="links">\n      ' + linksHtml + '\n  </div>\n  <div class="footer">lokalonline.at</div>\n</div>\n<script>\nvar d=document.getElementById("subtext");\nif(d&&"' + address + '")d.textContent="' + address + '";\n<\/script>\n</body>\n</html>\n';
+    return '<!DOCTYPE html>\n<html lang="de">\n<head>\n<meta charset="UTF-8">\n<meta name="viewport" content="width=device-width,initial-scale=1">\n<title>' + esc(name) + '</title>\n<style>\n*{box-sizing:border-box;margin:0;padding:0}\nbody{min-height:100vh;background:#0a0a0a;display:flex;align-items:center;justify-content:center;font-family:system-ui,sans-serif;padding:24px}\n.card{width:100%;max-width:400px}\n.logo{width:80px;height:80px;border-radius:50%;object-fit:cover;margin:0 auto 16px;display:block;background:#222}\n.name{color:#fff;font-size:22px;font-weight:700;text-align:center;margin-bottom:4px}\n.sub{color:rgba(255,255,255,.45);font-size:14px;text-align:center;margin-bottom:32px}\n.link-btn{display:flex;align-items:center;gap:14px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:#fff;text-decoration:none;padding:16px 20px;border-radius:12px;margin-bottom:10px;font-size:15px;transition:background .2s,border-color .2s}\n.link-btn:hover{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.25)}\n.link-icon{font-size:20px;flex-shrink:0;width:28px;text-align:center}\n.footer{text-align:center;margin-top:28px;font-size:11px;color:rgba(255,255,255,.2)}\n</style>\n</head>\n<body>\n<div class="card">\n  <img class="logo" src="img/logo.png" onerror="this.style.display=\'none\'">\n  <div class="name">' + esc(name) + '</div>\n  <div class="sub">' + esc(address || 'Wien') + '</div>\n  <div id="links">\n      ' + linksHtml + '\n  </div>\n  <div class="footer">lokalonline.at</div>\n</div>\n</body>\n</html>\n';
   }
 
   async function generateQrCode(slug) {
@@ -1926,8 +1948,11 @@
     await uploadFile(slug + '/img/qr-menu.png', null, base64);
   }
 
-  function showQrResult(slug) {
+  function showQrResult(slug, linkPageKept) {
     var menuUrl = 'https://web.lokalonline.at/' + slug + '/menu/';
+
+    var noteEl = document.getElementById('qrResultLinkNote');
+    noteEl.style.display = linkPageKept ? 'block' : 'none';
 
     var linksEl = document.getElementById('qrResultLinks');
     linksEl.innerHTML = [
@@ -1958,7 +1983,8 @@
     if (!/^[a-z0-9-]+$/.test(slug)) { errEl.textContent = 'Nur Kleinbuchstaben, Zahlen und Bindestriche erlaubt.'; errEl.style.display = 'block'; return; }
 
     btn.disabled = true;
-    btn.textContent = '⏳ 1/5 Hauptseite…';
+    btn.textContent = '⏳ 1/7 Hauptseite…';
+    var linkPageKept = false;
 
     try {
       // 1. Main site
@@ -1979,10 +2005,12 @@
         await uploadFile(slug + '/menu/menu-data.js', menuDataJs);
       }
 
-      // 3. Link page
+      // 3. Link page — eine vorhandene Seite bleibt unangetastet, damit im
+      // Link-Editor gepflegte Links beim Neu-Generieren nicht verloren gehen.
       btn.textContent = '⏳ 3/7 Link-Seite…';
-      var linkHtml = generateLinkPageHtml(slug, currentOrderData);
-      await uploadFile(slug + '/link/index.html', linkHtml);
+      var linkPath = slug + '/link/index.html';
+      linkPageKept = !(await isFileMissing(linkPath));
+      if (!linkPageKept) await uploadFile(linkPath, generateLinkPageHtml(slug, currentOrderData));
 
       // 4. Impressum
       btn.textContent = '⏳ 4/7 Impressum…';
@@ -2013,7 +2041,7 @@
       document.getElementById('generateSiteBtn').textContent = '🔄 Neu generieren';
 
       closeModal('siteGenOverlay');
-      showQrResult(slug);
+      showQrResult(slug, linkPageKept);
       if (qrErr) showToast('⚠️ QR-Code: ' + qrErr);
 
     } catch (e) {

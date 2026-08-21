@@ -173,6 +173,15 @@ admin_notes, status
 - `📝 data.js` 버튼 → site_slug 설정 시 표시
 - GitHub에서 data.js 로드 → 편집 → 저장
 
+### 링크페이지 편집 (openLinkEditor)
+- `🔗 Links` 버튼 → 주문 상세에서 site_slug 설정 시 사용
+- `{slug}/link/index.html`을 GitHub에서 읽어 링크 목록만 파싱 → 편집 → 저장
+- 링크 추가 / 삭제 / 순서 변경(↑↓) / 아이콘·라벨·URL 수정 지원
+- 버튼 스타일(`.btn-ig`, `.btn-maps` …)은 해당 페이지 stylesheet에서 자동 인식
+- 두 가지 마크업 형태 지원: `#links` + `.link-icon` (생성기 기본), `.links` + `.icon/.label/.arrow`
+- 링크 블록만 교체하므로 프로필·영업시간·스타일 등 나머지 내용은 그대로 유지
+- 링크 영역을 확실히 인식하지 못하면 저장을 막고 파일 편집기로 안내
+
 ### 채팅 + 파일 첨부
 - `+` 버튼으로 이미지/PDF 첨부
 - Supabase Storage uploads 버킷에 업로드

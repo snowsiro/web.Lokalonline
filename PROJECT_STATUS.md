@@ -164,7 +164,7 @@ admin_notes, status
    - `{slug}/data.js` — 사이트 데이터
    - `{slug}/menu/index.html` — 디지털 메뉴판
    - `{slug}/menu/menu-data.js` — 메뉴 데이터
-   - `{slug}/link/index.html` — SNS 링크 페이지
+   - `{slug}/link/index.html` — SNS 링크 페이지 (이미 있으면 건너뜀, 덮어쓰지 않음)
    - `{slug}/img/qr-menu.png` — QR 코드 (qrcode.js로 브라우저 생성)
 4. orders.site_slug 저장
 5. 완료 팝업 + QR 코드 표시 + 다운로드
@@ -172,6 +172,18 @@ admin_notes, status
 ### 파일 편집 (openFileEditor)
 - `📝 data.js` 버튼 → site_slug 설정 시 표시
 - GitHub에서 data.js 로드 → 편집 → 저장
+
+### 링크페이지 편집 (openLinkEditor)
+- `🔗 Links` 버튼 → 주문 상세에서 site_slug 설정 시 사용
+- `{slug}/link/index.html`을 GitHub에서 읽어 링크 목록만 파싱 → 편집 → 저장
+- 링크 추가 / 삭제 / 순서 변경(↑↓) / 아이콘·라벨·URL 수정 지원
+- 버튼 스타일(`.btn-ig`, `.btn-maps` …)은 해당 페이지 stylesheet에서 자동 인식
+- 두 가지 마크업 형태 지원: `#links` + `.link-icon` (생성기 기본), `.links` + `.icon/.label/.arrow`
+- 링크 블록만 교체하므로 프로필·영업시간·스타일 등 나머지 내용은 그대로 유지
+- 링크 영역을 확실히 인식하지 못하면 저장을 막고 파일 편집기로 안내
+- 사이트를 재생성해도 링크페이지는 덮어쓰지 않음 (`isFileMissing`으로 존재 확인,
+  판정이 불확실하면 안전하게 유지). 유지된 경우 완료 팝업에 안내 표시
+- 링크페이지를 처음부터 다시 만들려면 해당 파일을 지우고 재생성
 
 ### 채팅 + 파일 첨부
 - `+` 버튼으로 이미지/PDF 첨부

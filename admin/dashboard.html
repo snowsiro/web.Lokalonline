@@ -384,7 +384,8 @@
         <button class="modal-close" data-close="qrResultOverlay">✕</button>
       </div>
       <div class="modal-body" style="text-align:center">
-        <div id="qrResultLinks" style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:24px"></div>
+        <div id="qrResultLinks" style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:12px"></div>
+        <div id="qrResultLinkNote" style="display:none;font-size:12px;color:var(--text-muted);background:var(--bg);border-radius:8px;padding:10px 12px;margin-bottom:24px;text-align:left">ℹ️ Die bestehende Linkseite wurde <strong>nicht</strong> überschrieben. Änderungen daran über „🔗 Links“ in den Auftragsdetails.</div>
         <div style="font-size:13px;color:var(--text-muted);margin-bottom:12px;font-weight:600">QR Code — Menü / Sortiment</div>
         <div style="display:inline-block;border:1px solid var(--border);border-radius:8px;padding:12px;background:#fff">
           <img id="qrCodeImg" src="" alt="QR Code" style="width:200px;height:200px;display:block">
@@ -428,7 +429,7 @@
 
   <!-- Link Editor Modal -->
   <div class="modal-overlay" id="linkEditorOverlay">
-    <div class="modal" style="max-width:560px">
+    <div class="modal" style="max-width:620px">
       <div class="modal-header">
         <span class="modal-title">🔗 Linkseite bearbeiten</span>
         <button class="modal-close" data-close="linkEditorOverlay">✕</button>
@@ -436,6 +437,7 @@
       <div class="modal-body">
         <div id="linkEditorInfo" style="font-size:12px;color:var(--text-muted);margin-bottom:12px"></div>
         <div id="linkEditorRows"></div>
+        <button type="button" class="btn btn-outline btn-sm" id="linkEditorAdd" style="margin-top:4px">+ Link hinzufügen</button>
         <div id="linkEditorError" style="color:var(--danger);font-size:13px;margin-top:8px;display:none"></div>
       </div>
       <div class="modal-footer">

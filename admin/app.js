@@ -1476,6 +1476,21 @@
 
   function esc(s) { return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
+  // Prüft, ob eine Datei im Repo fehlt. Nur ein eindeutiges „nicht gefunden"
+  // zählt als fehlend — bei Unsicherheit wird nichts angelegt, damit eine
+  // vorhandene Datei niemals überschrieben wird.
+  async function isFileMissing(path) {
+    var session = (await sb.auth.getSession()).data.session;
+    var token = session ? session.access_token : '';
+    var res = await fetch(EDGE_FN, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+      body: JSON.stringify({ action: 'get-file', path: path })
+    });
+    var data = await res.json().catch(function () { return {}; });
+    return res.status === 404 || data.error === 'File not found';
+  }
+
   async function uploadFile(path, content, rawBase64) {
     var session = (await sb.auth.getSession()).data.session;
     var token = session ? session.access_token : '';
@@ -1554,17 +1569,211 @@
   var linkEditorSlug = null;
   var linkEditorHtml = '';
   var linkEditorLinks = [];
+  var linkEditorBlock = null;
+  var linkEditorVariants = [];
+
+  var LINK_URL_RE = /^(https?:\/\/|mailto:|tel:|\/|\.{1,2}\/)/i;
+
+  function linkTarget(href) { return /^https?:/i.test(href) ? ' target="_blank"' : ''; }
+
+  // Liest ein <a class="link-btn"> in das Editor-Modell.
+  function readLinkAnchor(a) {
+    var iconEl = a.querySelector('.icon, .link-icon');
+    var labelEl = a.querySelector('.label');
+    var label = '';
+    if (labelEl) {
+      label = labelEl.textContent.trim();
+    } else {
+      var spans = a.querySelectorAll('span');
+      for (var i = 0; i < spans.length; i++) {
+        if (spans[i] !== iconEl) label = spans[i].textContent.trim();
+      }
+      if (!label) label = a.textContent.trim();
+    }
+    var variant = '';
+    for (var c = 0; c < a.classList.length; c++) {
+      if (a.classList[c].indexOf('btn-') === 0) variant = a.classList[c];
+    }
+    return {
+      icon: iconEl ? iconEl.textContent.trim() : '',
+      label: label,
+      href: a.getAttribute('href') || '',
+      variant: variant
+    };
+  }
+
+  // Linkseite ohne Links: Einfügepunkt im Link-Container suchen.
+  function parseEmptyLinkPage(html) {
+    // Sieht der DOM Links, die der Regex nicht gefunden hat, wäre jede
+    // Bearbeitung falsch (neue Links kämen zusätzlich zu den alten).
+    var doc = new DOMParser().parseFromString(html, 'text/html');
+    if (doc.querySelector('a.link-btn')) return null;
+    var container = doc.querySelector('#links, .links');
+    if (!container || container.querySelector('a')) return null;
+
+    var m = /<div\b[^>]*(?:id="links"|class="[^"]*\blinks\b[^"]*")[^>]*>/i.exec(html);
+    if (!m) return null;
+    var closeIndent = (html.slice(0, m.index).match(/[ \t]*$/) || [''])[0];
+    var at = m.index + m[0].length;
+    var ws = (/^\s*/.exec(html.slice(at)) || [''])[0];
+    return {
+      links: [],
+      block: {
+        start: at, end: at + ws.length,
+        indent: closeIndent + '  ', closeIndent: closeIndent,
+        dialect: /\.link-btn\s+\.label/.test(html) ? 'rich' : 'compact',
+        wrap: true
+      }
+    };
+  }
+
+  // Sucht den Linkblock in der Rohdatei. Gibt null zurück, wenn er nicht
+  // eindeutig bestimmbar ist — dann bleibt nur der Datei-Editor.
+  function parseLinkPage(html) {
+    var re = /<a\b[^>]*class="[^"]*link-btn[^"]*"[^>]*>[\s\S]*?<\/a>/gi;
+    var m, found = [];
+    while ((m = re.exec(html)) !== null) found.push({ html: m[0], start: m.index, end: m.index + m[0].length });
+    if (!found.length) return parseEmptyLinkPage(html);
+
+    var wrapHtml = found.map(function (f) { return f.html; }).join('');
+    var doc = new DOMParser().parseFromString('<div id="lnkwrap">' + wrapHtml + '</div>', 'text/html');
+    var anchors = doc.querySelectorAll('#lnkwrap > a');
+    if (anchors.length !== found.length) return null;
+
+    var links = [];
+    for (var i = 0; i < anchors.length; i++) {
+      if (!anchors[i].classList.contains('link-btn')) return null;
+      links.push(readLinkAnchor(anchors[i]));
+    }
+    // Zwischen den Links darf nur Leerraum/Kommentar stehen — sonst würde
+    // beim Speichern fremder Seiteninhalt überschrieben.
+    for (var j = 1; j < found.length; j++) {
+      if (!/^\s*(?:<!--[\s\S]*?-->\s*)*$/.test(html.slice(found[j - 1].end, found[j].start))) return null;
+    }
+
+    // Die Einrückung der ersten Zeile gehört zum Block — sonst wächst sie
+    // bei jedem Speichern.
+    var indent = (html.slice(0, found[0].start).match(/[ \t]*$/) || [''])[0];
+    return {
+      links: links,
+      block: {
+        start: found[0].start - indent.length, end: found[found.length - 1].end,
+        indent: indent, closeIndent: '',
+        dialect: anchors[0].querySelector('.label') ? 'rich' : 'compact',
+        wrap: false
+      }
+    };
+  }
+
+  // Erzeugt die Link-Buttons im Markup-Stil der jeweiligen Seite.
+  function renderLinkAnchors(links, dialect, indent) {
+    if (dialect === 'rich') {
+      return links.map(function (l) {
+        return indent + '<a class="link-btn' + (l.variant ? ' ' + esc(l.variant) : '') + '" href="' + esc(l.href) + '"' + linkTarget(l.href) + '>\n' +
+          indent + '  <span class="icon">' + esc(l.icon) + '</span>\n' +
+          indent + '  <span class="label">' + esc(l.label) + '</span>\n' +
+          indent + '  <span class="arrow">›</span>\n' +
+          indent + '</a>';
+      }).join('\n\n');
+    }
+    return links.map(function (l) {
+      return indent + '<a href="' + esc(l.href) + '" class="link-btn"' + linkTarget(l.href) +
+        '><span class="link-icon">' + esc(l.icon) + '</span><span>' + esc(l.label) + '</span></a>';
+    }).join('\n');
+  }
+
+  // Ersetzt nur den Linkblock — der Rest der Datei bleibt unverändert.
+  function applyLinkEdits(html, block, links) {
+    var body = renderLinkAnchors(links, block.dialect, block.indent);
+    if (block.wrap) body = links.length ? '\n' + body + '\n' + block.closeIndent : '\n' + block.closeIndent;
+    return html.slice(0, block.start) + body + html.slice(block.end);
+  }
+
+  // Button-Varianten (.btn-ig, .btn-maps …) aus dem Stylesheet der Seite.
+  function detectLinkVariants(html) {
+    var re = /\.(btn-[a-z0-9_-]+)\s*(?:,|\{)/gi, m, seen = {}, out = [];
+    while ((m = re.exec(html)) !== null) {
+      var v = m[1].toLowerCase();
+      if (!seen[v]) { seen[v] = 1; out.push(v); }
+    }
+    return out;
+  }
+
+  function renderLinkEditorRows() {
+    var rowsEl = document.getElementById('linkEditorRows');
+    if (!linkEditorLinks.length) {
+      rowsEl.innerHTML = '<div class="link-editor-empty">Noch keine Links — mit „+ Link hinzufügen" starten.</div>';
+      return;
+    }
+    rowsEl.innerHTML = linkEditorLinks.map(function (l, i) {
+      var variantSel = '';
+      if (linkEditorVariants.length) {
+        // Eine im Stylesheet unbekannte Variante trotzdem anbieten, damit
+        // Anzeige und gespeicherter Wert nicht auseinanderlaufen.
+        var opts = linkEditorVariants.slice();
+        if (l.variant && opts.indexOf(l.variant) === -1) opts.push(l.variant);
+        variantSel = '<select class="link-field link-field-variant" data-idx="' + i + '" data-f="variant">' +
+          '<option value="">Standard</option>' +
+          opts.map(function (v) {
+            return '<option value="' + esc(v) + '"' + (l.variant === v ? ' selected' : '') + '>' + esc(v.replace('btn-', '')) + '</option>';
+          }).join('') + '</select>';
+      }
+      return '<div class="link-row">' +
+        '<div class="link-row-top">' +
+          '<span class="link-row-num">' + (i + 1) + '</span>' +
+          '<input type="text" class="link-field link-field-icon" data-idx="' + i + '" data-f="icon" value="' + esc(l.icon) + '" placeholder="🔗" maxlength="8">' +
+          '<input type="text" class="link-field link-field-label" data-idx="' + i + '" data-f="label" value="' + esc(l.label) + '" placeholder="Beschriftung">' +
+          variantSel +
+          '<button type="button" class="link-act" data-act="up" data-idx="' + i + '" title="Nach oben"' + (i === 0 ? ' disabled' : '') + '>↑</button>' +
+          '<button type="button" class="link-act" data-act="down" data-idx="' + i + '" title="Nach unten"' + (i === linkEditorLinks.length - 1 ? ' disabled' : '') + '>↓</button>' +
+          '<button type="button" class="link-act link-act-del" data-act="del" data-idx="' + i + '" title="Entfernen">🗑</button>' +
+        '</div>' +
+        '<input type="text" class="link-field link-field-url" data-idx="' + i + '" data-f="href" value="' + esc(l.href) + '" placeholder="https://…">' +
+        '</div>';
+    }).join('');
+  }
+
+  document.getElementById('linkEditorRows').addEventListener('input', function (e) {
+    var f = e.target.getAttribute && e.target.getAttribute('data-f');
+    if (!f) return;
+    var l = linkEditorLinks[parseInt(e.target.getAttribute('data-idx'), 10)];
+    if (l) l[f] = e.target.value;
+  });
+
+  document.getElementById('linkEditorRows').addEventListener('click', function (e) {
+    var btn = e.target.closest ? e.target.closest('button[data-act]') : null;
+    if (!btn) return;
+    var idx = parseInt(btn.getAttribute('data-idx'), 10);
+    var act = btn.getAttribute('data-act');
+    if (act === 'del') linkEditorLinks.splice(idx, 1);
+    else if (act === 'up' && idx > 0) linkEditorLinks.splice(idx - 1, 0, linkEditorLinks.splice(idx, 1)[0]);
+    else if (act === 'down' && idx < linkEditorLinks.length - 1) linkEditorLinks.splice(idx + 1, 0, linkEditorLinks.splice(idx, 1)[0]);
+    renderLinkEditorRows();
+  });
+
+  document.getElementById('linkEditorAdd').addEventListener('click', function () {
+    if (!linkEditorBlock) return;
+    linkEditorLinks.push({ icon: '🔗', label: '', href: '', variant: '' });
+    renderLinkEditorRows();
+    var labels = document.querySelectorAll('#linkEditorRows .link-field-label');
+    if (labels.length) labels[labels.length - 1].focus();
+  });
 
   async function openLinkEditor(slug) {
     linkEditorSlug = slug;
     linkEditorHtml = '';
     linkEditorLinks = [];
+    linkEditorBlock = null;
+    linkEditorVariants = [];
     var errEl = document.getElementById('linkEditorError');
     var rowsEl = document.getElementById('linkEditorRows');
-    var infoEl = document.getElementById('linkEditorInfo');
+    var addBtn = document.getElementById('linkEditorAdd');
+    var saveBtn = document.getElementById('linkEditorSave');
     errEl.style.display = 'none';
-    rowsEl.innerHTML = '<div style="color:var(--text-muted);font-size:13px">⏳ Lade…</div>';
-    infoEl.textContent = 'web.lokalonline.at/' + slug + '/link/';
+    rowsEl.innerHTML = '<div class="link-editor-empty">⏳ Lade…</div>';
+    document.getElementById('linkEditorInfo').textContent = 'web.lokalonline.at/' + slug + '/link/';
+    addBtn.disabled = true;
+    saveBtn.disabled = true;
     openModal('linkEditorOverlay');
 
     try {
@@ -1579,28 +1788,19 @@
       if (data.error) throw new Error(data.error);
       linkEditorHtml = data.content;
 
-      var doc = new DOMParser().parseFromString(linkEditorHtml, 'text/html');
-      var anchors = doc.querySelectorAll('a.link-btn');
-      anchors.forEach(function (a) {
-        var labelEl = a.querySelector('.label');
-        linkEditorLinks.push({
-          label: labelEl ? labelEl.textContent.trim() : a.textContent.trim(),
-          href: a.getAttribute('href') || ''
-        });
-      });
-
-      if (linkEditorLinks.length === 0) {
-        rowsEl.innerHTML = '<div style="color:var(--text-muted);font-size:13px">Keine Links gefunden (a.link-btn).</div>';
+      var parsed = parseLinkPage(linkEditorHtml);
+      if (!parsed) {
+        rowsEl.innerHTML = '';
+        errEl.textContent = 'Linkbereich nicht erkannt — bitte den Datei-Editor verwenden.';
+        errEl.style.display = 'block';
         return;
       }
-
-      rowsEl.innerHTML = linkEditorLinks.map(function (l, i) {
-        return '<div style="margin-bottom:14px">' +
-          '<label style="display:block;font-size:12px;font-weight:600;margin-bottom:4px">' + esc(l.label) + '</label>' +
-          '<input type="text" class="link-editor-input" data-idx="' + i + '" value="' + esc(l.href) + '"' +
-          ' style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:8px;font-size:13px;font-family:monospace;outline:none" />' +
-          '</div>';
-      }).join('');
+      linkEditorLinks = parsed.links;
+      linkEditorBlock = parsed.block;
+      linkEditorVariants = parsed.block.dialect === 'rich' ? detectLinkVariants(linkEditorHtml) : [];
+      addBtn.disabled = false;
+      saveBtn.disabled = false;
+      renderLinkEditorRows();
     } catch (e) {
       rowsEl.innerHTML = '';
       errEl.textContent = 'Fehler beim Laden: ' + e.message;
@@ -1609,42 +1809,32 @@
   }
 
   document.getElementById('linkEditorSave').addEventListener('click', async function () {
-    if (!linkEditorSlug || !linkEditorHtml) return;
+    if (!linkEditorSlug || !linkEditorHtml || !linkEditorBlock) return;
     var errEl = document.getElementById('linkEditorError');
-    var btn = document.getElementById('linkEditorSave');
+    var btn = this;
     errEl.style.display = 'none';
 
-    var inputs = document.querySelectorAll('.link-editor-input');
-    var html = linkEditorHtml;
-    var changed = false;
+    linkEditorLinks.forEach(function (l) {
+      l.icon = l.icon.trim(); l.label = l.label.trim(); l.href = l.href.trim();
+    });
+    renderLinkEditorRows();
 
-    for (var i = 0; i < inputs.length; i++) {
-      var idx = parseInt(inputs[i].getAttribute('data-idx'), 10);
-      var oldHref = linkEditorLinks[idx].href;
-      var newHref = inputs[i].value.trim();
-      if (newHref === oldHref) continue;
-      if (!/^(https?:\/\/|mailto:|tel:|\/)/.test(newHref)) {
-        errEl.textContent = 'Ungültige URL bei "' + linkEditorLinks[idx].label + '" — muss mit https://, mailto:, tel: oder / beginnen.';
+    for (var i = 0; i < linkEditorLinks.length; i++) {
+      var l = linkEditorLinks[i];
+      if (!l.label) {
+        errEl.textContent = 'Link ' + (i + 1) + ': Beschriftung fehlt.';
         errEl.style.display = 'block';
         return;
       }
-      var oldAttr = 'href="' + oldHref + '"';
-      var newAttr = 'href="' + newHref.replace(/"/g, '%22') + '"';
-      if (html.indexOf(oldAttr) === -1) {
-        // DOMParser decodes entities — try the HTML-encoded variant (& → &amp;)
-        oldAttr = 'href="' + oldHref.replace(/&/g, '&amp;') + '"';
-      }
-      if (html.indexOf(oldAttr) === -1) {
-        errEl.textContent = 'Link "' + linkEditorLinks[idx].label + '" nicht gefunden — bitte Datei-Editor verwenden.';
+      if (!LINK_URL_RE.test(l.href)) {
+        errEl.textContent = 'Link ' + (i + 1) + ' („' + l.label + '"): URL muss mit https://, mailto:, tel: oder / beginnen.';
         errEl.style.display = 'block';
         return;
       }
-      html = html.replace(oldAttr, newAttr);
-      changed = true;
     }
+    if (!linkEditorLinks.length && !confirm('Die Linkseite hat dann keine Links mehr. Trotzdem speichern?')) return;
 
-    if (!changed) { closeModal('linkEditorOverlay'); return; }
-
+    var html = applyLinkEdits(linkEditorHtml, linkEditorBlock, linkEditorLinks);
     btn.disabled = true; btn.textContent = '⏳ Speichert…';
     try {
       await uploadFile(linkEditorSlug + '/link/index.html', html);
@@ -1739,10 +1929,10 @@
     if (address) links.push({ icon: '📍', label: address, url: mapsUrl });
 
     var linksHtml = links.map(function(l) {
-      return '<a href="' + l.url + '" class="link-btn" target="_blank"><span class="link-icon">' + l.icon + '</span><span>' + l.label + '</span></a>';
+      return '<a href="' + esc(l.url) + '" class="link-btn" target="_blank"><span class="link-icon">' + esc(l.icon) + '</span><span>' + esc(l.label) + '</span></a>';
     }).join('\n      ');
 
-    return '<!DOCTYPE html>\n<html lang="de">\n<head>\n<meta charset="UTF-8">\n<meta name="viewport" content="width=device-width,initial-scale=1">\n<title>' + name + '</title>\n<style>\n*{box-sizing:border-box;margin:0;padding:0}\nbody{min-height:100vh;background:#0a0a0a;display:flex;align-items:center;justify-content:center;font-family:system-ui,sans-serif;padding:24px}\n.card{width:100%;max-width:400px}\n.logo{width:80px;height:80px;border-radius:50%;object-fit:cover;margin:0 auto 16px;display:block;background:#222}\n.name{color:#fff;font-size:22px;font-weight:700;text-align:center;margin-bottom:4px}\n.sub{color:rgba(255,255,255,.45);font-size:14px;text-align:center;margin-bottom:32px}\n.link-btn{display:flex;align-items:center;gap:14px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:#fff;text-decoration:none;padding:16px 20px;border-radius:12px;margin-bottom:10px;font-size:15px;transition:background .2s,border-color .2s}\n.link-btn:hover{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.25)}\n.link-icon{font-size:20px;flex-shrink:0;width:28px;text-align:center}\n.footer{text-align:center;margin-top:28px;font-size:11px;color:rgba(255,255,255,.2)}\n</style>\n</head>\n<body>\n<div class="card">\n  <img class="logo" src="img/logo.png" onerror="this.style.display=\'none\'">\n  <div class="name">' + name + '</div>\n  <div class="sub" id="subtext">Wien</div>\n  <div id="links">\n      ' + linksHtml + '\n  </div>\n  <div class="footer">lokalonline.at</div>\n</div>\n<script>\nvar d=document.getElementById("subtext");\nif(d&&"' + address + '")d.textContent="' + address + '";\n<\/script>\n</body>\n</html>\n';
+    return '<!DOCTYPE html>\n<html lang="de">\n<head>\n<meta charset="UTF-8">\n<meta name="viewport" content="width=device-width,initial-scale=1">\n<title>' + esc(name) + '</title>\n<style>\n*{box-sizing:border-box;margin:0;padding:0}\nbody{min-height:100vh;background:#0a0a0a;display:flex;align-items:center;justify-content:center;font-family:system-ui,sans-serif;padding:24px}\n.card{width:100%;max-width:400px}\n.logo{width:80px;height:80px;border-radius:50%;object-fit:cover;margin:0 auto 16px;display:block;background:#222}\n.name{color:#fff;font-size:22px;font-weight:700;text-align:center;margin-bottom:4px}\n.sub{color:rgba(255,255,255,.45);font-size:14px;text-align:center;margin-bottom:32px}\n.link-btn{display:flex;align-items:center;gap:14px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:#fff;text-decoration:none;padding:16px 20px;border-radius:12px;margin-bottom:10px;font-size:15px;transition:background .2s,border-color .2s}\n.link-btn:hover{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.25)}\n.link-icon{font-size:20px;flex-shrink:0;width:28px;text-align:center}\n.footer{text-align:center;margin-top:28px;font-size:11px;color:rgba(255,255,255,.2)}\n</style>\n</head>\n<body>\n<div class="card">\n  <img class="logo" src="img/logo.png" onerror="this.style.display=\'none\'">\n  <div class="name">' + esc(name) + '</div>\n  <div class="sub">' + esc(address || 'Wien') + '</div>\n  <div id="links">\n      ' + linksHtml + '\n  </div>\n  <div class="footer">lokalonline.at</div>\n</div>\n</body>\n</html>\n';
   }
 
   async function generateQrCode(slug) {
@@ -1758,8 +1948,11 @@
     await uploadFile(slug + '/img/qr-menu.png', null, base64);
   }
 
-  function showQrResult(slug) {
+  function showQrResult(slug, linkPageKept) {
     var menuUrl = 'https://web.lokalonline.at/' + slug + '/menu/';
+
+    var noteEl = document.getElementById('qrResultLinkNote');
+    noteEl.style.display = linkPageKept ? 'block' : 'none';
 
     var linksEl = document.getElementById('qrResultLinks');
     linksEl.innerHTML = [
@@ -1790,7 +1983,8 @@
     if (!/^[a-z0-9-]+$/.test(slug)) { errEl.textContent = 'Nur Kleinbuchstaben, Zahlen und Bindestriche erlaubt.'; errEl.style.display = 'block'; return; }
 
     btn.disabled = true;
-    btn.textContent = '⏳ 1/5 Hauptseite…';
+    btn.textContent = '⏳ 1/7 Hauptseite…';
+    var linkPageKept = false;
 
     try {
       // 1. Main site
@@ -1811,10 +2005,12 @@
         await uploadFile(slug + '/menu/menu-data.js', menuDataJs);
       }
 
-      // 3. Link page
+      // 3. Link page — eine vorhandene Seite bleibt unangetastet, damit im
+      // Link-Editor gepflegte Links beim Neu-Generieren nicht verloren gehen.
       btn.textContent = '⏳ 3/7 Link-Seite…';
-      var linkHtml = generateLinkPageHtml(slug, currentOrderData);
-      await uploadFile(slug + '/link/index.html', linkHtml);
+      var linkPath = slug + '/link/index.html';
+      linkPageKept = !(await isFileMissing(linkPath));
+      if (!linkPageKept) await uploadFile(linkPath, generateLinkPageHtml(slug, currentOrderData));
 
       // 4. Impressum
       btn.textContent = '⏳ 4/7 Impressum…';
@@ -1845,7 +2041,7 @@
       document.getElementById('generateSiteBtn').textContent = '🔄 Neu generieren';
 
       closeModal('siteGenOverlay');
-      showQrResult(slug);
+      showQrResult(slug, linkPageKept);
       if (qrErr) showToast('⚠️ QR-Code: ' + qrErr);
 
     } catch (e) {

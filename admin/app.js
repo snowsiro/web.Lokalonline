@@ -1571,6 +1571,8 @@
   var linkEditorLinks = [];
   var linkEditorBlock = null;
   var linkEditorVariants = [];
+  var linkEditorDefaultVariant = '';
+  var linkEditorBaseStyled = true;
 
   var LINK_URL_RE = /^(https?:\/\/|mailto:|tel:|\/|\.{1,2}\/)/i;
 
@@ -1699,6 +1701,27 @@
     return out;
   }
 
+  // Hat .link-btn selbst schon Hintergrund/Rahmen? Wenn nicht, kommt das
+  // komplette Aussehen aus den .btn-*-Varianten — ein Link ohne Variante
+  // wäre dann nur nackter Text.
+  function linkBaseIsStyled(html) {
+    var m = /\.link-btn\s*\{([^}]*)\}/i.exec(html);
+    if (!m) return false;
+    return /(^|;)\s*background/i.test(m[1]) || /(^|;)\s*border\s*:/i.test(m[1]);
+  }
+
+  // Startvariante für neue Links: bevorzugt eine schlichte (mit Rahmen,
+  // ohne Farbverlauf), damit ein neuer Link aussieht wie die bestehenden.
+  function pickDefaultVariant(html, variants) {
+    if (linkBaseIsStyled(html)) return '';
+    for (var i = 0; i < variants.length; i++) {
+      var m = new RegExp('\\.' + variants[i] + '\\s*\\{([^}]*)\\}', 'i').exec(html);
+      var rule = m ? m[1] : '';
+      if (/border\s*:/i.test(rule) && !/gradient/i.test(rule)) return variants[i];
+    }
+    return variants[0] || '';
+  }
+
   function renderLinkEditorRows() {
     var rowsEl = document.getElementById('linkEditorRows');
     if (!linkEditorLinks.length) {
@@ -1713,7 +1736,8 @@
         var opts = linkEditorVariants.slice();
         if (l.variant && opts.indexOf(l.variant) === -1) opts.push(l.variant);
         variantSel = '<select class="link-field link-field-variant" data-idx="' + i + '" data-f="variant">' +
-          '<option value="">Standard</option>' +
+          '<option value=""' + (l.variant ? '' : ' selected') + '>' +
+            (linkEditorBaseStyled ? 'Standard' : 'Ohne Rahmen') + '</option>' +
           opts.map(function (v) {
             return '<option value="' + esc(v) + '"' + (l.variant === v ? ' selected' : '') + '>' + esc(v.replace('btn-', '')) + '</option>';
           }).join('') + '</select>';
@@ -1753,7 +1777,7 @@
 
   document.getElementById('linkEditorAdd').addEventListener('click', function () {
     if (!linkEditorBlock) return;
-    linkEditorLinks.push({ icon: '🔗', label: '', href: '', variant: '' });
+    linkEditorLinks.push({ icon: '🔗', label: '', href: '', variant: linkEditorDefaultVariant });
     renderLinkEditorRows();
     var labels = document.querySelectorAll('#linkEditorRows .link-field-label');
     if (labels.length) labels[labels.length - 1].focus();
@@ -1765,6 +1789,8 @@
     linkEditorLinks = [];
     linkEditorBlock = null;
     linkEditorVariants = [];
+    linkEditorDefaultVariant = '';
+    linkEditorBaseStyled = true;
     var errEl = document.getElementById('linkEditorError');
     var rowsEl = document.getElementById('linkEditorRows');
     var addBtn = document.getElementById('linkEditorAdd');
@@ -1798,6 +1824,8 @@
       linkEditorLinks = parsed.links;
       linkEditorBlock = parsed.block;
       linkEditorVariants = parsed.block.dialect === 'rich' ? detectLinkVariants(linkEditorHtml) : [];
+      linkEditorBaseStyled = linkBaseIsStyled(linkEditorHtml);
+      linkEditorDefaultVariant = pickDefaultVariant(linkEditorHtml, linkEditorVariants);
       addBtn.disabled = false;
       saveBtn.disabled = false;
       renderLinkEditorRows();

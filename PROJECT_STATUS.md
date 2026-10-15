@@ -156,30 +156,47 @@ admin_notes, status
 
 ## SEO
 
+### 호스트 구성
+| 호스트 | 정체 | 코드 |
+|---|---|---|
+| `web.lokalonline.at` | 홈페이지 제작 서비스. `/<slug>/`가 고객 홈페이지 | 이 저장소 (GitHub Pages) |
+| `lokalonline.at` | 예약앱의 마켓플레이스 | `snowsiro/jamie` (Cloudflare → Render) |
+| `jaresi.lokalonline.at` | 예약앱. `/book/<slug>`가 손님용 예약 주소 | `snowsiro/jamie` (같은 앱) |
+
+2026-05-29 ~ 06-17에는 이 저장소가 `lokalonline.at`에서 서빙됐다. 그때의
+주소(`lokalonline.at/yori2/` 등)는 예약앱이 `web.lokalonline.at`의 같은 주소로 301한다.
+
 ### 적용 완료 (2026-10-15)
+이 저장소 (#78):
 - `sitemap.xml` — robots.txt가 가리키던 경로가 404였음. 11개 URL 등록
-  (루트 3 + yori2/seoulmate 각 4). 홈이 404인 jaresi/hayandal과 인스타
-  전용인 `/link/`는 제외
-- 전 페이지(21개) self-referencing `<link rel="canonical">`
+  (루트 3 + yori2/seoulmate 각 4). 인스타 전용인 `/link/`는 제외
+- 전 페이지(13개) self-referencing `<link rel="canonical">`
 - yori2/seoulmate 홈에 `Restaurant` JSON-LD (주소·전화·영업시간·메뉴·예약)
 - seoulmate에 누락돼 있던 meta description / og / twitter 태그 보충
 - 생성기: canonical·JSON-LD 자동 삽입, 템플릿의 title/description/og를
   **생성 시점에** 실제 값으로 치환(기존에는 JS로만 채워짐), 새 사이트를
   sitemap.xml에 자동 추가
+- 테스트 사이트 `jaresi/`, `hayandal/` 삭제
+
+예약앱 (`snowsiro/jamie` #363, #364):
+- `lokalonline.at`: 없는 경로는 404, 옛 고객 홈페이지 경로(`yori2`, `seoulmate`,
+  `Jaresi`, `order`, `portal`)는 `web.lokalonline.at`으로 301
+- `jaresi.lokalonline.at`: robots.txt가 `/book/`을 허용하고 자체 사이트맵
+  (`/welcome` + 업체 예약 페이지)을 안내. 예약 페이지 canonical은 jaresi 주소
+- 없는·삭제된 업체의 예약 페이지는 404, 끝에 `/`가 붙은 예약 링크도 열림
 
 ### 남은 작업 (코드 밖)
-- **Google Search Console 미등록** — `web.lokalonline.at` 등록 + 사이트맵
-  제출 + 색인 요청 필요. 안 하면 노출까지 수개월
-- **apex 도메인이 옛 URL을 가로챔** — `lokalonline.at/yori2/`가 200으로
-  마케팅 홈을 반환하고 `canonical: https://lokalonline.at/`를 선언.
-  2026-06-18 도메인 이전 전 URL이라 구글이 아직 들고 있음. 해당 프로젝트
-  (Cloudflare→Render, 이 저장소 아님)에서 고객 슬러그 경로를
-  `web.lokalonline.at/<slug>/`로 301 리디렉트하거나 404 처리해야 함
+- **Google Search Console** — `lokalonline.at`을 "도메인" 속성으로 등록(DNS TXT
+  인증)하면 세 호스트가 한 번에 잡힌다. 사이트맵 제출:
+  `https://web.lokalonline.at/sitemap.xml`, `https://jaresi.lokalonline.at/sitemap.xml`,
+  `https://lokalonline.at/sitemap.xml`
 - Google Business Profile (음식점 상호 검색은 사실상 이게 좌우)
 
 ### 알려진 문제
-- `jaresi/`, `hayandal/`은 홈페이지(index.html)가 없어 `/jaresi/`,
-  `/hayandal/`이 404. 두 사이트의 링크페이지는 그 404 홈을 가리킴
+- 어드민의 사이트 삭제(🗑️ → `github_upload`의 `delete-folder`)는 슬러그 폴더
+  바로 아래 파일만 지우고 하위 폴더(`menu/`, `link/`, `img/`, `impressum/`,
+  `datenschutz/`)는 남긴다. 그 페이지들은 삭제 후에도 공개된 채로 남고,
+  `sitemap.xml` 항목도 지워지지 않는다
 
 ---
 

@@ -132,6 +132,10 @@ admin_notes, status
 - `put-file`: base64 → GitHub 파일 업로드
 - `copy-from-url`: URL에서 이미지 가져와 GitHub에 저장
 - `get-file`: GitHub에서 파일 내용 읽기
+- `delete-folder`: 슬러그 폴더 아래 모든 파일 삭제(하위 폴더 포함). 어드민 🗑️가 호출
+- 쓰기·삭제는 고객 사이트 폴더(`<slug>/…`)와 루트의 `sitemap.xml`만 가능.
+  서비스 폴더(`admin`, `css`, `fonts`, `js`, `order`, `portal`, `supabase`,
+  `templates`)는 슬러그로 쓸 수 없음 — 최상위 폴더를 새로 만들면 `RESERVED`에 추가
 
 ### stripe-webhook
 - `checkout.session.completed` 이벤트 처리
@@ -177,13 +181,20 @@ admin_notes, status
   **생성 시점에** 실제 값으로 치환(기존에는 JS로만 채워짐), 새 사이트를
   sitemap.xml에 자동 추가
 - 테스트 사이트 `jaresi/`, `hayandal/` 삭제
+- 어드민 사이트 삭제(🗑️)가 하위 폴더까지 지우고 `sitemap.xml` 항목도 뺌.
+  전에는 슬러그 폴더 바로 아래 파일만 지워서, 2026-06-08에 지운 jaresi·hayandal의
+  하위 페이지가 10-15까지 공개돼 있었음
+- 새 사이트의 `sitemap.xml` 자동 등록이 실제로 동작함 (전에는 `put-file`이
+  루트의 `sitemap.xml`을 막아 매번 실패하고 콘솔 경고만 남겼음)
 
-예약앱 (`snowsiro/jamie` #363, #364):
+예약앱 (`snowsiro/jamie` #363 ~ #366):
 - `lokalonline.at`: 없는 경로는 404, 옛 고객 홈페이지 경로(`yori2`, `seoulmate`,
   `Jaresi`, `order`, `portal`)는 `web.lokalonline.at`으로 301
-- `jaresi.lokalonline.at`: robots.txt가 `/book/`을 허용하고 자체 사이트맵
-  (`/welcome` + 업체 예약 페이지)을 안내. 예약 페이지 canonical은 jaresi 주소
+- `jaresi.lokalonline.at`: robots.txt가 `/book/`과 `/sitemap.xml`을 허용하고 자체
+  사이트맵(`/welcome` + 업체 예약 페이지)을 안내. 예약 페이지 canonical은 jaresi 주소
 - 없는·삭제된 업체의 예약 페이지는 404, 끝에 `/`가 붙은 예약 링크도 열림
+- 예약 페이지 HTML 제목에 매장 이름 (`Yori2 – Online-Reservierung`). 열린 뒤에는
+  스크립트가 방문자 언어로 바꿈
 
 ### 남은 작업 (코드 밖)
 - **Google Search Console** — `lokalonline.at`을 "도메인" 속성으로 등록(DNS TXT
@@ -191,12 +202,6 @@ admin_notes, status
   `https://web.lokalonline.at/sitemap.xml`, `https://jaresi.lokalonline.at/sitemap.xml`,
   `https://lokalonline.at/sitemap.xml`
 - Google Business Profile (음식점 상호 검색은 사실상 이게 좌우)
-
-### 알려진 문제
-- 어드민의 사이트 삭제(🗑️ → `github_upload`의 `delete-folder`)는 슬러그 폴더
-  바로 아래 파일만 지우고 하위 폴더(`menu/`, `link/`, `img/`, `impressum/`,
-  `datenschutz/`)는 남긴다. 그 페이지들은 삭제 후에도 공개된 채로 남고,
-  `sitemap.xml` 항목도 지워지지 않는다
 
 ---
 

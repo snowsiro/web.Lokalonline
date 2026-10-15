@@ -1325,6 +1325,7 @@
     return '<!DOCTYPE html>\n<html lang="de">\n<head>\n' +
       '<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">\n' +
       '<title>Impressum — ' + esc(businessName) + '</title>\n' +
+      canonicalTag(slug + '/impressum/') +
       '<link rel="preconnect" href="https://fonts.googleapis.com">\n' +
       '<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">\n' +
       '<style>\n*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}\n' +
@@ -1401,6 +1402,7 @@
     return '<!DOCTYPE html>\n<html lang="de">\n<head>\n' +
       '<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">\n' +
       '<title>Datenschutz — ' + esc(businessName) + '</title>\n' +
+      canonicalTag(slug + '/datenschutz/') +
       '<link rel="preconnect" href="https://fonts.googleapis.com">\n' +
       '<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">\n' +
       '<style>\n*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}\n' +
@@ -1475,6 +1477,64 @@
   }
 
   function esc(s) { return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+  var SITE_BASE = 'https://web.lokalonline.at/';
+
+  // Canonical & strukturierte Daten müssen im HTML stehen — Suchmaschinen
+  // sollen die Seite ohne JavaScript zuordnen können.
+  function injectHead(html, tags) {
+    var i = html.toLowerCase().indexOf('</head>');
+    return i < 0 ? html : html.slice(0, i) + tags + html.slice(i);
+  }
+
+  function canonicalTag(path) {
+    return '<link rel="canonical" href="' + SITE_BASE + path + '">\n';
+  }
+
+  // Strukturierte Daten für die lokale Suche. Öffnungszeiten stehen in der
+  // Bestellung nicht, deshalb nur gesicherte Felder.
+  function generateJsonLd(slug, type, order) {
+    var types = { restaurant: 'Restaurant', cafe: 'CafeOrCoffeeShop', beauty: 'BeautySalon', retail: 'Store' };
+    var d = {
+      '@context': 'https://schema.org',
+      '@type': types[type] || 'LocalBusiness',
+      name: order.business_name || slug,
+      url: SITE_BASE + slug + '/',
+      image: SITE_BASE + slug + '/img/og-image.jpg'
+    };
+    var addr = (order.address || '').trim();
+    if (addr) {
+      // "Musterstraße 1, 1060 Wien" → strukturiert, sonst unverändert als Text.
+      var m = /^(.*?),?\s*(\d{4})\s+([A-Za-zÄÖÜäöüß .\-]+)$/.exec(addr);
+      d.address = m
+        ? { '@type': 'PostalAddress', streetAddress: m[1].trim(), postalCode: m[2], addressLocality: m[3].trim(), addressCountry: 'AT' }
+        : addr;
+    }
+    if (order.phone) d.telephone = order.phone;
+    if (order.email) d.email = order.email;
+    if (order.instagram) d.sameAs = ['https://instagram.com/' + order.instagram.replace(/^@/, '')];
+    return '<script type="application/ld+json">' + JSON.stringify(d) + '<\/script>\n';
+  }
+
+  // Neue Seiten in die sitemap.xml eintragen (robots.txt verweist darauf).
+  async function updateSitemap(slug) {
+    var session = (await sb.auth.getSession()).data.session;
+    var token = session ? session.access_token : '';
+    var res = await fetch(EDGE_FN, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+      body: JSON.stringify({ action: 'get-file', path: 'sitemap.xml' })
+    });
+    var data = await res.json().catch(function () { return {}; });
+    if (!data.content) return false;
+    if (data.content.indexOf('<loc>' + SITE_BASE + slug + '/</loc>') > -1) return true;
+    var today = new Date().toISOString().slice(0, 10);
+    var entries = ['', 'menu/', 'impressum/', 'datenschutz/'].map(function (sub) {
+      return '  <url>\n    <loc>' + SITE_BASE + slug + '/' + sub + '</loc>\n    <lastmod>' + today + '</lastmod>\n  </url>\n';
+    }).join('');
+    await uploadFile('sitemap.xml', data.content.replace('</urlset>', entries + '</urlset>'));
+    return true;
+  }
 
   // Prüft, ob eine Datei im Repo fehlt. Nur ein eindeutiges „nicht gefunden"
   // zählt als fehlend — bei Unsicherheit wird nichts angelegt, damit eine
@@ -1571,6 +1631,8 @@
   var linkEditorLinks = [];
   var linkEditorBlock = null;
   var linkEditorVariants = [];
+  var linkEditorDefaultVariant = '';
+  var linkEditorBaseStyled = true;
 
   var LINK_URL_RE = /^(https?:\/\/|mailto:|tel:|\/|\.{1,2}\/)/i;
 
@@ -1699,6 +1761,27 @@
     return out;
   }
 
+  // Hat .link-btn selbst schon Hintergrund/Rahmen? Wenn nicht, kommt das
+  // komplette Aussehen aus den .btn-*-Varianten — ein Link ohne Variante
+  // wäre dann nur nackter Text.
+  function linkBaseIsStyled(html) {
+    var m = /\.link-btn\s*\{([^}]*)\}/i.exec(html);
+    if (!m) return false;
+    return /(^|;)\s*background/i.test(m[1]) || /(^|;)\s*border\s*:/i.test(m[1]);
+  }
+
+  // Startvariante für neue Links: bevorzugt eine schlichte (mit Rahmen,
+  // ohne Farbverlauf), damit ein neuer Link aussieht wie die bestehenden.
+  function pickDefaultVariant(html, variants) {
+    if (linkBaseIsStyled(html)) return '';
+    for (var i = 0; i < variants.length; i++) {
+      var m = new RegExp('\\.' + variants[i] + '\\s*\\{([^}]*)\\}', 'i').exec(html);
+      var rule = m ? m[1] : '';
+      if (/border\s*:/i.test(rule) && !/gradient/i.test(rule)) return variants[i];
+    }
+    return variants[0] || '';
+  }
+
   function renderLinkEditorRows() {
     var rowsEl = document.getElementById('linkEditorRows');
     if (!linkEditorLinks.length) {
@@ -1713,7 +1796,8 @@
         var opts = linkEditorVariants.slice();
         if (l.variant && opts.indexOf(l.variant) === -1) opts.push(l.variant);
         variantSel = '<select class="link-field link-field-variant" data-idx="' + i + '" data-f="variant">' +
-          '<option value="">Standard</option>' +
+          '<option value=""' + (l.variant ? '' : ' selected') + '>' +
+            (linkEditorBaseStyled ? 'Standard' : 'Ohne Rahmen') + '</option>' +
           opts.map(function (v) {
             return '<option value="' + esc(v) + '"' + (l.variant === v ? ' selected' : '') + '>' + esc(v.replace('btn-', '')) + '</option>';
           }).join('') + '</select>';
@@ -1753,7 +1837,7 @@
 
   document.getElementById('linkEditorAdd').addEventListener('click', function () {
     if (!linkEditorBlock) return;
-    linkEditorLinks.push({ icon: '🔗', label: '', href: '', variant: '' });
+    linkEditorLinks.push({ icon: '🔗', label: '', href: '', variant: linkEditorDefaultVariant });
     renderLinkEditorRows();
     var labels = document.querySelectorAll('#linkEditorRows .link-field-label');
     if (labels.length) labels[labels.length - 1].focus();
@@ -1765,6 +1849,8 @@
     linkEditorLinks = [];
     linkEditorBlock = null;
     linkEditorVariants = [];
+    linkEditorDefaultVariant = '';
+    linkEditorBaseStyled = true;
     var errEl = document.getElementById('linkEditorError');
     var rowsEl = document.getElementById('linkEditorRows');
     var addBtn = document.getElementById('linkEditorAdd');
@@ -1798,6 +1884,8 @@
       linkEditorLinks = parsed.links;
       linkEditorBlock = parsed.block;
       linkEditorVariants = parsed.block.dialect === 'rich' ? detectLinkVariants(linkEditorHtml) : [];
+      linkEditorBaseStyled = linkBaseIsStyled(linkEditorHtml);
+      linkEditorDefaultVariant = pickDefaultVariant(linkEditorHtml, linkEditorVariants);
       addBtn.disabled = false;
       saveBtn.disabled = false;
       renderLinkEditorRows();
@@ -1932,7 +2020,7 @@
       return '<a href="' + esc(l.url) + '" class="link-btn" target="_blank"><span class="link-icon">' + esc(l.icon) + '</span><span>' + esc(l.label) + '</span></a>';
     }).join('\n      ');
 
-    return '<!DOCTYPE html>\n<html lang="de">\n<head>\n<meta charset="UTF-8">\n<meta name="viewport" content="width=device-width,initial-scale=1">\n<title>' + esc(name) + '</title>\n<style>\n*{box-sizing:border-box;margin:0;padding:0}\nbody{min-height:100vh;background:#0a0a0a;display:flex;align-items:center;justify-content:center;font-family:system-ui,sans-serif;padding:24px}\n.card{width:100%;max-width:400px}\n.logo{width:80px;height:80px;border-radius:50%;object-fit:cover;margin:0 auto 16px;display:block;background:#222}\n.name{color:#fff;font-size:22px;font-weight:700;text-align:center;margin-bottom:4px}\n.sub{color:rgba(255,255,255,.45);font-size:14px;text-align:center;margin-bottom:32px}\n.link-btn{display:flex;align-items:center;gap:14px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:#fff;text-decoration:none;padding:16px 20px;border-radius:12px;margin-bottom:10px;font-size:15px;transition:background .2s,border-color .2s}\n.link-btn:hover{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.25)}\n.link-icon{font-size:20px;flex-shrink:0;width:28px;text-align:center}\n.footer{text-align:center;margin-top:28px;font-size:11px;color:rgba(255,255,255,.2)}\n</style>\n</head>\n<body>\n<div class="card">\n  <img class="logo" src="img/logo.png" onerror="this.style.display=\'none\'">\n  <div class="name">' + esc(name) + '</div>\n  <div class="sub">' + esc(address || 'Wien') + '</div>\n  <div id="links">\n      ' + linksHtml + '\n  </div>\n  <div class="footer">lokalonline.at</div>\n</div>\n</body>\n</html>\n';
+    return '<!DOCTYPE html>\n<html lang="de">\n<head>\n<meta charset="UTF-8">\n<meta name="viewport" content="width=device-width,initial-scale=1">\n<title>' + esc(name) + '</title>\n' + canonicalTag(slug + '/link/') + '<style>\n*{box-sizing:border-box;margin:0;padding:0}\nbody{min-height:100vh;background:#0a0a0a;display:flex;align-items:center;justify-content:center;font-family:system-ui,sans-serif;padding:24px}\n.card{width:100%;max-width:400px}\n.logo{width:80px;height:80px;border-radius:50%;object-fit:cover;margin:0 auto 16px;display:block;background:#222}\n.name{color:#fff;font-size:22px;font-weight:700;text-align:center;margin-bottom:4px}\n.sub{color:rgba(255,255,255,.45);font-size:14px;text-align:center;margin-bottom:32px}\n.link-btn{display:flex;align-items:center;gap:14px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:#fff;text-decoration:none;padding:16px 20px;border-radius:12px;margin-bottom:10px;font-size:15px;transition:background .2s,border-color .2s}\n.link-btn:hover{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.25)}\n.link-icon{font-size:20px;flex-shrink:0;width:28px;text-align:center}\n.footer{text-align:center;margin-top:28px;font-size:11px;color:rgba(255,255,255,.2)}\n</style>\n</head>\n<body>\n<div class="card">\n  <img class="logo" src="img/logo.png" onerror="this.style.display=\'none\'">\n  <div class="name">' + esc(name) + '</div>\n  <div class="sub">' + esc(address || 'Wien') + '</div>\n  <div id="links">\n      ' + linksHtml + '\n  </div>\n  <div class="footer">lokalonline.at</div>\n</div>\n</body>\n</html>\n';
   }
 
   async function generateQrCode(slug) {
@@ -1992,6 +2080,15 @@
       if (!tplRes.ok) throw new Error('Template nicht gefunden.');
       var tplHtml = await tplRes.text();
       var dataJs = generateDataJs(selectedTemplate, slug, currentOrderData);
+      // Titel/Beschreibung setzt die Vorlage sonst erst per JS aus data.js —
+      // für die Indexierung müssen sie im ausgelieferten HTML stehen.
+      var seo = JSON.parse(dataJs.replace(/^window\.SITE_DATA = /, '').replace(/;\s*$/, '')).seo;
+      var ogImage = /^https?:/i.test(seo.ogImage) ? seo.ogImage : SITE_BASE + slug + '/' + seo.ogImage;
+      tplHtml = tplHtml
+        .replace(/<title id="seo-title">[^<]*<\/title>/, '<title id="seo-title">' + esc(seo.title) + '</title>')
+        .replace(/<meta name="description" id="seo-desc" content="[^"]*">/, '<meta name="description" id="seo-desc" content="' + esc(seo.description.de) + '">')
+        .replace(/<meta property="og:image" id="seo-og" content="[^"]*">/, '<meta property="og:image" id="seo-og" content="' + esc(ogImage) + '">');
+      tplHtml = injectHead(tplHtml, canonicalTag(slug + '/') + generateJsonLd(slug, selectedTemplate, currentOrderData));
       await uploadFile(slug + '/index.html', tplHtml);
       await uploadFile(slug + '/data.js', dataJs);
 
@@ -2000,6 +2097,11 @@
       var menuRes = await fetch('/templates/' + selectedTemplate + '/menu/index.html');
       if (menuRes.ok) {
         var menuHtml = await menuRes.text();
+        var menuName = currentOrderData.business_name || slug;
+        menuHtml = menuHtml.replace(/<title id="page-title">([^<]*)<\/title>/, function (m, t) {
+          return '<title id="page-title">' + t + ' — ' + esc(menuName) + '</title>';
+        });
+        menuHtml = injectHead(menuHtml, canonicalTag(slug + '/menu/'));
         var menuDataJs = generateMenuDataJs(selectedTemplate, slug, currentOrderData);
         await uploadFile(slug + '/menu/index.html', menuHtml);
         await uploadFile(slug + '/menu/menu-data.js', menuDataJs);
@@ -2019,6 +2121,9 @@
       // 5. Datenschutz
       btn.textContent = '⏳ 5/7 Datenschutz…';
       await uploadFile(slug + '/datenschutz/index.html', generateDatenschutzHtml(slug, currentOrderData));
+
+      // Sitemap ergänzen — scheitert das, ist die Seite trotzdem fertig.
+      try { await updateSitemap(slug); } catch (e) { console.warn('Sitemap:', e); }
 
       // 6. Photos + QR code
       btn.textContent = '⏳ 6/7 Fotos & QR…';

@@ -582,8 +582,11 @@
     });
     var data = await res.json();
     if (data.error) { showToast('Fehler: ' + data.error); return; }
+    // Sitemap-Einträge entfernen — scheitert das, ist die Website trotzdem gelöscht.
+    var sitemapOk = true;
+    try { await removeFromSitemap(slug); } catch (e) { sitemapOk = false; console.warn('Sitemap:', e); }
     await sb.from('orders').update({ site_slug: null }).eq('id', orderId);
-    showToast('✅ "' + slug + '" gelöscht.');
+    showToast('✅ "' + slug + '" gelöscht.' + (sitemapOk ? '' : ' (sitemap.xml bitte prüfen)'));
     loadSites();
   };
 
@@ -1534,6 +1537,29 @@
     }).join('');
     await uploadFile('sitemap.xml', data.content.replace('</urlset>', entries + '</urlset>'));
     return true;
+  }
+
+  // Gegenstück zu updateSitemap: alle <url>-Einträge einer gelöschten Website
+  // entfernen. "yori2/" trifft nicht "yori22/".
+  function sitemapWithout(xml, slug) {
+    var prefix = '<loc>' + SITE_BASE + slug + '/';
+    return xml.replace(/[ \t]*<url>[\s\S]*?<\/url>[ \t]*\r?\n?/g, function (entry) {
+      return entry.indexOf(prefix) > -1 ? '' : entry;
+    });
+  }
+
+  async function removeFromSitemap(slug) {
+    var session = (await sb.auth.getSession()).data.session;
+    var token = session ? session.access_token : '';
+    var res = await fetch(EDGE_FN, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+      body: JSON.stringify({ action: 'get-file', path: 'sitemap.xml' })
+    });
+    var data = await res.json().catch(function () { return {}; });
+    if (!data.content) throw new Error('sitemap.xml nicht lesbar');
+    var next = sitemapWithout(data.content, slug);
+    if (next !== data.content) await uploadFile('sitemap.xml', next);
   }
 
   // Prüft, ob eine Datei im Repo fehlt. Nur ein eindeutiges „nicht gefunden"

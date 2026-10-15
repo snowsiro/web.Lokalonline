@@ -31,11 +31,20 @@ async function isAdmin(req: Request): Promise<boolean> {
   return user?.email === ADMIN_EMAIL;
 }
 
+// Top-level folders of the service itself. They look like slugs but are never
+// a customer site, so nothing may write into or delete them.
+const RESERVED = new Set(["admin", "css", "fonts", "js", "order", "portal", "supabase", "templates"]);
+function isSiteSlug(slug: unknown): boolean {
+  return typeof slug === "string" && /^[a-z0-9-]+$/.test(slug) && !RESERVED.has(slug);
+}
+
 // Restrict writes to customer site folders / known asset paths — never workflows, configs, etc.
+// sitemap.xml is the one root file the admin writes (sites are added and removed there).
 function isAllowedPath(path: unknown): boolean {
   if (typeof path !== "string" || !path) return false;
+  if (path === "sitemap.xml") return true;
   if (path.includes("..")) return false;
-  return /^[a-z0-9-]+\/[a-zA-Z0-9._\/-]+$/.test(path);
+  return /^[a-z0-9-]+\/[a-zA-Z0-9._\/-]+$/.test(path) && isSiteSlug(path.split("/")[0]);
 }
 
 async function putFile(path: string, base64Content: string, message: string) {
@@ -110,27 +119,27 @@ Deno.serve(async (req) => {
       return json({ content: decoded, sha: data.sha });
     }
 
-    // Delete all files under a slug folder
+    // Delete all files under a slug folder, subfolders included. (Listing the
+    // folder through the contents API gave one level only, so menu/, link/,
+    // img/ … stayed online.) A failed delete is reported; running it again
+    // deletes what is left.
     if (action === "delete-folder") {
       const slug = body.slug;
-      if (!slug || !/^[a-z0-9-]+$/.test(slug)) return json({ error: "Invalid slug" }, 400);
-      const listRes = await fetch(
-        `https://api.github.com/repos/${GITHUB_REPO}/contents/${slug}?ref=${GITHUB_BRANCH}`,
-        { headers: { Authorization: `Bearer ${GITHUB_TOKEN}`, Accept: "application/vnd.github+json" } }
-      );
-      if (listRes.status === 404) return json({ ok: true });
-      const files = await listRes.json();
-      if (!Array.isArray(files)) return json({ error: "Could not list folder" }, 500);
+      if (!isSiteSlug(slug)) return json({ error: "Invalid slug" }, 400);
+      const gh = { Authorization: `Bearer ${GITHUB_TOKEN}`, Accept: "application/vnd.github+json" };
+      const treeRes = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/git/trees/${GITHUB_BRANCH}?recursive=1`, { headers: gh });
+      const tree = await treeRes.json().catch(() => ({}));
+      if (!treeRes.ok || !Array.isArray(tree.tree) || tree.truncated) return json({ error: "Could not list folder" }, 500);
+      const files = tree.tree.filter((e) => e.type === "blob" && e.path.startsWith(slug + "/"));
       for (const file of files) {
-        if (file.type === "file") {
-          await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/${file.path}`, {
-            method: "DELETE",
-            headers: { Authorization: `Bearer ${GITHUB_TOKEN}`, Accept: "application/vnd.github+json", "Content-Type": "application/json" },
-            body: JSON.stringify({ message: "Delete site: " + slug, sha: file.sha, branch: GITHUB_BRANCH })
-          });
-        }
+        const del = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/${file.path.split("/").map(encodeURIComponent).join("/")}`, {
+          method: "DELETE",
+          headers: { ...gh, "Content-Type": "application/json" },
+          body: JSON.stringify({ message: "Delete site: " + slug, sha: file.sha, branch: GITHUB_BRANCH })
+        });
+        if (!del.ok) return json({ error: `Could not delete ${file.path} (${del.status})` }, 500);
       }
-      return json({ ok: true });
+      return json({ ok: true, deleted: files.length });
     }
 
     return json({ error: "Unknown action" }, 400);

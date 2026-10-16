@@ -19,7 +19,7 @@ Dreisprachig: **DE / EN / 한국어**
 
 ## NAV
 
-- Logo: `Yori2` + Subline `Korean Dining`
+- Logo: `Yori2` + Subline `Casual Korean Restaurant`
 - Links: Speisekarte / Öffnungszeiten / Anfahrt / Bewertungen
 - CTA Button: `Reservierung` (schwarz, hover: rot)
 

@@ -111,7 +111,7 @@ Lokalonline/
 - [x] order/messages_migration.sql — messages 테이블
 - [x] order/chat_attachments_migration.sql — attachment 컬럼
 - [x] supabase/rls_policies.sql — 전체 RLS 정책
-- [ ] supabase/menu_data.sql — 메뉴 편집 표 + yori2 데이터 이전
+- [x] supabase/menu_data.sql — 메뉴 편집 표 + yori2 데이터 이전 (2026-10-17)
 
 ### orders 테이블 주요 컬럼
 ```

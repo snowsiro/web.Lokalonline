@@ -8,7 +8,7 @@
 - **DB/Auth**: Supabase (프로젝트 ID: vhnourjddnlslgabrasb)
 - **결제**: Stripe
 - **이메일**: Resend (noreply@lokalonline.at)
-- **Edge Functions**: Supabase (github-upload, stripe-webhook, send-email)
+- **Edge Functions**: Supabase (github-upload, stripe-webhook, send-email, menu_photo_sign)
 
 ---
 
@@ -29,6 +29,7 @@
 - `STRIPE_WEBHOOK_SECRET` — Stripe 대시보드 → Webhooks
 - `SUPABASE_SERVICE_ROLE_KEY` — Supabase → Settings → API (⚠️ 이전에 노출됨, 재발급 불가, RLS로 보호)
 - `RESEND_API_KEY` — resend.com → API Keys
+- `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET` — Cloudinary(cloud name `dxsrdx0cw`) → Settings → API Keys. 메뉴 사진 업로드 서명용
 
 ### GitHub Secrets (Actions용)
 - `SUPABASE_ACCESS_TOKEN` — Supabase → Account → Access Tokens
@@ -74,13 +75,16 @@ Lokalonline/
 │   └── stripe-config.js          # Stripe 결제 링크
 ├── supabase/
 │   ├── rls_policies.sql          # 전체 RLS 정책 (실행 완료)
+│   ├── menu_data.sql             # 메뉴 편집 데이터 표 + 권한 (can_edit_menu)
 │   └── functions/
 │       ├── github-upload/
 │       │   └── index.ts          # 파일 업로드/수정/조회
 │       ├── stripe-webhook/
 │       │   └── index.ts          # 결제 완료 → clients 자동 등록
-│       └── send-email/
-│           └── index.ts          # 이메일 알림 (Resend)
+│       ├── send-email/
+│       │   └── index.ts          # 이메일 알림 (Resend)
+│       └── menu_photo_sign/
+│           └── index.ts          # 메뉴 사진 Cloudinary 업로드 서명
 └── .github/
     └── workflows/
         └── deploy-edge-functions.yml  # Edge Function 자동 배포
@@ -98,6 +102,7 @@ Lokalonline/
 | `inquiries` | 문의 폼 | ✅ |
 | `update_requests` | 수정 요청 | ✅ |
 | `reviews` | 리뷰 | ✅ |
+| `menu_data` | 메뉴 편집 내용 (가게마다 한 줄) | ✅ |
 
 ### SQL 실행 완료 목록
 - [x] admin/setup.sql — 기본 테이블 생성
@@ -106,6 +111,7 @@ Lokalonline/
 - [x] order/messages_migration.sql — messages 테이블
 - [x] order/chat_attachments_migration.sql — attachment 컬럼
 - [x] supabase/rls_policies.sql — 전체 RLS 정책
+- [ ] supabase/menu_data.sql — 메뉴 편집 표 + yori2 데이터 이전
 
 ### orders 테이블 주요 컬럼
 ```
@@ -146,6 +152,11 @@ admin_notes, status
 - `new-order` (orders INSERT): 어드민에게 새 주문 알림
 - `new-message` (messages INSERT): 메시지 발신자에 따라 상대방에게 알림
 - 테이블명으로 자동 타입 감지
+
+### menu_photo_sign
+- 로그인한 사람이 `can_edit_menu(slug)`를 통과하면 Cloudinary 업로드 서명을 줌
+- 사진은 `menus/{slug}/{메뉴}_{시각}`에 저장되고, 저장 전에 긴 변 1600px로 줄어듦
+- 시크릿 `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET` 필요 (없으면 500)
 
 ---
 
@@ -258,6 +269,24 @@ admin_notes, status
 - 어드민과 채팅 (파일 첨부 포함)
 - 수정 요청
 - 리뷰 작성
+- "Speisekarte bearbeiten" → `/{slug}/menu/#edit` (`EDITABLE_MENUS`에 있는 가게만)
+
+---
+
+## 메뉴 편집 (yori2, seoulmate)
+
+- 기본 메뉴는 각 `/{slug}/menu/index.html`에 있고, 수정 내용은 Supabase `menu_data`
+  (`slug`, `data` jsonb)에 저장돼 페이지가 열릴 때 덮어씀. 손님은 이 한 줄만 읽음
+  - yori2: `data = {items, sections, photos}` / seoulmate: `data = {overrides, photos}`
+- 사진은 Cloudinary `menus/{slug}/`. 화면에는 `q_auto,f_auto,w_900` 사본을 씀
+- 편집: 로고 5번 탭(또는 ⚙ Admin, 포털의 "Speisekarte bearbeiten") → 로그인 확인
+  - 로그인은 고객 포털(매직 링크)·관리자 페이지와 같은 세션 (같은 도메인)
+  - 쓰기 권한은 DB 함수 `can_edit_menu(slug)`: 운영자(info@lokalonline.at), 또는
+    `clients.page_url`의 마지막 경로 / `orders.site_slug`가 그 가게인 이메일
+- 가게를 추가하려면: 메뉴 페이지에 같은 편집 코드를 넣고, `portal/portal.js`의
+  `EDITABLE_MENUS`에 slug 추가
+- 예전 방식(정리 대상): yori2는 Firebase `yori2-web` + Cloudinary 서명 없는 preset
+  `yori2menu`, seoulmate는 GitHub `data.json`. 전환 확인 후 preset 끄기, Firebase 쓰기 막기
 
 ---
 

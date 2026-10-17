@@ -9,6 +9,8 @@
   var STRIPE_LINKS = (window.STRIPE_CONFIG && window.STRIPE_CONFIG.links) || {};
 
   var ADMIN_EMAIL = 'info@lokalonline.at';
+  // Speisekarten, die man direkt auf der Seite bearbeiten kann (Daten in menu_data)
+  var EDITABLE_MENUS = ['yori2', 'seoulmate'];
   var userEmail = '';
 
   // ── Auth ─────────────────────────────────────────────────────────
@@ -73,6 +75,9 @@
     document.getElementById('heroTitle').textContent = 'Willkommen, ' + client.business_name + '!';
     document.getElementById('heroSub').textContent = 'Hier verwalten Sie Ihren Auftrag bei lokalonline.at';
 
+    // page_url 마지막 세그먼트 = slug (예: web.lokalonline.at/yori2 → yori2)
+    var siteSlug = client.page_url ? client.page_url.replace(/\/$/, '').split('/').pop() : '';
+
     // 구독 정보 카드
     var planLabels = { flat: 'Premium', basis: 'Premium', standard: 'Premium', premium: 'Premium' };
     var billingLabels = { monthly: 'Monatlich', yearly: 'Jährlich' };
@@ -90,6 +95,9 @@
       (client.page_url
         ? '<div style="margin-top:16px"><div class="info-field"><label>Ihre Webseite</label>' +
           '<a class="page-link" href="https://' + esc(client.page_url) + '" target="_blank">🔗 ' + esc(client.page_url) + '</a></div></div>'
+        : '') +
+      (EDITABLE_MENUS.indexOf(siteSlug) > -1
+        ? '<div style="margin-top:12px"><a class="btn btn-outline btn-sm" href="/' + siteSlug + '/menu/#edit">✏️ Speisekarte bearbeiten</a></div>'
         : '') +
       stripeActionsHtml(client) +
       '</div>';

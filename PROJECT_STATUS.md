@@ -285,8 +285,16 @@ admin_notes, status
     `clients.page_url`의 마지막 경로 / `orders.site_slug`가 그 가게인 이메일
 - 가게를 추가하려면: 메뉴 페이지에 같은 편집 코드를 넣고, `portal/portal.js`의
   `EDITABLE_MENUS`에 slug 추가
-- 예전 방식(정리 대상): yori2는 Firebase `yori2-web` + Cloudinary 서명 없는 preset
-  `yori2menu`, seoulmate는 GitHub `data.json`. 전환 확인 후 preset 끄기, Firebase 쓰기 막기
+- 사장님 권한 확인 (사장님 로그인 없이): Supabase SQL Editor에서
+  ```sql
+  select public.can_edit_menu('seoulmate') as seoulmate, public.can_edit_menu('yori2') as yori2
+  from (select set_config('request.jwt.claims', '{"email":"사장님이메일"}', true)) as login;
+  ```
+  읽기만 하고, 설정은 그 쿼리 안에서만 유효함
+- 예전 방식 정리 (2026-10-17)
+  - Firebase `yori2-web`: 규칙을 읽기만 허용으로 바꿈 (쓰기 금지). 예전 데이터는 백업으로 남아 있음
+  - Cloudinary preset `yori2menu`: Signed로 바꿈. `ml_default`도 Signed임을 확인 (둘 다 서명 없는 업로드 거부)
+  - seoulmate의 GitHub `data.json`: 삭제됨 (비어 있었음)
 
 ---
 

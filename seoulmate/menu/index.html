@@ -130,15 +130,7 @@ body.lang-ko span[data-lang="ko"],body.lang-ko .inline[data-lang="ko"],body.lang
 .pw-icon{font-size:1.8rem;margin-bottom:12px}
 .pw-title{font-family:'DM Serif Display',serif;font-size:1.3rem;letter-spacing:-0.01em;color:var(--text);margin-bottom:4px}
 .pw-sub{font-size:0.78rem;color:var(--muted);margin-bottom:24px}
-.pw-input-wrap{position:relative;margin-bottom:8px}
-.pw-input{width:100%;border:1.5px solid var(--border);border-radius:7px;padding:11px 44px 11px 14px;font-family:'DM Sans',sans-serif;font-size:0.92rem;color:var(--text);background:var(--bg);outline:none;transition:border-color 0.15s}
-.pw-input:focus{border-color:var(--text)}
-.pw-input.error{border-color:#c82020;animation:shake 0.35s ease}
-@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
-.pw-toggle{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--muted);font-size:1rem;padding:2px;transition:color 0.15s}
-.pw-toggle:hover{color:var(--text)}
-.pw-error-msg{font-size:0.72rem;color:#c82020;height:18px;margin-bottom:16px;letter-spacing:0.02em}
-.pw-btn{width:100%;background:var(--text);color:#fff;border:none;border-radius:7px;padding:12px;font-family:'DM Sans',sans-serif;font-size:0.82rem;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;cursor:pointer;transition:opacity 0.15s}
+.pw-btn{display:block;text-align:center;text-decoration:none;width:100%;background:var(--text);color:#fff;border:none;border-radius:7px;padding:12px;font-family:'DM Sans',sans-serif;font-size:0.82rem;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;cursor:pointer;transition:opacity 0.15s}
 .pw-btn:hover{opacity:0.85}
 .pw-cancel{display:block;text-align:center;margin-top:14px;font-size:0.75rem;color:var(--muted);cursor:pointer;transition:color 0.15s}
 .pw-cancel:hover{color:var(--text)}
@@ -230,13 +222,8 @@ body:not(.admin-mode) .has-photo:hover{color:var(--accent);text-decoration-color
   <div class="pw-box">
     <div class="pw-icon">🔐</div>
     <div class="pw-title">Admin-Zugang</div>
-    <div class="pw-sub">관리자 비밀번호를 입력하세요</div>
-    <div class="pw-input-wrap">
-      <input class="pw-input" id="pwInput" type="password" placeholder="Passwort" onkeydown="if(event.key==='Enter')checkPassword()">
-      <button class="pw-toggle" id="pwToggle" onclick="togglePwVisibility()" tabindex="-1">👁</button>
-    </div>
-    <div class="pw-error-msg" id="pwError"></div>
-    <button class="pw-btn" onclick="checkPassword()">확인 / Bestätigen</button>
+    <div class="pw-sub">메뉴를 고치려면 고객 포털에서 로그인하세요.<br>Bitte zuerst im Kundenportal anmelden.</div>
+    <a class="pw-btn" href="/portal/">고객 포털 / Kundenportal</a>
     <span class="pw-cancel" onclick="closePwModal()">취소 / Abbrechen</span>
   </div>
 </div>
@@ -1026,15 +1013,10 @@ body:not(.admin-mode) .has-photo:hover{color:var(--accent);text-decoration-color
 
 <script>
 // ── CONFIG ──
-var EDGE_FN   = 'https://vhnourjddnlslgabrasb.supabase.co/functions/v1/github_upload';
-var SB_ANON   = 'sb_publishable_y5l1cAZXoAj8xaSVXUkBfw_Pk9pxb6H';
-var GH_REPO   = 'snowsiro/Lokalonline';
-var GH_BRANCH = 'main';
-var DATA_PATH = 'seoulmate/menu/data.json';
-var IMG_DIR   = 'seoulmate/menu/img/';
-var ADMIN_PW  = 'Seoulmate2026';
+var MENU_SLUG = 'seoulmate';
+var SB_URL    = 'https://vhnourjddnlslgabrasb.supabase.co';
+var SB_KEY    = 'sb_publishable_y5l1cAZXoAj8xaSVXUkBfw_Pk9pxb6H';
 
-var GH_TOKEN  = '';
 var photos    = {};
 var overrides = {};
 
@@ -1052,11 +1034,13 @@ var overrides = {};
 })();
 
 // ── LOAD DATA ON START ──
+// 손님은 메뉴 데이터(Supabase menu_data)만 읽으면 되니 라이브러리 없이 한 번 요청
 async function loadData(){
   try {
-    var r = await fetch('https://raw.githubusercontent.com/' + GH_REPO + '/' + GH_BRANCH + '/' + DATA_PATH + '?t=' + Date.now());
+    var r = await fetch(SB_URL + '/rest/v1/menu_data?select=data&slug=eq.' + MENU_SLUG, { headers: { apikey: SB_KEY } });
     if(r.ok){
-      var d = await r.json();
+      var rows = await r.json();
+      var d = rows.length ? rows[0].data : {};
       photos    = d.photos    || {};
       overrides = d.overrides || {};
       applyOverrides();
@@ -1064,6 +1048,21 @@ async function loadData(){
     }
   } catch(e){}
 }
+
+// 로그인 라이브러리는 편집을 열 때만 불러옴. 로그인은 고객 포털·관리자 페이지와 같은 세션(같은 도메인).
+var sbClient = null;
+function getSb(){
+  if(sbClient) return Promise.resolve(sbClient);
+  return new Promise(function(resolve, reject){
+    var sc = document.createElement('script');
+    sc.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js';
+    sc.onload = function(){ resolve(sbClient = supabase.createClient(SB_URL, SB_KEY)); };
+    sc.onerror = reject;
+    document.head.appendChild(sc);
+  });
+}
+
+function escHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
 function applyOverrides(){
   for(var id in overrides){
@@ -1096,26 +1095,38 @@ function markHasPhoto(id, url){
   var el = document.querySelector('[data-id="' + id + '"] .item-name');
   if(el){
     el.classList.add('has-photo');
-    el.setAttribute('onclick', 'openPhoto("' + id + '", this)');
+    el.onclick = function(){ openPhoto(id, el); };
     if(!el.querySelector('.photo-badge')) el.insertAdjacentHTML('beforeend', '<span class="photo-badge">📷 Foto</span>');
   }
 }
 
-// ── GITHUB API (via Supabase Edge Function) ──
-async function ghPutFile(path, contentBase64, message){
-  var r = await fetch(EDGE_FN, {
-    method: 'POST',
-    headers: { 'Authorization': 'Bearer ' + SB_ANON, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ action: 'put-file', path: path, content: contentBase64, message: message })
-  });
-  var d = await r.json();
-  return d.ok === true;
+// ── SAVE (쓰기 권한은 DB 규칙이 확인: 운영자 + 이 가게 사장님) ──
+async function saveMenuData(){
+  var sb = await getSb();
+  var res = await sb.from('menu_data').upsert({ slug: MENU_SLUG, data: { photos: photos, overrides: overrides } });
+  if(res.error) toast('⚠️ 저장 실패. 로그인 상태를 확인하세요. / Speichern fehlgeschlagen');
+  return !res.error;
 }
 
-async function saveDataJson(){
-  var content = JSON.stringify({ photos: photos, overrides: overrides }, null, 2);
-  var b64 = btoa(unescape(encodeURIComponent(content)));
-  return await ghPutFile(DATA_PATH, b64, 'Update menu data');
+// 업로드 서명은 서버(menu_photo_sign)가 로그인과 가게 권한을 확인한 뒤에만 줌
+async function uploadPhoto(id, dataUrl){
+  var sb = await getSb();
+  var session = (await sb.auth.getSession()).data.session;
+  var r = await fetch(SB_URL + '/functions/v1/menu_photo_sign', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + (session ? session.access_token : '') },
+    body: JSON.stringify({ slug: MENU_SLUG, item: id })
+  });
+  var sig = await r.json();
+  if(!r.ok) throw new Error('업로드 권한 확인 실패 / Keine Berechtigung');
+  var form = new FormData();
+  form.append('file', dataUrl);
+  ['api_key', 'timestamp', 'public_id', 'transformation', 'allowed_formats', 'signature']
+    .forEach(function(k){ form.append(k, sig[k]); });
+  var up = await fetch('https://api.cloudinary.com/v1_1/' + sig.cloud_name + '/image/upload', { method: 'POST', body: form });
+  var data = await up.json();
+  if(data.error) throw new Error(data.error.message);
+  return data.secure_url;
 }
 
 // ── PHOTO UPLOAD ──
@@ -1126,9 +1137,10 @@ function buildZone(zone, id){
   wrap.className = 'photo-preview-wrap' + (url ? ' has-img' : '');
   wrap.innerHTML =
     '<div class="photo-placeholder"><div class="photo-placeholder-icon">📷</div><div class="photo-placeholder-text">Foto hochladen</div></div>' +
-    '<img class="photo-preview-img" src="' + (url||'') + '" alt="">' +
+    '<img class="photo-preview-img" alt="">' +
     '<input type="file" accept="image/*" class="photo-upload-input">';
   zone.appendChild(wrap);
+  if(url) wrap.querySelector('.photo-preview-img').src = url;
 
   wrap.querySelector('input').addEventListener('change', function(e){
     var file = e.target.files[0];
@@ -1145,12 +1157,10 @@ function buildZone(zone, id){
         canvas.width  = Math.round(img.width  * scale);
         canvas.height = Math.round(img.height * scale);
         canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
-        var b64 = canvas.toDataURL('image/jpeg', 0.82).split(',')[1];
-        var path = IMG_DIR + id + '.jpg';
-        var ok = await ghPutFile(path, b64, 'Add photo: ' + id);
-        if(ok){
-          photos[id] = 'https://raw.githubusercontent.com/' + GH_REPO + '/' + GH_BRANCH + '/' + path;
-          await saveDataJson();
+        try {
+          photos[id] = await uploadPhoto(id, canvas.toDataURL('image/jpeg', 0.82));
+        } catch(err){ toast('❌ 오류: ' + err.message); return; }
+        if(await saveMenuData()){
           markHasPhoto(id, photos[id]);
           buildZone(zone, id);
           toast('✅ Foto gespeichert!');
@@ -1173,9 +1183,9 @@ function buildZone(zone, id){
     delBtn.textContent = '삭제';
     delBtn.onclick = async function(){
       delete photos[id];
-      await saveDataJson();
+      if(!await saveMenuData()) return;
       var nameEl = document.querySelector('[data-id="' + id + '"] .item-name');
-      if(nameEl){ nameEl.classList.remove('has-photo'); nameEl.removeAttribute('onclick'); var b = nameEl.querySelector('.photo-badge'); if(b) b.remove(); }
+      if(nameEl){ nameEl.classList.remove('has-photo'); nameEl.onclick = null; var b = nameEl.querySelector('.photo-badge'); if(b) b.remove(); }
       buildZone(zone, id);
       toast('삭제됨');
     };
@@ -1205,11 +1215,11 @@ function openEditor(id){
     '<div style="font-family:\'DM Serif Display\',serif;font-size:1.1rem;">수정 / Bearbeiten</div>' +
     '<button onclick="document.getElementById(\'adminEditorModal\').remove()" style="border:none;background:none;cursor:pointer;font-size:1.4rem;color:var(--muted);padding:4px;line-height:1">×</button></div>' +
     '<div style="padding:20px 24px;">' +
-    '<div style="margin-bottom:14px"><label style="font-size:0.72rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:6px">이름 / Name</label><input id="ef_name" type="text" value="' + nameText.replace(/"/g,'&quot;') + '" style="width:100%;border:1.5px solid var(--border);border-radius:6px;padding:9px 12px;font-family:\'DM Sans\',sans-serif;font-size:0.9rem;color:var(--text);background:var(--bg);outline:none"></div>' +
-    '<div style="margin-bottom:14px"><label style="font-size:0.72rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:6px">Preis / 가격</label><input id="ef_price" type="text" value="' + priceText.replace(/"/g,'&quot;') + '" style="width:100%;border:1.5px solid var(--border);border-radius:6px;padding:9px 12px;font-family:\'DM Sans\',sans-serif;font-size:0.9rem;color:var(--text);background:var(--bg);outline:none"></div>' +
-    '<div style="margin-bottom:14px"><label style="font-size:0.72rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:6px">Beschreibung DE</label><textarea id="ef_desc_de" rows="2" style="width:100%;border:1.5px solid var(--border);border-radius:6px;padding:9px 12px;font-family:\'DM Sans\',sans-serif;font-size:0.85rem;color:var(--text);background:var(--bg);outline:none;resize:vertical">' + descDe + '</textarea></div>' +
-    '<div style="margin-bottom:14px"><label style="font-size:0.72rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:6px">Description EN</label><textarea id="ef_desc_en" rows="2" style="width:100%;border:1.5px solid var(--border);border-radius:6px;padding:9px 12px;font-family:\'DM Sans\',sans-serif;font-size:0.85rem;color:var(--text);background:var(--bg);outline:none;resize:vertical">' + descEn + '</textarea></div>' +
-    '<div style="margin-bottom:20px"><label style="font-size:0.72rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:6px">설명 KO</label><textarea id="ef_desc_ko" rows="2" style="width:100%;border:1.5px solid var(--border);border-radius:6px;padding:9px 12px;font-family:\'DM Sans\',sans-serif;font-size:0.85rem;color:var(--text);background:var(--bg);outline:none;resize:vertical">' + descKo + '</textarea></div>' +
+    '<div style="margin-bottom:14px"><label style="font-size:0.72rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:6px">이름 / Name</label><input id="ef_name" type="text" value="' + escHtml(nameText) + '" style="width:100%;border:1.5px solid var(--border);border-radius:6px;padding:9px 12px;font-family:\'DM Sans\',sans-serif;font-size:0.9rem;color:var(--text);background:var(--bg);outline:none"></div>' +
+    '<div style="margin-bottom:14px"><label style="font-size:0.72rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:6px">Preis / 가격</label><input id="ef_price" type="text" value="' + escHtml(priceText) + '" style="width:100%;border:1.5px solid var(--border);border-radius:6px;padding:9px 12px;font-family:\'DM Sans\',sans-serif;font-size:0.9rem;color:var(--text);background:var(--bg);outline:none"></div>' +
+    '<div style="margin-bottom:14px"><label style="font-size:0.72rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:6px">Beschreibung DE</label><textarea id="ef_desc_de" rows="2" style="width:100%;border:1.5px solid var(--border);border-radius:6px;padding:9px 12px;font-family:\'DM Sans\',sans-serif;font-size:0.85rem;color:var(--text);background:var(--bg);outline:none;resize:vertical">' + escHtml(descDe) + '</textarea></div>' +
+    '<div style="margin-bottom:14px"><label style="font-size:0.72rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:6px">Description EN</label><textarea id="ef_desc_en" rows="2" style="width:100%;border:1.5px solid var(--border);border-radius:6px;padding:9px 12px;font-family:\'DM Sans\',sans-serif;font-size:0.85rem;color:var(--text);background:var(--bg);outline:none;resize:vertical">' + escHtml(descEn) + '</textarea></div>' +
+    '<div style="margin-bottom:20px"><label style="font-size:0.72rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:6px">설명 KO</label><textarea id="ef_desc_ko" rows="2" style="width:100%;border:1.5px solid var(--border);border-radius:6px;padding:9px 12px;font-family:\'DM Sans\',sans-serif;font-size:0.85rem;color:var(--text);background:var(--bg);outline:none;resize:vertical">' + escHtml(descKo) + '</textarea></div>' +
     '<button id="editorSaveBtn" style="width:100%;background:var(--text);color:#fff;border:none;border-radius:8px;padding:13px;font-family:\'DM Sans\',sans-serif;font-size:0.82rem;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;cursor:pointer">💾 저장</button>' +
     '<button onclick="document.getElementById(\'adminEditorModal\').remove()" style="width:100%;margin-top:8px;background:transparent;border:1px solid var(--border);color:var(--muted);border-radius:8px;padding:11px;font-family:\'DM Sans\',sans-serif;font-size:0.78rem;font-weight:600;cursor:pointer">취소</button>' +
     '</div></div>';
@@ -1230,12 +1240,10 @@ function openEditor(id){
     if(de) o.desc_en = de;
     if(dk) o.desc_ko = dk;
     overrides[id] = o;
-    var ok = await saveDataJson();
+    var ok = await saveMenuData();
     if(ok){
       applyOverrides();
       toast('✅ 저장됨!');
-    } else {
-      toast('❌ 저장 실패');
     }
     overlay.remove();
   };
@@ -1272,15 +1280,19 @@ function setAdminMode(on){
     });
   }
 }
-function toggleAdminMode(){
-  if(document.body.classList.contains('admin-mode')){ setAdminMode(false); }
-  else { openPwModal(); }
+async function toggleAdminMode(){
+  if(document.body.classList.contains('admin-mode')){ setAdminMode(false); return; }
+  var sb;
+  try { sb = await getSb(); } catch(e){ toast('⚠️ 네트워크 오류 / Netzwerkfehler'); return; }
+  var session = (await sb.auth.getSession()).data.session;
+  if(!session){ openPwModal(); return; }
+  var allowed = (await sb.rpc('can_edit_menu', { p_slug: MENU_SLUG })).data;
+  if(allowed) setAdminMode(true);
+  else toast('⚠️ 이 메뉴를 고칠 권한이 없습니다 / Keine Berechtigung');
 }
-function openPwModal(){ var o=document.getElementById('pwOverlay'); o.classList.add('open'); document.body.style.overflow='hidden'; document.getElementById('pwInput').value=''; document.getElementById('pwError').textContent=''; setTimeout(function(){ document.getElementById('pwInput').focus(); },100); }
+function openPwModal(){ document.getElementById('pwOverlay').classList.add('open'); document.body.style.overflow='hidden'; }
 function closePwModal(){ document.getElementById('pwOverlay').classList.remove('open'); document.body.style.overflow=''; }
 function handlePwOverlayClick(e){ if(e.target===document.getElementById('pwOverlay')) closePwModal(); }
-function togglePwVisibility(){ var i=document.getElementById('pwInput'),b=document.getElementById('pwToggle'); if(i.type==='password'){i.type='text';b.textContent='🙈';}else{i.type='password';b.textContent='👁';} }
-async function checkPassword(){ var i=document.getElementById('pwInput'),e=document.getElementById('pwError'); if(i.value===ADMIN_PW){closePwModal();toast('⏳ Token laden...');GH_TOKEN=await fetchGhToken();if(!GH_TOKEN)toast('⚠️ Token konnte nicht geladen werden');setAdminMode(true);}else{i.classList.add('error');e.textContent='비밀번호가 틀렸습니다';i.value='';setTimeout(function(){i.classList.remove('error');},400);setTimeout(function(){i.focus();},50);} }
 
 // ── TOAST ──
 var toastTimer;
@@ -1299,7 +1311,8 @@ secs.forEach(function(id){ var el=document.getElementById(id); if(el) obs.observ
 document.addEventListener('keydown',function(e){ if(e.key==='Escape'){ if(document.getElementById('pwOverlay').classList.contains('open')) closePwModal(); else if(document.getElementById('adminEditorModal')) document.getElementById('adminEditorModal').remove(); else closePhotoModal(); } });
 
 // ── INIT ──
-loadData();
+// 고객 포털의 "Speisekarte bearbeiten"으로 들어오면 바로 편집 모드
+loadData().then(function(){ if(location.hash === '#edit') toggleAdminMode(); });
 </script>
 
 </body></html>

@@ -493,9 +493,9 @@ body.admin-mode .menu-item{position:relative;border:1px dashed rgba(212,43,43,0.
 // ══════════════════════════════════════════════════════
 const CLD_CLOUD  = 'dxsrdx0cw';
 const CLD_PRESET = 'yori2menu';
-const CLD_BASE   = 'https://res.cloudinary.com/' + CLD_CLOUD + '/image/upload/';
 function cldPublicId(id){ return 'kse_menu/' + id; }
-function cldUrl(id){ return CLD_BASE + 'q_auto,f_auto,w_900/' + cldPublicId(id); }
+// 저장된 URL은 원본(수 MB)이라 화면에는 줄인 사본을 씀
+function cldUrl(url){ return url.replace('/image/upload/', '/image/upload/q_auto,f_auto,w_900/'); }
 
 // Firebase config
 const FB_PROJECT = 'yori2-web';
@@ -506,18 +506,8 @@ const FB_BASE    = 'https://firestore.googleapis.com/v1/projects/' + FB_PROJECT 
 const STORE = 'kse_photos_v3';
 let photos = {};
 try { photos = JSON.parse(localStorage.getItem(STORE) || '{}'); } catch(e){}
-// 캐시된 이미지 즉시 preload (재방문 시 딜레이 제거)
-setTimeout(function(){ preloadPhotos(photos); }, 0);
 function savePhotos(){
   try { localStorage.setItem(STORE, JSON.stringify(photos)); } catch(e){}
-}
-
-function preloadPhotos(photoMap){
-  Object.values(photoMap).forEach(function(url){
-    if(!url) return;
-    var img = new Image();
-    img.src = url;
-  });
 }
 
 // ── FIREBASE HELPERS ──
@@ -596,7 +586,6 @@ async function loadFirebaseOverrides(){
   if(photoData) {
     Object.assign(photos, photoData);
     savePhotos();
-    preloadPhotos(photos);
     Object.keys(photos).forEach(id => markHasPhoto(id));
   }
 }
@@ -989,9 +978,10 @@ function buildZone(zone, id){
     + '<div class="photo-placeholder-icon">\uD83D\uDCF7</div>'
     + '<div class="photo-placeholder-text">Foto hochladen</div>'
     + '</div>'
-    + '<img class="photo-preview-img" src="' + (url||'') + '" alt="">'
+    + '<img class="photo-preview-img" alt="">'
     + '<input type="file" accept="image/*" class="photo-upload-input">';
   zone.appendChild(wrap);
+  if(url) wrap.querySelector('.photo-preview-img').src = cldUrl(url);
 
   const input = wrap.querySelector('input');
   input.addEventListener('change', function(e){
@@ -1067,7 +1057,7 @@ function openPhoto(id, nameEl){
     modalImg.style.opacity = '1';
     if(wrap) wrap.classList.remove('loading');
   };
-  modalImg.src = dataUrl;
+  modalImg.src = cldUrl(dataUrl);
   document.getElementById('photoModalTitle').textContent = clone.textContent.trim();
   document.getElementById('photoModal').classList.add('open');
   document.body.style.overflow = 'hidden';

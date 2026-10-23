@@ -207,6 +207,20 @@ admin_notes, status
 - 예약 페이지 HTML 제목에 매장 이름 (`Yori2 – Online-Reservierung`). 열린 뒤에는
   스크립트가 방문자 언어로 바꿈
 
+### AI 학습 봇 차단 (2026-10-23)
+검색·AI 검색은 허용하고 AI 학습용 크롤러만 막는다.
+- `lokalonline.at`, `jaresi.lokalonline.at`: Cloudflare → Security → Settings →
+  AI bot policies (Search·Agent **Allow**, Training **Disallow**, Bot Preference
+  Sync 켬). Cloudflare가 robots.txt 앞에 학습 봇 목록을 붙이고 학습 봇은 403.
+  Training을 "Block"으로 바꾸면 Googlebot·Bingbot까지 막힌다
+- `lokalonline.at`은 DNS가 A 레코드(Render IP + 2026-06까지 쓰던 GitHub Pages IP)라
+  위 설정이 통째로 빠져 있었다. Render가 같은 이름을 커스텀 도메인으로 갖고 있으면
+  A 레코드는 Render 쪽만 거치고, CNAME일 때만 우리 Cloudflare를 먼저 거친다.
+  `CNAME @ → jaresi.onrender.com` (Proxied)로 바꿈 — A 레코드로 되돌리지 말 것
+- `web.lokalonline.at`: Cloudflare를 거치지 않아(GitHub Pages) `robots.txt`에 같은
+  목록을 직접 넣음. 403 차단은 없고 robots.txt를 지키는 봇에만 통한다. Cloudflare
+  목록이 바뀌면 `https://lokalonline.at/robots.txt`의 "Training crawlers"에서 다시 복사
+
 ### 남은 작업 (코드 밖)
 - **Google Search Console** — `lokalonline.at`을 "도메인" 속성으로 등록(DNS TXT
   인증)하면 세 호스트가 한 번에 잡힌다. 사이트맵 제출:

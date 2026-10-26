@@ -2,6 +2,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Yori2 — Speisekarte</title>
+<meta name="description" content="Speisekarte von Yori2, Casual Korean Restaurant in Wien (Stumpergasse 27, 1060): Mandu, K-Fried Chicken, Bulgogi, Jjamppong, Tteokbokki und mehr – mit Preisen.">
 <link rel="canonical" href="https://web.lokalonline.at/yori2/menu/">
 <link rel="icon" type="image/png" sizes="32x32" href="../img/favicon-32.png">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&amp;family=DM+Serif+Display:ital@0;1&amp;family=Noto+Sans+KR:wght@300;400;500&amp;display=swap" rel="stylesheet">
@@ -23,7 +24,7 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans','Noto Sans KR'
 
 /* HEADER */
 .site-header{position:sticky;top:0;z-index:100;background:rgba(255,255,255,0.96);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 32px;height:64px}
-.brand{font-family:'DM Serif Display',serif;font-size:1.35rem;letter-spacing:-0.01em;color:var(--text);white-space:nowrap}
+.brand{margin:0;font-weight:inherit;font-family:'DM Serif Display',serif;font-size:1.35rem;letter-spacing:-0.01em;color:var(--text);white-space:nowrap}
 .brand span{color:var(--accent)}
 @media(max-width:800px){.brand span{display:none}}
 .header-right{display:flex;align-items:center;gap:12px}
@@ -238,7 +239,7 @@ body.admin-mode .menu-item{position:relative;border:1px dashed rgba(212,43,43,0.
 
 <!-- HEADER -->
 <header class="site-header">
-  <div class="brand"><img src="../img/Logo.png" alt="Yori2" style="height:38px;width:38px;object-fit:cover;border-radius:8px;margin-right:10px;vertical-align:middle;"> Yori2 <span>Casual Korean Restaurant</span></div>
+  <h1 class="brand"><img src="../img/Logo.png" alt="Yori2" style="height:38px;width:38px;object-fit:cover;border-radius:8px;margin-right:10px;vertical-align:middle;"> Yori2 <span>Casual Korean Restaurant</span></h1>
   <div class="header-right">
     <div class="lang-switcher">
       <button class="lang-btn" onclick="setLang('ko')">한국어</button>

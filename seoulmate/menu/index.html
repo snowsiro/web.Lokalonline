@@ -2,6 +2,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Seoulmate — Speisekarte</title>
+<meta name="description" content="Speisekarte von Seoulmate, Korean Bistro in Wien (Rüdengasse 16/4, 1030): Tteokbokki, Japchae, Ramyeon, Chicken, Cupbap und Gimbap – mit Preisen.">
 <link rel="canonical" href="https://web.lokalonline.at/seoulmate/menu/">
 <link rel="icon" type="image/png" sizes="32x32" href="../img/favicon-32.png">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&family=DM+Serif+Display:ital@0;1&family=Noto+Sans+KR:wght@300;400;500&display=swap" rel="stylesheet">
@@ -23,7 +24,7 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans','Noto Sans KR'
 
 /* HEADER */
 .site-header{position:sticky;top:0;z-index:100;background:rgba(255,255,255,0.96);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 32px;height:64px}
-.brand{font-family:'DM Serif Display',serif;font-size:1.35rem;letter-spacing:-0.01em;color:var(--text);white-space:nowrap}
+.brand{margin:0;font-weight:inherit;font-family:'DM Serif Display',serif;font-size:1.35rem;letter-spacing:-0.01em;color:var(--text);white-space:nowrap}
 .brand span{color:var(--accent)}
 .header-right{display:flex;align-items:center;gap:12px}
 .lang-switcher{display:flex;gap:2px;background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:3px}
@@ -230,7 +231,7 @@ body:not(.admin-mode) .has-photo:hover{color:var(--accent);text-decoration-color
 
 <!-- HEADER -->
 <header class="site-header">
-  <div class="brand"><img src="../img/logo.png" alt="Seoulmate" style="height:38px;width:38px;object-fit:cover;border-radius:8px;margin-right:10px;vertical-align:middle;"> Seoulmate <span>Korean Bistro</span></div>
+  <h1 class="brand"><img src="../img/logo.png" alt="Seoulmate" style="height:38px;width:38px;object-fit:cover;border-radius:8px;margin-right:10px;vertical-align:middle;"> Seoulmate <span>Korean Bistro</span></h1>
   <div class="header-right">
     <a href="/seoulmate/" class="home-link">← Startseite</a>
     <div class="lang-switcher">

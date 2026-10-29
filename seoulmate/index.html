@@ -755,7 +755,7 @@ footer {
 
 <!-- MAP -->
 <section class="map-section" id="location">
-  <iframe src="https://www.openstreetmap.org/export/embed.html?bbox=16.3963%2C48.1934%2C16.4063%2C48.2034&layer=mapnik&marker=48.19837%2C16.40128"
+  <iframe data-src="https://www.openstreetmap.org/export/embed.html?bbox=16.3963%2C48.1934%2C16.4063%2C48.2034&layer=mapnik&marker=48.19837%2C16.40128"
     allowfullscreen="" loading="lazy" title="Seoulmate Korean Bistro Wien"></iframe>
   <div class="map-card">
     <div class="map-card-name">Seoulmate — Wien</div>
@@ -1070,6 +1070,20 @@ function submitReview(){window.submitReviewDB();}
   var nl=document.getElementById('navLinks');
   h.addEventListener('click',function(){h.classList.toggle('open');nl.classList.toggle('open');});
   nl.querySelectorAll('a').forEach(function(a){a.addEventListener('click',function(){h.classList.remove('open');nl.classList.remove('open');});});
+})();
+</script>
+<script>
+// The map loads once it comes near the screen. loading="lazy" alone still let
+// Chrome fetch it (about 1.8 MB) on a phone's first visit.
+(function () {
+  var map = document.querySelector(".map-section iframe[data-src]");
+  if (!map) return;
+  function load() { map.src = map.getAttribute("data-src"); map.removeAttribute("data-src"); }
+  if (!("IntersectionObserver" in window)) return load();
+  var io = new IntersectionObserver(function (entries) {
+    if (entries.some(function (e) { return e.isIntersecting; })) { io.disconnect(); load(); }
+  }, { rootMargin: "300px 0px" });
+  io.observe(map);
 })();
 </script>
 </body>

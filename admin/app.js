@@ -565,6 +565,9 @@
         '</td>' +
         '<td style="display:flex;gap:6px">' +
           '<button class="btn btn-outline btn-sm" onclick="openOrder(\'' + o.id + '\')">✏️ Details</button>' +
+          (SITE_SWITCH.indexOf(o.site_slug) > -1
+            ? '<button class="btn btn-outline btn-sm" onclick="toggleSiteOnline(\'' + slug + '\')" title="Website online/offline schalten">🌐</button>'
+            : '') +
           '<button class="btn btn-danger btn-sm" onclick="deleteSite(\'' + o.id + '\',\'' + slug + '\')">🗑️</button>' +
         '</td>' +
         '</tr>';
@@ -588,6 +591,33 @@
     await sb.from('orders').update({ site_slug: null }).eq('id', orderId);
     showToast('✅ "' + slug + '" gelöscht.' + (sitemapOk ? '' : ' (sitemap.xml bitte prüfen)'));
     loadSites();
+  };
+
+  // Online/Offline-Schalter: Seiten mit <slug>/site-status.js leiten bei
+  // SITE_OFF = true auf <slug>/offline/ um. Der Schalter schreibt nur diese Datei.
+  var SITE_SWITCH = ['seoulmate'];
+
+  window.toggleSiteOnline = async function (slug) {
+    var path = slug + '/site-status.js';
+    try {
+      var session = (await sb.auth.getSession()).data.session;
+      var res = await fetch(EDGE_FN, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + (session ? session.access_token : '') },
+        body: JSON.stringify({ action: 'get-file', path: path })
+      });
+      var data = await res.json();
+      if (data.error) throw new Error(data.error);
+      var off = /SITE_OFF\s*=\s*true/.test(data.content);
+      var question = off
+        ? '"' + slug + '" ist gerade OFFLINE.\nWieder online schalten?'
+        : '"' + slug + '" ist gerade ONLINE.\nOffline schalten? Besucher sehen dann „Vorübergehend geschlossen".';
+      if (!confirm(question)) return;
+      await uploadFile(path, 'window.SITE_OFF = ' + !off + ';\n');
+      showToast('✅ "' + slug + '" ist jetzt ' + (off ? 'online' : 'offline') + ' — sichtbar in 1–10 Min.');
+    } catch (e) {
+      showToast('Fehler: ' + e.message);
+    }
   };
 
   function orderStatusBadge(status) {

@@ -10,7 +10,7 @@
 
   var ADMIN_EMAIL = 'info@lokalonline.at';
   // Speisekarten, die man direkt auf der Seite bearbeiten kann (Daten in menu_data)
-  var EDITABLE_MENUS = ['yori2', 'seoulmate'];
+  var EDITABLE_MENUS = ['yori2'];
   var userEmail = '';
 
   // ── Auth ─────────────────────────────────────────────────────────

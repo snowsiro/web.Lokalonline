@@ -309,6 +309,37 @@ admin_notes, status
   - Firebase `yori2-web`: 규칙을 읽기만 허용으로 바꿈 (쓰기 금지). 예전 데이터는 백업으로 남아 있음
   - Cloudinary preset `yori2menu`: Signed로 바꿈. `ml_default`도 Signed임을 확인 (둘 다 서명 없는 업로드 거부)
   - seoulmate의 GitHub `data.json`: 삭제됨 (비어 있었음)
+- seoulmate는 2026-11-05부터 이 편집을 쓰지 않음 (아래 "Seoulmate 메뉴 → 구글").
+  Supabase `menu_data`의 seoulmate 줄과 Cloudinary 사진은 지우지 않고 남겨 둠
+
+---
+
+## Seoulmate 메뉴 → 구글 (2026-11-05)
+
+- 메뉴는 운영자가 구글 비즈니스 프로필에서 관리. 홈페이지에서 두 번 고치지 않으려고 구글로 통일
+- `/seoulmate/menu/`는 구글 메뉴로 넘기는 페이지(noindex). 테이블 QR, 홈페이지 버튼, 링크페이지,
+  JSON-LD `hasMenu`가 모두 이 주소를 가리키므로 **구글 링크는 이 파일 한 곳에만 있음**
+- 받은 구글 검색 링크에서 `hl=ko`(누구에게나 한국어 화면)와 세션 값(`sxsrf`, `rlz`, `ved`, `lei`,
+  `biw/bih`, `sca_esv`, `sa`)을 뺐음. 메뉴 화면을 띄우는 `q`, `uds`, `si`는 유지. 이 값들은 구글이
+  언제든 바꿀 수 있어서, 링크가 메뉴를 안 띄우면 새 링크로 `href`만 교체
+- 사이트맵에서 `/seoulmate/menu/` 뺌. 포털 `EDITABLE_MENUS`에서 seoulmate 뺌
+- 예전 3개 국어 메뉴판은 git 기록에 있음 (`git show db5149f:seoulmate/menu/index.html`).
+  `seoulmate/menu/img/ttbk-cheese.jpg`는 이제 쓰이지 않지만 그대로 둠
+- ⚠️ 어드민에서 seoulmate를 "Neu generieren" 하면 템플릿 메뉴판이 이 페이지를 덮어씀
+
+## 홈페이지 켜기/끄기 (seoulmate, 2026-11-05)
+
+- 관리자 페이지 → Webseiten → seoulmate 줄의 🌐 버튼. 현재 상태를 보여주고 확인 후 전환
+- 버튼은 `seoulmate/site-status.js` (`window.SITE_OFF = true/false;`) 한 파일만 GitHub에 씀
+- 홈, 링크페이지, 메뉴 주소는 `<head>`에서 이 파일을 읽고, 꺼져 있으면 `/seoulmate/offline/`
+  (독·영·한 "vorübergehend geschlossen" + 전화·인스타, noindex)로 넘김
+- Impressum·Datenschutz는 항상 열림. 안내 페이지는 켜져 있으면 홈으로 돌려보냄
+- 반영까지 1~10분 (GitHub Pages 배포 + `max-age=600` 캐시)
+- 파일을 못 읽으면(404 등) 사이트는 켜진 채로 보임
+- 숨김일 뿐 삭제가 아님: HTML은 계속 서빙돼서 소스를 보면 내용이 보임. 계약 종료·미납처럼
+  내용을 정말 내려야 하면 다른 방법 필요. 오래 꺼두면 구글 검색에서 빠지고, 켜면 며칠 뒤 돌아옴
+- 다른 가게에 넣으려면: `<slug>/site-status.js`, `<slug>/offline/`, 각 페이지 `<head>`의 두 줄을
+  복사하고 `admin/app.js`의 `SITE_SWITCH`에 slug 추가
 
 ---
 

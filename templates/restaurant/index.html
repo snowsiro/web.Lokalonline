@@ -942,6 +942,8 @@
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
 }
+    /* Lucide 아이콘: 둘레 글자 크기를 따라가고, 글줄 가운데에 놓입니다 (DESIGN.md) */
+    .lucide { display: inline-block; width: 1.15em; height: 1.15em; vertical-align: -0.2em; flex-shrink: 0; }
 </style>
 </head>
 <body>
@@ -1348,21 +1350,21 @@
       if (contact) {
         contact.innerHTML = `
           <div class="contact-item">
-            <div class="contact-icon">📍</div>
+            <div class="contact-icon"><svg class="lucide" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></svg></div>
             <div>
               <div class="contact-label">${lang === 'de' ? 'Adresse' : 'Address'}</div>
               <div class="contact-value">${D.address}</div>
             </div>
           </div>
           <div class="contact-item">
-            <div class="contact-icon">📞</div>
+            <div class="contact-icon"><svg class="lucide" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13.832 16.568a1 1 0 0 0 1.213-.303l.355-.465A2 2 0 0 1 17 15h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2A18 18 0 0 1 2 4a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v3a2 2 0 0 1-.8 1.6l-.468.351a1 1 0 0 0-.292 1.233 14 14 0 0 0 6.392 6.384"/></svg></div>
             <div>
               <div class="contact-label">${lang === 'de' ? 'Telefon' : 'Phone'}</div>
               <div class="contact-value"><a href="tel:${D.phone}" style="color:inherit;text-decoration:none;">${D.phone}</a></div>
             </div>
           </div>
           <div class="contact-item">
-            <div class="contact-icon">✉️</div>
+            <div class="contact-icon"><svg class="lucide" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7"/><rect x="2" y="4" width="20" height="16" rx="2"/></svg></div>
             <div>
               <div class="contact-label">E-Mail</div>
               <div class="contact-value"><a href="mailto:${D.email}" style="color:inherit;text-decoration:none;">${D.email}</a></div>
@@ -1572,9 +1574,9 @@
 
           msg.className = 'form-message success';
           msg.style.display = 'block';
-          msg.textContent = lang === 'de'
-            ? '✓ Ihre Reservierung wurde erfolgreich übermittelt. Wir melden uns in Kürze bei Ihnen.'
-            : '✓ Your reservation has been submitted. We will be in touch shortly.';
+          msg.innerHTML = '<svg class="lucide" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg> ' + (lang === 'de'
+            ? 'Ihre Reservierung wurde erfolgreich übermittelt. Wir melden uns in Kürze bei Ihnen.'
+            : 'Your reservation has been submitted. We will be in touch shortly.');
           form.reset();
         } catch (err) {
           console.error(err);

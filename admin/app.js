@@ -16,7 +16,13 @@
     'save': '<path d="M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/><path d="M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7"/><path d="M7 3v4a1 1 0 0 0 1 1h7"/>',
     'arrow-up': '<path d="m5 12 7-7 7 7"/><path d="M12 19V5"/>',
     'arrow-down': '<path d="M12 5v14"/><path d="m19 12-7 7-7-7"/>',
-    'rocket': '<path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09"/><path d="M9 12a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.4 22.4 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 .05 5 .05"/>'
+    'rocket': '<path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09"/><path d="M9 12a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.4 22.4 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 .05 5 .05"/>',
+    'soup': '<path d="M11.248 3c.273.1.808.53.747 1.36-.05.83-.938 1.2-.989 2.02-.06.78.333 1.24.727 1.62"/><path d="M16.252 3c.268.1.794.53.745 1.36-.06.83-.923 1.2-.993 2.02-.05.78.338 1.24.725 1.62"/><path d="M19.5 12 22 6"/><path d="M4 12a1 1 0 00-.99 1.133A9 9 0 0012 21a9 9 0 008.99-7.867A1 1 0 0020 12z"/><path d="M6.252 3c.268.1.794.53.745 1.36-.06.83-.923 1.2-.993 2.02-.05.78.338 1.24.735 1.62"/><path d="M7 21h10"/>',
+    'calendar-days': '<path d="M8 2v3"/><path d="M16 2v3"/><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M8 13h.01"/><path d="M12 13h.01"/><path d="M16 13h.01"/><path d="M8 17h.01"/><path d="M12 17h.01"/><path d="M16 17h.01"/>',
+    'camera': '<path d="M13.997 4a2 2 0 0 1 1.76 1.05l.486.9A2 2 0 0 0 18.003 7H20a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h1.997a2 2 0 0 0 1.759-1.048l.489-.904A2 2 0 0 1 10.004 4z"/><circle cx="12" cy="13" r="3"/>',
+    'map-pin': '<path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/>',
+    'phone': '<path d="M13.832 16.568a1 1 0 0 0 1.213-.303l.355-.465A2 2 0 0 1 17 15h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2A18 18 0 0 1 2 4a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v3a2 2 0 0 1-.8 1.6l-.468.351a1 1 0 0 0-.292 1.233 14 14 0 0 0 6.392 6.384"/>',
+    'mail': '<path d="m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7"/><rect x="2" y="4" width="20" height="16" rx="2"/>'
   };
   function icon(name) {
     return '<svg class="lucide" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + ICON_PATHS[name] + '</svg>';
@@ -1713,6 +1719,13 @@
 
   var LINK_URL_RE = /^(https?:\/\/|mailto:|tel:|\/|\.{1,2}\/)/i;
 
+  // Icons der Linkseiten: als Emoji gespeichert (data-icon), als Lucide-SVG gezeichnet.
+  // Unbekannte Werte bleiben, wie sie eingegeben wurden.
+  var LINK_ICONS = {
+    '🌐': 'globe', '📋': 'clipboard-list', '🍜': 'soup', '📅': 'calendar-days', '📸': 'camera', '📷': 'camera', '📍': 'map-pin', '📞': 'phone', '✉️': 'mail', '✉': 'mail', '🔗': 'link'
+  };
+  function linkIconHtml(v) { return LINK_ICONS[v] ? icon(LINK_ICONS[v]) : esc(v); }
+
   function linkTarget(href) { return /^https?:/i.test(href) ? ' target="_blank"' : ''; }
 
   // Liest ein <a class="link-btn"> in das Editor-Modell.
@@ -1734,7 +1747,7 @@
       if (a.classList[c].indexOf('btn-') === 0) variant = a.classList[c];
     }
     return {
-      icon: iconEl ? iconEl.textContent.trim() : '',
+      icon: iconEl ? (iconEl.getAttribute('data-icon') || iconEl.textContent.trim()) : '',
       label: label,
       href: a.getAttribute('href') || '',
       variant: variant
@@ -1809,7 +1822,7 @@
     if (dialect === 'rich') {
       return links.map(function (l) {
         return indent + '<a class="link-btn' + (l.variant ? ' ' + esc(l.variant) : '') + '" href="' + esc(l.href) + '"' + linkTarget(l.href) + '>\n' +
-          indent + '  <span class="icon">' + esc(l.icon) + '</span>\n' +
+          indent + '  <span class="icon" data-icon="' + esc(l.icon) + '">' + linkIconHtml(l.icon) + '</span>\n' +
           indent + '  <span class="label">' + esc(l.label) + '</span>\n' +
           indent + '  <span class="arrow">›</span>\n' +
           indent + '</a>';
@@ -1817,7 +1830,7 @@
     }
     return links.map(function (l) {
       return indent + '<a href="' + esc(l.href) + '" class="link-btn"' + linkTarget(l.href) +
-        '><span class="link-icon">' + esc(l.icon) + '</span><span>' + esc(l.label) + '</span></a>';
+        '><span class="link-icon" data-icon="' + esc(l.icon) + '">' + linkIconHtml(l.icon) + '</span><span>' + esc(l.label) + '</span></a>';
     }).join('\n');
   }
 
@@ -2094,10 +2107,10 @@
     if (address) links.push({ icon: '📍', label: address, url: mapsUrl });
 
     var linksHtml = links.map(function(l) {
-      return '<a href="' + esc(l.url) + '" class="link-btn" target="_blank"><span class="link-icon">' + esc(l.icon) + '</span><span>' + esc(l.label) + '</span></a>';
+      return '<a href="' + esc(l.url) + '" class="link-btn" target="_blank"><span class="link-icon" data-icon="' + esc(l.icon) + '">' + linkIconHtml(l.icon) + '</span><span>' + esc(l.label) + '</span></a>';
     }).join('\n      ');
 
-    return '<!DOCTYPE html>\n<html lang="de">\n<head>\n<meta charset="UTF-8">\n<meta name="viewport" content="width=device-width,initial-scale=1">\n<title>' + esc(name) + '</title>\n' + canonicalTag(slug + '/link/') + '<style>\n*{box-sizing:border-box;margin:0;padding:0}\nbody{min-height:100vh;background:#0a0a0a;display:flex;align-items:center;justify-content:center;font-family:system-ui,sans-serif;padding:24px}\n.card{width:100%;max-width:400px}\n.logo{width:80px;height:80px;border-radius:50%;object-fit:cover;margin:0 auto 16px;display:block;background:#222}\n.name{color:#fff;font-size:22px;font-weight:700;text-align:center;margin-bottom:4px}\n.sub{color:rgba(255,255,255,.45);font-size:14px;text-align:center;margin-bottom:32px}\n.link-btn{display:flex;align-items:center;gap:14px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:#fff;text-decoration:none;padding:16px 20px;border-radius:12px;margin-bottom:10px;font-size:15px;transition:background .2s,border-color .2s}\n.link-btn:hover{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.25)}\n.link-icon{font-size:20px;flex-shrink:0;width:28px;text-align:center}\n.footer{text-align:center;margin-top:28px;font-size:11px;color:rgba(255,255,255,.2)}\n</style>\n</head>\n<body>\n<div class="card">\n  <img class="logo" src="img/logo.png" onerror="this.style.display=\'none\'">\n  <div class="name">' + esc(name) + '</div>\n  <div class="sub">' + esc(address || 'Wien') + '</div>\n  <div id="links">\n      ' + linksHtml + '\n  </div>\n  <div class="footer">lokalonline.at</div>\n</div>\n</body>\n</html>\n';
+    return '<!DOCTYPE html>\n<html lang="de">\n<head>\n<meta charset="UTF-8">\n<meta name="viewport" content="width=device-width,initial-scale=1">\n<title>' + esc(name) + '</title>\n' + canonicalTag(slug + '/link/') + '<style>\n*{box-sizing:border-box;margin:0;padding:0}\nbody{min-height:100vh;background:#0a0a0a;display:flex;align-items:center;justify-content:center;font-family:system-ui,sans-serif;padding:24px}\n.card{width:100%;max-width:400px}\n.logo{width:80px;height:80px;border-radius:50%;object-fit:cover;margin:0 auto 16px;display:block;background:#222}\n.name{color:#fff;font-size:22px;font-weight:700;text-align:center;margin-bottom:4px}\n.sub{color:rgba(255,255,255,.45);font-size:14px;text-align:center;margin-bottom:32px}\n.link-btn{display:flex;align-items:center;gap:14px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:#fff;text-decoration:none;padding:16px 20px;border-radius:12px;margin-bottom:10px;font-size:15px;transition:background .2s,border-color .2s}\n.link-btn:hover{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.25)}\n.link-icon{font-size:20px;flex-shrink:0;width:28px;text-align:center}\n.lucide{display:inline-block;width:1.15em;height:1.15em;vertical-align:-.2em;flex-shrink:0}\n.footer{text-align:center;margin-top:28px;font-size:11px;color:rgba(255,255,255,.2)}\n</style>\n</head>\n<body>\n<div class="card">\n  <img class="logo" src="img/logo.png" onerror="this.style.display=\'none\'">\n  <div class="name">' + esc(name) + '</div>\n  <div class="sub">' + esc(address || 'Wien') + '</div>\n  <div id="links">\n      ' + linksHtml + '\n  </div>\n  <div class="footer">lokalonline.at</div>\n</div>\n</body>\n</html>\n';
   }
 
   async function generateQrCode(slug) {

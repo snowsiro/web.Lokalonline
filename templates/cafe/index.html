@@ -935,6 +935,8 @@
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
 }
+    /* Lucide 아이콘: 둘레 글자 크기를 따라가고, 글줄 가운데에 놓입니다 (DESIGN.md) */
+    .lucide { display: inline-block; width: 1.15em; height: 1.15em; vertical-align: -0.2em; flex-shrink: 0; }
 </style>
 </head>
 <body>
@@ -1122,6 +1124,9 @@
   <script src="data.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <script>
+    // 추천 메뉴 아이콘: data.js에는 이모지로 저장돼 있어서, 아는 값은 Lucide 아이콘으로 그리고 모르는 값은 그대로 둡니다 (DESIGN.md).
+    const SPECIAL_ICONS = { '☕': '<svg class="lucide" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 2v2"/><path d="M14 2v2"/><path d="M16 8a1 1 0 0 1 1 1v8a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V9a1 1 0 0 1 1-1h14a4 4 0 1 1 0 8h-1"/><path d="M6 2v2"/></svg>', '🥐': '<svg class="lucide" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.2 18H4.774a1.5 1.5 0 0 1-1.352-.97 11 11 0 0 1 .132-6.487"/><path d="M18 10.2V4.774a1.5 1.5 0 0 0-.97-1.352 11 11 0 0 0-6.486.132"/><path d="M18 5a4 3 0 0 1 4 3 2 2 0 0 1-2 2 10 10 0 0 0-5.139 1.42"/><path d="M5 18a3 4 0 0 0 3 4 2 2 0 0 0 2-2 10 10 0 0 1 1.42-5.14"/><path d="M8.709 2.554a10 10 0 0 0-6.155 6.155 1.5 1.5 0 0 0 .676 1.626l9.807 5.42a2 2 0 0 0 2.718-2.718l-5.42-9.807a1.5 1.5 0 0 0-1.626-.676"/></svg>', '🌿': '<svg class="lucide" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 20a10 10 0 0010-10 25.9 25.9 0 00-1.04-7.281 1 1 0 00-1.755-.325C15.833 5.5 13 5.5 9.8 6.1A7 7 0 0011 20"/><path d="M2 21a5 5 0 012.911-4.544C7.613 15.212 8.351 15.24 11 13"/></svg>' };
+    function specialIcon(v) { v = v || '☕'; return SPECIAL_ICONS[v] || v; }
   (function () {
     'use strict';
 
@@ -1225,7 +1230,7 @@
           <div class="special-card reveal">
             <div class="special-img">
               <img src="${s.img}" alt="${t(s.name)}" loading="lazy">
-              <div class="special-icon">${s.icon || '☕'}</div>
+              <div class="special-icon">${specialIcon(s.icon)}</div>
             </div>
             <div class="special-body">
               <div class="special-name">${t(s.name)}</div>
@@ -1305,28 +1310,28 @@
       if (details) {
         details.innerHTML = `
           <div class="loc-row">
-            <div class="loc-icon">📍</div>
+            <div class="loc-icon"><svg class="lucide" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></svg></div>
             <div>
               <div class="loc-label">${lang === 'de' ? 'Adresse' : 'Address'}</div>
               <div class="loc-value">${D.address}</div>
             </div>
           </div>
           <div class="loc-row">
-            <div class="loc-icon">📞</div>
+            <div class="loc-icon"><svg class="lucide" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13.832 16.568a1 1 0 0 0 1.213-.303l.355-.465A2 2 0 0 1 17 15h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2A18 18 0 0 1 2 4a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v3a2 2 0 0 1-.8 1.6l-.468.351a1 1 0 0 0-.292 1.233 14 14 0 0 0 6.392 6.384"/></svg></div>
             <div>
               <div class="loc-label">${lang === 'de' ? 'Telefon' : 'Phone'}</div>
               <div class="loc-value"><a href="tel:${D.phone}">${D.phone}</a></div>
             </div>
           </div>
           <div class="loc-row">
-            <div class="loc-icon">✉️</div>
+            <div class="loc-icon"><svg class="lucide" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7"/><rect x="2" y="4" width="20" height="16" rx="2"/></svg></div>
             <div>
               <div class="loc-label">E-Mail</div>
               <div class="loc-value"><a href="mailto:${D.email}">${D.email}</a></div>
             </div>
           </div>
           <div class="loc-row">
-            <div class="loc-icon">📸</div>
+            <div class="loc-icon"><svg class="lucide" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13.997 4a2 2 0 0 1 1.76 1.05l.486.9A2 2 0 0 0 18.003 7H20a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h1.997a2 2 0 0 0 1.759-1.048l.489-.904A2 2 0 0 1 10.004 4z"/><circle cx="12" cy="13" r="3"/></svg></div>
             <div>
               <div class="loc-label">Instagram</div>
               <div class="loc-value"><a href="https://instagram.com/${D.instagram.replace('@','')}" target="_blank" rel="noopener">${D.instagram}</a></div>
@@ -1511,9 +1516,9 @@
 
           msg.className = 'form-message success';
           msg.style.display = 'block';
-          msg.textContent = lang === 'de'
-            ? '✓ Ihre Reservierung wurde erfolgreich übermittelt. Wir freuen uns auf Sie!'
-            : '✓ Your reservation was submitted successfully. We look forward to seeing you!';
+          msg.innerHTML = '<svg class="lucide" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg> ' + (lang === 'de'
+            ? 'Ihre Reservierung wurde erfolgreich übermittelt. Wir freuen uns auf Sie!'
+            : 'Your reservation was submitted successfully. We look forward to seeing you!');
           form.reset();
         } catch (err) {
           console.error(err);

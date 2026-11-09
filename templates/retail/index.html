@@ -426,6 +426,8 @@ footer { background: var(--dark); color: rgba(255,255,255,0.45); padding: 72px 0
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
 }
+/* Lucide 아이콘: 둘레 글자 크기를 따라가고, 글줄 가운데에 놓입니다 (DESIGN.md) */
+.lucide { display: inline-block; width: 1.15em; height: 1.15em; vertical-align: -0.2em; flex-shrink: 0; }
 </style>
 </head>
 <body>
@@ -766,19 +768,19 @@ function render() {
   document.getElementById('ttl-location').textContent = lang === 'de' ? 'Besuchen Sie uns' : 'Visit Us';
   document.getElementById('contact-info').innerHTML = `
     <div class="contact-row">
-      <span class="contact-icon">📍</span>
+      <span class="contact-icon"><svg class="lucide" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></svg></span>
       <span class="contact-data">${D.address||''}</span>
     </div>
     <div class="contact-row">
-      <span class="contact-icon">📞</span>
+      <span class="contact-icon"><svg class="lucide" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13.832 16.568a1 1 0 0 0 1.213-.303l.355-.465A2 2 0 0 1 17 15h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2A18 18 0 0 1 2 4a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v3a2 2 0 0 1-.8 1.6l-.468.351a1 1 0 0 0-.292 1.233 14 14 0 0 0 6.392 6.384"/></svg></span>
       <span class="contact-data"><a href="tel:${D.phone||''}">${D.phone||''}</a></span>
     </div>
     <div class="contact-row">
-      <span class="contact-icon">✉</span>
+      <span class="contact-icon"><svg class="lucide" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7"/><rect x="2" y="4" width="20" height="16" rx="2"/></svg></span>
       <span class="contact-data"><a href="mailto:${D.email||''}">${D.email||''}</a></span>
     </div>
     <div class="contact-row">
-      <span class="contact-icon">📷</span>
+      <span class="contact-icon"><svg class="lucide" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13.997 4a2 2 0 0 1 1.76 1.05l.486.9A2 2 0 0 0 18.003 7H20a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h1.997a2 2 0 0 0 1.759-1.048l.489-.904A2 2 0 0 1 10.004 4z"/><circle cx="12" cy="13" r="3"/></svg></span>
       <span class="contact-data"><a href="https://instagram.com/${(D.instagram||'').replace('@','')}" target="_blank">${D.instagram||''}</a></span>
     </div>`;
   const mapsBtn = document.getElementById('maps-btn');

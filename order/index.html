@@ -766,6 +766,7 @@ So: Ruhetag"></textarea>
     // Lucide 아이콘(인라인 SVG). 이모지 대신 씁니다 (DESIGN.md).
     var ICON_PATHS = {
       'x': '<path d="M18 6 6 18"/><path d="m6 6 12 12"/>',
+      'cookie': '<path d="M11 17h.01"/><path d="M11.496 2c.324-.016.558.292.529.615a4 4 0 004.235 4.368.713.713 0 01.758.757 4 4 0 004.366 4.237c.323-.03.63.204.614.527a10 10 0 01-2.915 6.566A1 1 0 114.93 4.918 10 10 0 0111.496 2"/><path d="M12 12h.01"/><path d="M16 16h.01"/><path d="M16 3h.01"/><path d="M21 4h.01"/><path d="M21 8h.01"/><path d="M7 14h.01"/><path d="M9 8h.01"/>',
       'circle-check': '<circle cx="12" cy="12" r="10"/><path d="m16 9-5.5 5.5L8 12"/>'
     };
     function icon(name) {
@@ -1606,7 +1607,7 @@ So: Ruhetag"></textarea>
         '</div>';
 
       dsgvo.innerHTML =
-        '<div class="dsgvo-preview-title">🍪 ' + (isDE ? 'Datenschutz & Cookies' : 'Privacy & Cookies') + '</div>' +
+        '<div class="dsgvo-preview-title">' + icon('cookie') + ' ' + (isDE ? 'Datenschutz & Cookies' : 'Privacy & Cookies') + '</div>' +
         '<div>' +
           (isDE
             ? 'Diese Website verwendet Cookies, um Ihr Nutzungserlebnis zu verbessern. Mit der Nutzung dieser Website erklären Sie sich mit der Verwendung von Cookies gemäß unserer DSGVO-konformen Datenschutzerklärung einverstanden.'

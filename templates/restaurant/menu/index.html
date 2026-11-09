@@ -378,6 +378,8 @@
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
 }
+    /* Lucide 아이콘: 둘레 글자 크기를 따라가고, 글줄 가운데에 놓입니다 (DESIGN.md) */
+    .lucide { display: inline-block; width: 1.15em; height: 1.15em; vertical-align: -0.2em; flex-shrink: 0; }
 </style>
 </head>
 <body>
@@ -418,21 +420,21 @@
   <!-- INFO BAND -->
   <section id="info-band">
     <div class="info-item">
-      <div class="info-icon">📍</div>
+      <div class="info-icon"><svg class="lucide" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></svg></div>
       <div>
         <div class="info-label" id="info-addr-label">Adresse</div>
         <div class="info-value" id="info-addr"></div>
       </div>
     </div>
     <div class="info-item">
-      <div class="info-icon">📞</div>
+      <div class="info-icon"><svg class="lucide" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13.832 16.568a1 1 0 0 0 1.213-.303l.355-.465A2 2 0 0 1 17 15h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2A18 18 0 0 1 2 4a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v3a2 2 0 0 1-.8 1.6l-.468.351a1 1 0 0 0-.292 1.233 14 14 0 0 0 6.392 6.384"/></svg></div>
       <div>
         <div class="info-label" id="info-phone-label">Telefon</div>
         <div class="info-value"><a id="info-phone" href="#" style="color:inherit;text-decoration:none;"></a></div>
       </div>
     </div>
     <div class="info-item">
-      <div class="info-icon">🕐</div>
+      <div class="info-icon"><svg class="lucide" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></div>
       <div>
         <div class="info-label" id="info-hours-label">Öffnungszeiten</div>
         <div class="info-value" id="info-hours"></div>

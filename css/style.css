@@ -887,3 +887,6 @@ img { max-width: 100%; display: block; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
 }
+
+/* Lucide 아이콘: 둘레 글자 크기를 따라가고, 글줄 가운데에 놓입니다 (DESIGN.md) */
+.lucide { display: inline-block; width: 1.15em; height: 1.15em; vertical-align: -0.2em; flex-shrink: 0; }

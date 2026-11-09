@@ -1,6 +1,27 @@
 (function () {
   'use strict';
 
+  // Lucide 아이콘(인라인 SVG). 이모지 대신 씁니다 (DESIGN.md).
+  var ICON_PATHS = {
+    'house': '<path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/><path d="M3 10a2 2 0 0 1 .709-1.528l7-6a2 2 0 0 1 2.582 0l7 6A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>',
+    'clipboard-list': '<rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/>',
+    'link': '<path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>',
+    'pencil': '<path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/>',
+    'globe': '<circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/>',
+    'trash-2': '<path d="M10 11v6"/><path d="M14 11v6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>',
+    'paperclip': '<path d="m16 6-8.414 8.586a2 2 0 0 0 2.829 2.829l8.414-8.586a4 4 0 1 0-5.657-5.657l-8.379 8.551a6 6 0 1 0 8.485 8.485l8.379-8.551"/>',
+    'credit-card': '<rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/><path d="M6 14h2"/>',
+    'refresh-cw': '<path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/>',
+    'file-text': '<path d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"/><path d="M14 2v5a1 1 0 0 0 1 1h5"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/>',
+    'save': '<path d="M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/><path d="M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7"/><path d="M7 3v4a1 1 0 0 0 1 1h7"/>',
+    'arrow-up': '<path d="m5 12 7-7 7 7"/><path d="M12 19V5"/>',
+    'arrow-down': '<path d="M12 5v14"/><path d="m19 12-7 7-7-7"/>',
+    'rocket': '<path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09"/><path d="M9 12a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.4 22.4 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 .05 5 .05"/>'
+  };
+  function icon(name) {
+    return '<svg class="lucide" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + ICON_PATHS[name] + '</svg>';
+  }
+
   var SUPABASE_URL = 'https://vhnourjddnlslgabrasb.supabase.co';
   var SUPABASE_KEY = 'sb_publishable_y5l1cAZXoAj8xaSVXUkBfw_Pk9pxb6H';
   var ADMIN_EMAIL = 'info@lokalonline.at';
@@ -559,16 +580,16 @@
         '<td><code style="font-size:12px;background:var(--bg);padding:2px 6px;border-radius:4px">' + slug + '</code></td>' +
         '<td>' + orderStatusBadge(o.payment_status) + '</td>' +
         '<td style="display:flex;gap:6px;flex-wrap:wrap">' +
-          '<a href="' + base + '/" target="_blank" class="btn btn-outline btn-sm">🏠 Start</a>' +
-          '<a href="' + base + '/menu/" target="_blank" class="btn btn-outline btn-sm">📋 Menü</a>' +
-          '<a href="' + base + '/link/" target="_blank" class="btn btn-outline btn-sm">🔗 Links</a>' +
+          '<a href="' + base + '/" target="_blank" class="btn btn-outline btn-sm">' + icon('house') + ' Start</a>' +
+          '<a href="' + base + '/menu/" target="_blank" class="btn btn-outline btn-sm">' + icon('clipboard-list') + ' Menü</a>' +
+          '<a href="' + base + '/link/" target="_blank" class="btn btn-outline btn-sm">' + icon('link') + ' Links</a>' +
         '</td>' +
         '<td style="display:flex;gap:6px">' +
-          '<button class="btn btn-outline btn-sm" onclick="openOrder(\'' + o.id + '\')">✏️ Details</button>' +
+          '<button class="btn btn-outline btn-sm" onclick="openOrder(\'' + o.id + '\')">' + icon('pencil') + ' Details</button>' +
           (SITE_SWITCH.indexOf(o.site_slug) > -1
-            ? '<button class="btn btn-outline btn-sm" onclick="toggleSiteOnline(\'' + slug + '\')" title="Website online/offline schalten">🌐</button>'
+            ? '<button class="btn btn-outline btn-sm" onclick="toggleSiteOnline(\'' + slug + '\')" title="Website online/offline schalten">' + icon('globe') + '</button>'
             : '') +
-          '<button class="btn btn-danger btn-sm" onclick="deleteSite(\'' + o.id + '\',\'' + slug + '\')">🗑️</button>' +
+          '<button class="btn btn-danger btn-sm" onclick="deleteSite(\'' + o.id + '\',\'' + slug + '\')" title="Löschen">' + icon('trash-2') + '</button>' +
         '</td>' +
         '</tr>';
     }).join('');
@@ -589,7 +610,7 @@
     var sitemapOk = true;
     try { await removeFromSitemap(slug); } catch (e) { sitemapOk = false; console.warn('Sitemap:', e); }
     await sb.from('orders').update({ site_slug: null }).eq('id', orderId);
-    showToast('✅ "' + slug + '" gelöscht.' + (sitemapOk ? '' : ' (sitemap.xml bitte prüfen)'));
+    showToast('"' + slug + '" gelöscht.' + (sitemapOk ? '' : ' (sitemap.xml bitte prüfen)'));
     loadSites();
   };
 
@@ -614,7 +635,7 @@
         : '"' + slug + '" ist gerade ONLINE.\nOffline schalten? Besucher sehen dann „Vorübergehend geschlossen".';
       if (!confirm(question)) return;
       await uploadFile(path, 'window.SITE_OFF = ' + !off + ';\n');
-      showToast('✅ "' + slug + '" ist jetzt ' + (off ? 'online' : 'offline') + ' — sichtbar in 1–10 Min.');
+      showToast('"' + slug + '" ist jetzt ' + (off ? 'online' : 'offline') + ' — sichtbar in 1–10 Min.');
     } catch (e) {
       showToast('Fehler: ' + e.message);
     }
@@ -681,7 +702,7 @@
     editBtn.style.display = data.site_slug ? 'inline-flex' : 'none';
     document.getElementById('editLinksBtn').style.display = data.site_slug ? 'inline-flex' : 'none';
     document.getElementById('previewSiteBtn').style.display = data.site_slug ? 'inline-flex' : 'none';
-    document.getElementById('generateSiteBtn').textContent = data.site_slug ? '🔄 Neu generieren' : '🌐 Website erstellen';
+    document.getElementById('generateSiteBtn').innerHTML = data.site_slug ? icon('refresh-cw') + ' Neu generieren' : icon('globe') + ' Website erstellen';
     openModal('orderOverlay');
 
     loadOrderMessages(id);
@@ -721,7 +742,7 @@
       var file = this.files[0];
       if (!file) return;
       var btn = document.getElementById('orderMsgSend');
-      btn.disabled = true; btn.textContent = '⏳';
+      btn.disabled = true; btn.textContent = '…';
       try {
         var ext = file.name.split('.').pop();
         var path = 'chat/' + id + '/' + Date.now() + '.' + ext;
@@ -793,7 +814,7 @@
         var isImg = /\.(jpg|jpeg|png|gif|webp)$/i.test(m.attachment_name || m.attachment_url);
         attachHtml = isImg
           ? '<a href="' + safeUrl + '" target="_blank"><img src="' + safeUrl + '" style="max-width:220px;max-height:200px;border-radius:8px;display:block;margin-top:' + (m.content ? '6px' : '0') + '" /></a>'
-          : '<a href="' + safeUrl + '" target="_blank" style="display:inline-flex;align-items:center;gap:6px;color:inherit;font-size:12px;opacity:.85;text-decoration:underline;margin-top:' + (m.content ? '4px' : '0') + '">📎 ' + esc(m.attachment_name || 'Datei') + '</a>';
+          : '<a href="' + safeUrl + '" target="_blank" style="display:inline-flex;align-items:center;gap:6px;color:inherit;font-size:12px;opacity:.85;text-decoration:underline;margin-top:' + (m.content ? '4px' : '0') + '">' + icon('paperclip') + ' ' + esc(m.attachment_name || 'Datei') + '</a>';
       }
       return '<div style="display:flex;flex-direction:column;align-items:' + (isOwn ? 'flex-end' : 'flex-start') + '">' +
         '<div style="' + bubbleStyle + '">' + (m.content ? esc(m.content) : '') + attachHtml + '</div>' +
@@ -809,7 +830,7 @@
       if (!paymentUrl) { showToast('Zahlungslink nicht konfiguriert.'); return; }
 
       var btn = this;
-      btn.disabled = true; btn.textContent = '⏳ Wird gesendet…';
+      btn.disabled = true; btn.textContent = 'Wird gesendet…';
 
       var session = (await sb.auth.getSession()).data.session;
       var res = await fetch('https://vhnourjddnlslgabrasb.supabase.co/functions/v1/send-email', {
@@ -832,7 +853,7 @@
       } else {
         showToast('Fehler: ' + (data.error || 'unbekannt'));
       }
-      btn.disabled = false; btn.textContent = '💳 Zahlungslink senden';
+      btn.disabled = false; btn.innerHTML = icon('credit-card') + ' Zahlungslink senden';
     });
 
     document.getElementById('generateSiteBtn').addEventListener('click', function () {
@@ -870,7 +891,7 @@
         document.getElementById('editSiteBtn').style.display = slug ? 'inline-flex' : 'none';
         document.getElementById('editLinksBtn').style.display = slug ? 'inline-flex' : 'none';
         document.getElementById('previewSiteBtn').style.display = slug ? 'inline-flex' : 'none';
-        document.getElementById('generateSiteBtn').textContent = slug ? '🔄 Neu generieren' : '🌐 Website erstellen';
+        document.getElementById('generateSiteBtn').innerHTML = slug ? icon('refresh-cw') + ' Neu generieren' : icon('globe') + ' Website erstellen';
         closeModal('orderOverlay');
         showToast('Gespeichert');
         loadOrders();
@@ -1005,9 +1026,9 @@
     if (!slug) { preview.style.display = 'none'; return; }
     preview.style.display = 'block';
     content.innerHTML =
-      '<div style="margin-bottom:4px">📄 <code>' + slug + '/index.html</code> ← templates/' + selectedTemplate + '</div>' +
-      '<div style="margin-bottom:4px">📄 <code>' + slug + '/data.js</code> ← Bestelldaten</div>' +
-      '<div style="margin-top:8px;color:#16a34a;font-weight:600">🔗 web.lokalonline.at/' + slug + '/</div>';
+      '<div style="margin-bottom:4px">' + icon('file-text') + ' <code>' + slug + '/index.html</code> ← templates/' + selectedTemplate + '</div>' +
+      '<div style="margin-bottom:4px">' + icon('file-text') + ' <code>' + slug + '/data.js</code> ← Bestelldaten</div>' +
+      '<div style="margin-top:8px;color:#16a34a;font-weight:600">' + icon('link') + ' web.lokalonline.at/' + slug + '/</div>';
   }
 
   window.openSiteGenerator = function (order) {
@@ -1629,7 +1650,7 @@
     var contentEl = document.getElementById('fileEditorContent');
     var infoEl = document.getElementById('fileEditorInfo');
     errEl.style.display = 'none';
-    contentEl.value = '⏳ Lade…';
+    contentEl.value = 'Lade…';
     infoEl.textContent = 'web.lokalonline.at/' + editingSlug + '/' + file;
 
     try {
@@ -1668,17 +1689,17 @@
     var errEl = document.getElementById('fileEditorError');
     var btn = document.getElementById('fileEditorSave');
     errEl.style.display = 'none';
-    btn.disabled = true; btn.textContent = '⏳ Speichert…';
+    btn.disabled = true; btn.textContent = 'Speichert…';
 
     try {
       await uploadFile(editingSlug + '/' + file, content);
       closeModal('fileEditorOverlay');
-      showToast('✅ ' + file + ' gespeichert!');
+      showToast(file + ' gespeichert!');
     } catch (e) {
       errEl.textContent = 'Fehler: ' + e.message;
       errEl.style.display = 'block';
     }
-    btn.disabled = false; btn.textContent = '💾 Speichern & deployen';
+    btn.disabled = false; btn.innerHTML = icon('save') + ' Speichern & deployen';
   });
 
   // ── Link Editor (Linkseite ohne Code bearbeiten) ──────────────────
@@ -1864,9 +1885,9 @@
           '<input type="text" class="link-field link-field-icon" data-idx="' + i + '" data-f="icon" value="' + esc(l.icon) + '" placeholder="🔗" maxlength="8">' +
           '<input type="text" class="link-field link-field-label" data-idx="' + i + '" data-f="label" value="' + esc(l.label) + '" placeholder="Beschriftung">' +
           variantSel +
-          '<button type="button" class="link-act" data-act="up" data-idx="' + i + '" title="Nach oben"' + (i === 0 ? ' disabled' : '') + '>↑</button>' +
-          '<button type="button" class="link-act" data-act="down" data-idx="' + i + '" title="Nach unten"' + (i === linkEditorLinks.length - 1 ? ' disabled' : '') + '>↓</button>' +
-          '<button type="button" class="link-act link-act-del" data-act="del" data-idx="' + i + '" title="Entfernen">🗑</button>' +
+          '<button type="button" class="link-act" data-act="up" data-idx="' + i + '" title="Nach oben"' + (i === 0 ? ' disabled' : '') + '>' + icon('arrow-up') + '</button>' +
+          '<button type="button" class="link-act" data-act="down" data-idx="' + i + '" title="Nach unten"' + (i === linkEditorLinks.length - 1 ? ' disabled' : '') + '>' + icon('arrow-down') + '</button>' +
+          '<button type="button" class="link-act link-act-del" data-act="del" data-idx="' + i + '" title="Entfernen">' + icon('trash-2') + '</button>' +
         '</div>' +
         '<input type="text" class="link-field link-field-url" data-idx="' + i + '" data-f="href" value="' + esc(l.href) + '" placeholder="https://…">' +
         '</div>';
@@ -1912,7 +1933,7 @@
     var addBtn = document.getElementById('linkEditorAdd');
     var saveBtn = document.getElementById('linkEditorSave');
     errEl.style.display = 'none';
-    rowsEl.innerHTML = '<div class="link-editor-empty">⏳ Lade…</div>';
+    rowsEl.innerHTML = '<div class="link-editor-empty">Lade…</div>';
     document.getElementById('linkEditorInfo').textContent = 'web.lokalonline.at/' + slug + '/link/';
     addBtn.disabled = true;
     saveBtn.disabled = true;
@@ -1979,16 +2000,16 @@
     if (!linkEditorLinks.length && !confirm('Die Linkseite hat dann keine Links mehr. Trotzdem speichern?')) return;
 
     var html = applyLinkEdits(linkEditorHtml, linkEditorBlock, linkEditorLinks);
-    btn.disabled = true; btn.textContent = '⏳ Speichert…';
+    btn.disabled = true; btn.textContent = 'Speichert…';
     try {
       await uploadFile(linkEditorSlug + '/link/index.html', html);
       closeModal('linkEditorOverlay');
-      showToast('✅ Linkseite gespeichert!');
+      showToast('Linkseite gespeichert!');
     } catch (e) {
       errEl.textContent = 'Fehler: ' + e.message;
       errEl.style.display = 'block';
     }
-    btn.disabled = false; btn.textContent = '💾 Speichern & deployen';
+    btn.disabled = false; btn.innerHTML = icon('save') + ' Speichern & deployen';
   });
 
   // ── Copy photos from Supabase Storage to GitHub ───────────────────
@@ -2100,9 +2121,9 @@
 
     var linksEl = document.getElementById('qrResultLinks');
     linksEl.innerHTML = [
-      { label: '🌐 Website', url: 'https://web.lokalonline.at/' + slug + '/' },
-      { label: '📋 Menü', url: menuUrl },
-      { label: '🔗 Link Page', url: 'https://web.lokalonline.at/' + slug + '/link/' }
+      { label: icon('globe') + ' Website', url: 'https://web.lokalonline.at/' + slug + '/' },
+      { label: icon('clipboard-list') + ' Menü', url: menuUrl },
+      { label: icon('link') + ' Link Page', url: 'https://web.lokalonline.at/' + slug + '/link/' }
     ].map(function(l) {
       return '<a href="' + l.url + '" target="_blank" class="btn btn-outline btn-sm">' + l.label + '</a>';
     }).join('');
@@ -2127,7 +2148,7 @@
     if (!/^[a-z0-9-]+$/.test(slug)) { errEl.textContent = 'Nur Kleinbuchstaben, Zahlen und Bindestriche erlaubt.'; errEl.style.display = 'block'; return; }
 
     btn.disabled = true;
-    btn.textContent = '⏳ 1/7 Hauptseite…';
+    btn.textContent = '1/7 Hauptseite…';
     var linkPageKept = false;
 
     try {
@@ -2149,7 +2170,7 @@
       await uploadFile(slug + '/data.js', dataJs);
 
       // 2. Menu page
-      btn.textContent = '⏳ 2/7 Menüseite…';
+      btn.textContent = '2/7 Menüseite…';
       var menuRes = await fetch('/templates/' + selectedTemplate + '/menu/index.html');
       if (menuRes.ok) {
         var menuHtml = await menuRes.text();
@@ -2165,30 +2186,30 @@
 
       // 3. Link page — eine vorhandene Seite bleibt unangetastet, damit im
       // Link-Editor gepflegte Links beim Neu-Generieren nicht verloren gehen.
-      btn.textContent = '⏳ 3/7 Link-Seite…';
+      btn.textContent = '3/7 Link-Seite…';
       var linkPath = slug + '/link/index.html';
       linkPageKept = !(await isFileMissing(linkPath));
       if (!linkPageKept) await uploadFile(linkPath, generateLinkPageHtml(slug, currentOrderData));
 
       // 4. Impressum
-      btn.textContent = '⏳ 4/7 Impressum…';
+      btn.textContent = '4/7 Impressum…';
       await uploadFile(slug + '/impressum/index.html', generateImpressumHtml(slug, currentOrderData));
 
       // 5. Datenschutz
-      btn.textContent = '⏳ 5/7 Datenschutz…';
+      btn.textContent = '5/7 Datenschutz…';
       await uploadFile(slug + '/datenschutz/index.html', generateDatenschutzHtml(slug, currentOrderData));
 
       // Sitemap ergänzen — scheitert das, ist die Seite trotzdem fertig.
       try { await updateSitemap(slug); } catch (e) { console.warn('Sitemap:', e); }
 
       // 6. Photos + QR code
-      btn.textContent = '⏳ 6/7 Fotos & QR…';
+      btn.textContent = '6/7 Fotos & QR…';
       await copyPhotosToGitHub(slug, currentOrderData);
       var qrErr = null;
       try { await generateQrCode(slug); } catch(e) { qrErr = e.message; }
 
       // 7. Save to DB
-      btn.textContent = '⏳ 7/7 Speichert…';
+      btn.textContent = '7/7 Speichert…';
       await sb.from('orders').update({
         site_slug: slug,
         admin_notes: (currentOrderData.admin_notes ? currentOrderData.admin_notes + '\n' : '') + 'Site: web.lokalonline.at/' + slug + '/'
@@ -2199,21 +2220,21 @@
       document.getElementById('editSiteBtn').style.display = 'inline-flex';
       document.getElementById('editLinksBtn').style.display = 'inline-flex';
       document.getElementById('previewSiteBtn').style.display = 'inline-flex';
-      document.getElementById('generateSiteBtn').textContent = '🔄 Neu generieren';
+      document.getElementById('generateSiteBtn').innerHTML = icon('refresh-cw') + ' Neu generieren';
 
       closeModal('siteGenOverlay');
       showQrResult(slug, linkPageKept);
-      if (qrErr) showToast('⚠️ QR-Code: ' + qrErr);
+      if (qrErr) showToast('QR-Code: ' + qrErr);
 
     } catch (e) {
-      var step = btn.textContent.replace('⏳ ', '');
+      var step = btn.textContent;
       errEl.textContent = 'Fehler bei [' + step + ']: ' + (e && e.message ? e.message : String(e));
       errEl.style.display = 'block';
       console.error('doGenerateSite error:', step, e);
     }
 
     btn.disabled = false;
-    btn.textContent = '🚀 Website generieren';
+    btn.innerHTML = icon('rocket') + ' Website generieren';
   }
 
   function esc(str) {

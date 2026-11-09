@@ -223,6 +223,8 @@
     }
     .file-upload-label:hover { border-color: var(--orange); background: #fdf6f2; }
     .file-upload-label .upload-icon { font-size: 28px; }
+    /* Lucide 아이콘: 둘레 글자 크기를 따라가고, 글줄 가운데에 놓입니다 (DESIGN.md) */
+    .lucide { display: inline-block; width: 1.15em; height: 1.15em; vertical-align: -0.2em; flex-shrink: 0; }
     .file-upload-label .upload-text { font-size: 13px; font-weight: 600; color: var(--text); }
     .file-upload-label .upload-hint { font-size: 11px; color: var(--text-muted); }
     .file-upload-label input[type="file"] { display: none; }
@@ -348,7 +350,7 @@
     /* Success */
     .success-panel { display: none; text-align: center; padding: 40px 20px; }
     .success-panel.show { display: block; }
-    .success-icon { font-size: 56px; margin-bottom: 16px; }
+    .success-icon { font-size: 56px; margin-bottom: 16px; color: var(--success); }
     .success-title { font-size: 22px; font-weight: 700; margin-bottom: 8px; }
     .success-sub { font-size: 14px; color: var(--text-muted); line-height: 1.6; }
     /* Signup prompt */
@@ -431,7 +433,7 @@
     </a>
     <div class="header-right">
       <button class="lang-toggle" id="langToggle">EN</button>
-      <div class="order-secure" id="secureLabel">🔒 Sicher &amp; verschlüsselt</div>
+      <div class="order-secure"><svg class="lucide" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> <span id="secureLabel">Sicher &amp; verschlüsselt</span></div>
     </div>
   </header>
 
@@ -476,7 +478,7 @@
 
         <!-- Google Maps 안내 -->
         <div class="maps-tip-box" id="mapsTipBox">
-          <div class="maps-tip-label">🗺️ <span id="lbl_maps_tip">Tipp: Daten direkt aus Google Maps übernehmen</span></div>
+          <div class="maps-tip-label"><svg class="lucide" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.106 5.553a2 2 0 0 0 1.788 0l3.659-1.83A1 1 0 0 1 21 4.619v12.764a1 1 0 0 1-.553.894l-4.553 2.277a2 2 0 0 1-1.788 0l-4.212-2.106a2 2 0 0 0-1.788 0l-3.659 1.83A1 1 0 0 1 3 19.381V6.618a1 1 0 0 1 .553-.894l4.553-2.277a2 2 0 0 1 1.788 0z"/><path d="M15 5.764v15"/><path d="M9 3.236v15"/></svg> <span id="lbl_maps_tip">Tipp: Daten direkt aus Google Maps übernehmen</span></div>
           <ol class="maps-tip-steps">
             <li id="maps_tip_s1">Google Maps öffnen → Ihren Betrieb suchen</li>
             <li id="maps_tip_s2">Name, Adresse und Telefon ablesen</li>
@@ -595,7 +597,7 @@
 
         <!-- Impressum Live Preview -->
         <div class="impressum-toggle" id="impressumToggle">
-          <span id="impressumToggleIcon">▶</span> <span id="lbl_impressum_toggle">Impressum &amp; Datenschutz — Vorschau</span>
+          <span id="impressumToggleIcon" style="display:inline-flex;transition:transform .2s"><svg class="lucide" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></span> <span id="lbl_impressum_toggle">Impressum &amp; Datenschutz — Vorschau</span>
         </div>
         <div id="impressumPreview" style="display:none">
           <div class="impressum-panel" id="impressumPanel"></div>
@@ -656,7 +658,7 @@ So: Ruhetag"></textarea>
         <div class="form-group">
           <label id="lbl_logo">Logo <span class="optional-badge" id="badge_logo">optional</span></label>
           <label class="file-upload-label" id="logoUploadLabel">
-            <span class="upload-icon">🖼️</span>
+            <span class="upload-icon"><svg class="lucide" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg></span>
             <span class="upload-text" id="logoUploadText">Logo-Datei auswählen</span>
             <span class="upload-hint">PNG, JPG, SVG · max. 5 MB</span>
             <input type="file" id="f_logo" accept="image/*" />
@@ -664,14 +666,14 @@ So: Ruhetag"></textarea>
           <div class="file-preview" id="logoPreview">
             <img id="logoThumb" src="" alt="logo" />
             <span class="file-name" id="logoFileName"></span>
-            <span class="file-remove" id="logoRemove">✕</span>
+            <span class="file-remove" id="logoRemove"><svg class="lucide" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></span>
           </div>
         </div>
 
         <div class="form-group">
           <label id="lbl_photos">Fotos Ihres Betriebs <span class="optional-badge" id="badge_photos">optional</span></label>
           <label class="file-upload-label" id="photoUploadLabel">
-            <span class="upload-icon">📷</span>
+            <span class="upload-icon"><svg class="lucide" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13.997 4a2 2 0 0 1 1.76 1.05l.486.9A2 2 0 0 0 18.003 7H20a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h1.997a2 2 0 0 0 1.759-1.048l.489-.904A2 2 0 0 1 10.004 4z"/><circle cx="12" cy="13" r="3"/></svg></span>
             <span class="upload-text" id="photoUploadText">Fotos auswählen (mehrere möglich)</span>
             <span class="upload-hint" id="photoUploadHint">PNG, JPG · max. 10 MB pro Bild · max. 5 Bilder</span>
             <input type="file" id="f_photos" accept="image/*" multiple />
@@ -692,9 +694,9 @@ So: Ruhetag"></textarea>
 
         <!-- Menu Upload with AI Parsing + manual editing -->
         <div class="form-group" id="menuUploadGroup">
-          <label id="lbl_menu_photo">📋 <span id="lbl_menu_photo_text">Speisekarte</span> <span class="optional-badge" id="badge_menu">optional</span></label>
+          <label id="lbl_menu_photo"><svg class="lucide" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/></svg> <span id="lbl_menu_photo_text">Speisekarte</span> <span class="optional-badge" id="badge_menu">optional</span></label>
           <label class="file-upload-label" id="menuUploadLabel">
-            <span class="upload-icon">🍽️</span>
+            <span class="upload-icon"><svg class="lucide" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m16 2-2.3 2.3a3 3 0 0 0 0 4.2l1.8 1.8a3 3 0 0 0 4.2 0L22 8"/><path d="M15 15 3.3 3.3a4.2 4.2 0 0 0 0 6l7.3 7.3c.7.7 2 .7 2.8 0L15 15Zm0 0 7 7"/><path d="m2.1 21.8 6.4-6.3"/><path d="m19 5-7 7"/></svg></span>
             <span class="upload-text" id="menuUploadText">Speisekarte-Foto hochladen (AI liest Menü aus)</span>
             <span class="upload-hint" id="menuUploadHint">JPG, PNG · wird automatisch analysiert</span>
             <input type="file" id="f_menu_photo" accept="image/*" />
@@ -708,16 +710,16 @@ So: Ruhetag"></textarea>
           <div class="menu-parsed-box" id="menuAiResult" style="display:none">
             <div class="menu-parsed-header">
               <span id="menuParsedTitle">Gerichte (bearbeitbar)</span>
-              <button class="menu-parsed-reset" id="menuParsedReset" type="button">✕ <span id="menuParsedResetText">Foto neu</span></button>
+              <button class="menu-parsed-reset" id="menuParsedReset" type="button"><svg class="lucide" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg> <span id="menuParsedResetText">Foto neu</span></button>
             </div>
             <div id="menuParsedList"></div>
             <button type="button" id="menuAddItem" style="margin-top:8px;background:none;border:1px dashed var(--border);border-radius:8px;padding:8px 12px;font-size:13px;color:var(--primary);cursor:pointer;width:100%">+ <span id="lbl_menu_add">Gericht hinzufügen</span></button>
           </div>
-          <button type="button" id="menuManualStart" style="margin-top:8px;background:none;border:none;font-size:13px;color:var(--primary);cursor:pointer;text-decoration:underline">✏️ <span id="lbl_menu_manual">Speisekarte ohne Foto eingeben</span></button>
+          <button type="button" id="menuManualStart" style="margin-top:8px;background:none;border:none;font-size:13px;color:var(--primary);cursor:pointer;text-decoration:underline"><svg class="lucide" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/></svg> <span id="lbl_menu_manual">Speisekarte ohne Foto eingeben</span></button>
         </div>
 
         <div class="notice-box" id="noticeBox">
-          ✉️ <span id="noticeText">Nach dem Absenden erhalten Sie innerhalb von <strong>24 Stunden</strong> einen kostenlosen Prototyp. Kein Zahlungspflicht — erst schauen, dann entscheiden.</span>
+          <svg class="lucide" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7"/><rect x="2" y="4" width="20" height="16" rx="2"/></svg> <span id="noticeText">Nach dem Absenden erhalten Sie innerhalb von <strong>24 Stunden</strong> einen kostenlosen Prototyp. Kein Zahlungspflicht — erst schauen, dann entscheiden.</span>
         </div>
 
         <p style="font-size:12px;color:var(--text-muted);margin:-8px 0 16px;line-height:1.6">
@@ -740,14 +742,14 @@ So: Ruhetag"></textarea>
 
     <!-- Success -->
     <div class="success-panel" id="successPanel">
-      <div class="success-icon">✅</div>
+      <div class="success-icon"><svg class="lucide" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m16 9-5.5 5.5L8 12"/></svg></div>
       <div class="success-title" id="successTitle">Anfrage erfolgreich gesendet!</div>
       <div class="success-sub" id="successSub">Vielen Dank! Wir melden uns innerhalb von 24 Stunden mit einem kostenlosen Prototyp Ihrer Website.<br><br><a href="/" style="color:var(--orange);font-weight:600">← Zurück zur Startseite</a></div>
       <div id="uploadWarningMsg" style="display:none;color:#b45309;background:#fef3c7;border:1px solid #fde68a;border-radius:8px;padding:10px 14px;font-size:13px;margin-top:12px;text-align:left"></div>
 
       <!-- Account creation prompt -->
       <div class="signup-prompt" id="signupPrompt">
-        <div class="signup-prompt-heading" id="spHeading">🔐 Konto erstellen</div>
+        <div class="signup-prompt-heading"><svg class="lucide" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" x2="19" y1="8" y2="14"/><line x1="22" x2="16" y1="11" y2="11"/></svg> <span id="spHeading">Konto erstellen</span></div>
         <div class="signup-prompt-desc" id="spDesc">Erstellen Sie jetzt ein Konto, um den Status Ihrer Anfrage zu verfolgen und später einfach auf Ihr Kundenportal zuzugreifen.</div>
         <div class="signup-email-display" id="spEmail"></div>
         <input type="password" id="spPassword" class="signup-input" placeholder="Passwort wählen (min. 8 Zeichen)" autocomplete="new-password" />
@@ -761,6 +763,15 @@ So: Ruhetag"></textarea>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <script>
   (function () {
+    // Lucide 아이콘(인라인 SVG). 이모지 대신 씁니다 (DESIGN.md).
+    var ICON_PATHS = {
+      'x': '<path d="M18 6 6 18"/><path d="m6 6 12 12"/>',
+      'circle-check': '<circle cx="12" cy="12" r="10"/><path d="m16 9-5.5 5.5L8 12"/>'
+    };
+    function icon(name) {
+      return '<svg class="lucide" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + ICON_PATHS[name] + '</svg>';
+    }
+
     var SB_URL = 'https://vhnourjddnlslgabrasb.supabase.co';
     var SB_KEY = 'sb_publishable_y5l1cAZXoAj8xaSVXUkBfw_Pk9pxb6H';
     var sb = supabase.createClient(SB_URL, SB_KEY);
@@ -777,7 +788,7 @@ So: Ruhetag"></textarea>
     var T = {
       de: {
         langBtn: 'EN',
-        secureLabel: '🔒 Sicher & verschlüsselt',
+        secureLabel: 'Sicher & verschlüsselt',
         introTitle: 'Kostenlose Anfrage stellen',
         introSub: 'Füllen Sie das Formular aus — wir erstellen Ihnen innerhalb von 24 Stunden einen kostenlosen Prototyp Ihrer Website.',
         lblStep1: 'Betrieb', lblStep2: 'Details', lblStep3: 'Dateien',
@@ -864,17 +875,17 @@ So: Ruhetag"></textarea>
         err_owner_name: 'Bitte geben Sie den Vor- und Nachnamen ein.',
         err_company_legal_name: 'Bitte geben Sie den vollständigen Firmennamen ein.',
         lbl_impressum_toggle: 'Impressum & Datenschutz — Vorschau',
-        spHeading: '🔐 Konto erstellen',
+        spHeading: 'Konto erstellen',
         spDesc: 'Erstellen Sie jetzt ein Konto, um den Status Ihrer Anfrage zu verfolgen und später einfach auf Ihr Kundenportal zuzugreifen.',
         spPasswordPh: 'Passwort wählen (min. 8 Zeichen)',
         spBtn: 'Konto erstellen',
         spErrShort: 'Passwort muss mindestens 8 Zeichen haben.',
         spErrExists: 'Diese E-Mail ist bereits registriert. Bitte melden Sie sich an.',
-        spDone: '✅ Bestätigungs-E-Mail gesendet! Bitte prüfen Sie Ihr Postfach.',
+        spDone: 'Bestätigungs-E-Mail gesendet! Bitte prüfen Sie Ihr Postfach.',
       },
       en: {
         langBtn: 'DE',
-        secureLabel: '🔒 Secure & encrypted',
+        secureLabel: 'Secure & encrypted',
         introTitle: 'Request your free prototype',
         introSub: 'Fill in the form — we\'ll send you a free prototype of your website within 24 hours.',
         lblStep1: 'Business', lblStep2: 'Details', lblStep3: 'Files',
@@ -961,13 +972,13 @@ So: Ruhetag"></textarea>
         err_owner_name: 'Please enter your first and last name.',
         err_company_legal_name: 'Please enter the full legal company name.',
         lbl_impressum_toggle: 'Impressum & Privacy — Preview',
-        spHeading: '🔐 Create an account',
+        spHeading: 'Create an account',
         spDesc: 'Create an account to track the status of your request and easily access your customer portal later.',
         spPasswordPh: 'Choose a password (min. 8 characters)',
         spBtn: 'Create account',
         spErrShort: 'Password must be at least 8 characters.',
         spErrExists: 'Email already registered. Please sign in.',
-        spDone: '✅ Confirmation email sent! Please check your inbox.',
+        spDone: 'Confirmation email sent! Please check your inbox.',
       }
     };
 
@@ -1186,7 +1197,7 @@ So: Ruhetag"></textarea>
         photoFiles.forEach(function (file, idx) {
           var wrap = document.createElement('div'); wrap.className = 'photo-thumb-wrap';
           var img = document.createElement('img'); img.src = URL.createObjectURL(file);
-          var rm = document.createElement('div'); rm.className = 'photo-thumb-remove'; rm.textContent = '✕';
+          var rm = document.createElement('div'); rm.className = 'photo-thumb-remove'; rm.innerHTML = icon('x');
           rm.addEventListener('click', function () { photoFiles.splice(idx, 1); photoRoles.splice(idx, 1); renderGrid(); updateLabel(); });
           var sel = document.createElement('select');
           sel.className = 'photo-thumb-role';
@@ -1350,7 +1361,7 @@ So: Ruhetag"></textarea>
             btn.textContent = t.spBtn;
           } else {
             btn.dataset.done = '1';
-            document.getElementById('signupPrompt').innerHTML = '<div style="color:var(--success);font-weight:600;font-size:14px;padding:4px 0">' + t.spDone + '</div>';
+            document.getElementById('signupPrompt').innerHTML = '<div style="color:var(--success);font-weight:600;font-size:14px;padding:4px 0">' + icon('circle-check') + ' ' + t.spDone + '</div>';
           }
         });
 
@@ -1412,7 +1423,7 @@ So: Ruhetag"></textarea>
           return '<div class="menu-parsed-item" style="display:flex;gap:6px;align-items:center;margin-bottom:6px">' +
             '<input type="text" class="mi-name" data-i="' + i + '" value="' + esc(item.name) + '" placeholder="Gericht" style="flex:1;padding:7px 9px;border:1px solid var(--border);border-radius:7px;font-size:13px;outline:none" />' +
             '<input type="text" class="mi-price" data-i="' + i + '" value="' + esc(item.price) + '" placeholder="€ 0,00" style="width:84px;padding:7px 9px;border:1px solid var(--border);border-radius:7px;font-size:13px;outline:none" />' +
-            '<button type="button" class="mi-del" data-i="' + i + '" style="background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:16px;padding:0 4px">✕</button>' +
+            '<button type="button" class="mi-del" data-i="' + i + '" aria-label="' + (currentLang === 'de' ? 'Entfernen' : 'Remove') + '" style="background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:16px;padding:0 4px">' + icon('x') + '</button>' +
             '</div>';
         }).join('');
       }
@@ -1612,7 +1623,7 @@ So: Ruhetag"></textarea>
       var icon    = document.getElementById('impressumToggleIcon');
       var open    = preview.style.display === 'none' || preview.style.display === '';
       preview.style.display = open ? 'block' : 'none';
-      icon.textContent = open ? '▼' : '▶';
+      icon.style.transform = open ? 'rotate(90deg)' : '';
       if (open) renderImpressum();
     }
 

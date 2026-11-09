@@ -37,7 +37,7 @@
     ```
   - 움직이는 hover(`transform`)는 `@media (hover: hover) and (pointer: fine) { … }` 안에서만 씁니다. 휴대폰과 태블릿은 탭한 뒤에도 hover가 남습니다. Tailwind 페이지는 `[@media(hover:hover)_and_(pointer:fine)]:hover:…`로 씁니다.
   - `transition: all` 대신 바뀌는 속성을 적습니다.
-- **아이콘:** Lucide(인라인 SVG). 새로 넣는 아이콘에는 이모지를 쓰지 않습니다.
+- **아이콘:** Lucide(인라인 SVG, `class="lucide"`). 이모지는 아이콘으로 쓰지 않습니다. 스타일마다 `.lucide` 규칙(1.15em, 글줄 가운데)이 있어 아이콘이 둘레 글자 크기를 따라갑니다. JS로 그리는 화면은 `icon('이름')`(`admin/app.js`, `portal/portal.js`, 주문폼)을 씁니다. 아이콘만 있는 버튼에는 `aria-label`이나 `title`로 이름을 붙입니다.
 - **새 고객 사이트:** 관리자 생성기가 `templates/<업종>/`을 복사해 사이트를 만듭니다(`admin/app.js`). 템플릿을 고치면 새 사이트에 반영되고, 이미 만든 사이트는 따로 고칩니다.
 
 ## 아직 맞추지 않은 곳

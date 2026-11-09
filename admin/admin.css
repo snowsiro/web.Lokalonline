@@ -60,7 +60,7 @@ input, select, textarea { font-family: inherit; }
   transition: all 0.15s;
   white-space: nowrap;
 }
-.btn-primary { background: var(--accent); color: #fff; }
+.btn-primary { background: var(--accent); color: var(--text); } /* 흰 글자는 주황 위 2.4:1 */
 .btn-primary:hover { background: #d97c08; }
 .btn-outline { background: transparent; color: var(--primary); border: 1.5px solid var(--border); }
 .btn-outline:hover { border-color: var(--primary); background: var(--bg); }
@@ -237,7 +237,7 @@ input, select, textarea { font-family: inherit; }
 .badge-cancelled { background: #fff5f5; color: var(--danger); }
 .badge-count {
   background: var(--accent);
-  color: #fff;
+  color: var(--text);
   font-size: 11px;
   font-weight: 700;
   padding: 1px 7px;
@@ -428,3 +428,8 @@ input, select, textarea { font-family: inherit; }
 .link-act:hover:not(:disabled) { border-color: var(--primary); }
 .link-act:disabled { opacity: 0.35; cursor: default; }
 .link-act-del:hover:not(:disabled) { border-color: var(--danger); }
+
+/* 동작 줄이기를 켠 사람에게는 움직임을 끕니다 (DESIGN.md) */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+}

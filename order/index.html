@@ -10,7 +10,8 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
       --orange: #e06535;
-      --orange-dark: #c9572a;
+      --orange-dark: #c4531f;
+      --orange-ink: #a8461a;
       --dark: #1b0d07;
       --bg: #f9f6f3;
       --card: #ffffff;
@@ -139,8 +140,8 @@
       z-index: 1;
       transition: background .3s, color .3s;
     }
-    .progress-step.active .step-circle { background: var(--orange); color: #fff; }
-    .progress-step.done .step-circle { background: var(--orange); color: #fff; }
+    .progress-step.active .step-circle { background: var(--orange-dark); color: #fff; }
+    .progress-step.done .step-circle { background: var(--orange-dark); color: #fff; }
     .step-label {
       font-size: 11px;
       color: var(--text-muted);
@@ -148,7 +149,7 @@
       font-weight: 500;
       text-align: center;
     }
-    .progress-step.active .step-label { color: var(--orange); font-weight: 600; }
+    .progress-step.active .step-label { color: var(--orange-ink); font-weight: 600; }
     /* Card */
     .order-card {
       background: var(--card);
@@ -252,8 +253,8 @@
       border: none;
       transition: all .2s;
     }
-    .btn-primary { background: var(--orange); color: #fff; flex: 1; }
-    .btn-primary:hover { background: var(--orange-dark); transform: translateY(-1px); }
+    .btn-primary { background: var(--orange-dark); color: #fff; flex: 1; }
+    @media (hover: hover) and (pointer: fine) { .btn-primary:hover { background: var(--orange-ink); transform: translateY(-1px); } }
     .btn-primary:disabled { opacity: .6; cursor: not-allowed; transform: none; }
     .btn-outline {
       background: #fff;
@@ -273,7 +274,7 @@
     .step-tag {
       display: inline-block;
       background: #fdf0ea;
-      color: var(--orange);
+      color: var(--orange-ink);
       font-size: 11px;
       font-weight: 700;
       padding: 3px 10px;
@@ -357,7 +358,7 @@
     .signup-email-display { font-size: 13px; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 9px 12px; margin-bottom: 10px; color: var(--text-muted); }
     .signup-input { width: 100%; padding: 10px 14px; border: 1.5px solid var(--border); border-radius: 8px; font-size: 14px; font-family: inherit; outline: none; transition: border-color .15s; }
     .signup-input:focus { border-color: var(--orange); }
-    .signup-btn { margin-top: 10px; width: 100%; padding: 11px; background: var(--orange); color: #fff; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; transition: background .15s; }
+    .signup-btn { margin-top: 10px; width: 100%; padding: 11px; background: var(--orange-dark); color: #fff; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; transition: background .15s; }
     .signup-btn:hover { background: var(--orange-dark); }
     .signup-btn:disabled { opacity: .6; cursor: default; }
     .signup-msg { margin-top: 10px; font-size: 13px; }
@@ -415,7 +416,11 @@
     .legal-fields-section .form-row { margin-bottom:0; }
     .legal-fields-section .form-group { margin-bottom:12px; }
     .legal-fields-section .form-group:last-child { margin-bottom:0; }
-  </style>
+  /* 동작 줄이기를 켠 사람에게는 움직임을 끕니다 (DESIGN.md) */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+}
+</style>
 </head>
 <body>
 

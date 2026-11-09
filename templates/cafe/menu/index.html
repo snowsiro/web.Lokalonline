@@ -363,7 +363,11 @@
       #info-strip { padding: 48px 6vw; }
       #menu-footer { padding: 24px 6vw; }
     }
-  </style>
+  /* 동작 줄이기를 켠 사람에게는 움직임을 끕니다 (DESIGN.md) */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+}
+</style>
 </head>
 <body>
 

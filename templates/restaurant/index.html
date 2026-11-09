@@ -357,7 +357,7 @@
       display: block;
       transition: transform 6s ease;
     }
-    .about-img:hover img { transform: scale(1.04); }
+    @media (hover: hover) and (pointer: fine) { .about-img:hover img { transform: scale(1.04); } }
 
     .about-content {
       padding: 72px 64px;
@@ -453,7 +453,7 @@
       transition: background .2s, transform .2s;
       white-space: nowrap;
     }
-    .btn-primary:hover { background: #a82521; transform: translateY(-2px); }
+    @media (hover: hover) and (pointer: fine) { .btn-primary:hover { background: #a82521; transform: translateY(-2px); } }
 
     @media (max-width: 640px) {
       #menu-band { flex-direction: column; align-items: flex-start; }
@@ -486,7 +486,7 @@
       display: block;
       transition: transform .5s ease;
     }
-    .photo-grid-item:hover img { transform: scale(1.04); }
+    @media (hover: hover) and (pointer: fine) { .photo-grid-item:hover img { transform: scale(1.04); } }
 
     .photo-grid-item:nth-child(3n+2) { margin-top: 32px; }
 
@@ -819,7 +819,7 @@
       object-fit: cover;
       transition: transform .5s ease, filter .5s;
     }
-    .insta-item:hover img { transform: scale(1.06); filter: brightness(1.1); }
+    @media (hover: hover) and (pointer: fine) { .insta-item:hover img { transform: scale(1.06); filter: brightness(1.1); } }
 
     .insta-overlay {
       position: absolute;
@@ -928,7 +928,11 @@
       opacity: 1;
       transform: translateY(0);
     }
-  </style>
+  /* 동작 줄이기를 켠 사람에게는 움직임을 끕니다 (DESIGN.md) */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+}
+</style>
 </head>
 <body>
 

@@ -244,7 +244,7 @@
       letter-spacing: .08em;
       transition: background .2s, transform .2s;
     }
-    .btn-caramel:hover { background: #9a6130; transform: translateY(-2px); }
+    @media (hover: hover) and (pointer: fine) { .btn-caramel:hover { background: #9a6130; transform: translateY(-2px); } }
 
     .btn-ghost {
       display: inline-block;
@@ -310,10 +310,10 @@
       box-shadow: 0 4px 24px rgba(28,18,8,.06);
       transition: transform .3s, box-shadow .3s;
     }
-    .special-card:hover {
+    @media (hover: hover) and (pointer: fine) { .special-card:hover {
       transform: translateY(-6px);
       box-shadow: 0 12px 40px rgba(28,18,8,.12);
-    }
+    } }
 
     .special-img {
       height: 220px;
@@ -326,7 +326,7 @@
       object-fit: cover;
       transition: transform .5s;
     }
-    .special-card:hover .special-img img { transform: scale(1.06); }
+    @media (hover: hover) and (pointer: fine) { .special-card:hover .special-img img { transform: scale(1.06); } }
 
     .special-icon {
       position: absolute;
@@ -470,10 +470,10 @@
       display: flex;
       flex-direction: column;
     }
-    .drink-card:hover {
+    @media (hover: hover) and (pointer: fine) { .drink-card:hover {
       box-shadow: 0 8px 32px rgba(28,18,8,.1);
       transform: translateY(-4px);
-    }
+    } }
 
     .drink-img {
       height: 180px;
@@ -485,7 +485,7 @@
       object-fit: cover;
       transition: transform .4s;
     }
-    .drink-card:hover .drink-img img { transform: scale(1.06); }
+    @media (hover: hover) and (pointer: fine) { .drink-card:hover .drink-img img { transform: scale(1.06); } }
 
     .drink-body {
       padding: 20px;
@@ -548,7 +548,7 @@
       display: block;
       transition: transform .5s;
     }
-    .photo-item:hover img { transform: scale(1.04); }
+    @media (hover: hover) and (pointer: fine) { .photo-item:hover img { transform: scale(1.04); } }
     .photo-item:nth-child(3n+2) { margin-top: 28px; }
 
     @media (max-width: 768px) {
@@ -757,7 +757,7 @@
       cursor: pointer;
       transition: background .2s, transform .2s;
     }
-    .form-submit:hover { background: #9a6130; transform: translateY(-2px); }
+    @media (hover: hover) and (pointer: fine) { .form-submit:hover { background: #9a6130; transform: translateY(-2px); } }
     .form-submit:disabled { opacity: .6; transform: none; cursor: not-allowed; }
 
     .form-message {
@@ -799,10 +799,10 @@
       border: 1px solid var(--line);
       transition: box-shadow .3s, transform .3s;
     }
-    .review-card:hover {
+    @media (hover: hover) and (pointer: fine) { .review-card:hover {
       box-shadow: 0 8px 28px rgba(28,18,8,.08);
       transform: translateY(-3px);
-    }
+    } }
 
     .review-stars {
       display: flex;
@@ -923,7 +923,11 @@
       opacity: 1;
       transform: translateY(0);
     }
-  </style>
+  /* 동작 줄이기를 켠 사람에게는 움직임을 끕니다 (DESIGN.md) */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+}
+</style>
 </head>
 <body>
 

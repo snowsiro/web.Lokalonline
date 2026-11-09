@@ -1216,8 +1216,8 @@
 
     var colorDefaults = {
       restaurant: { primary:'#C8302A', accent:'#C8302A', bg:'#F8F7F4', dark:'#111110', mid:'#9B9893', dim:'#5C5A57', line:'#DDDAD4' },
-      cafe:        { primary:'#B8763A', accent:'#B8763A', bg:'#FAF7F2', dark:'#1C1208', mid:'#8C7B6B', dim:'#6B5C4E', line:'#E8DDD0' },
-      beauty:      { primary:'#C9A96E', accent:'#C9A96E', bg:'#FAF9F7', dark:'#1A1A1A', mid:'#8A8480', dim:'#6B6865', line:'#E8E4DF' },
+      cafe:        { primary:'#B8763A', accent:'#B8763A', bg:'#FAF7F2', dark:'#1C1208', mid:'#7B6C5E', dim:'#6B5C4E', line:'#E8DDD0' },
+      beauty:      { primary:'#C9A96E', accent:'#C9A96E', bg:'#FAF9F7', dark:'#1A1A1A', mid:'#746F6C', dim:'#6B6865', line:'#E8E4DF' },
       retail:      { primary:'#E85D26', accent:'#E85D26', bg:'#FFFFFF', dark:'#0A0A0A', mid:'#6B6B6B', dim:'#9A9A9A', line:'#E8E8E8' }
     };
     var fontDefaults = {

@@ -17,11 +17,16 @@
       --accent:  #B8763A;
       --bg:      #FAF7F2;
       --dark:    #1C1208;
-      --mid:     #8C7B6B;
+      --mid:     #7B6C5E;
       --dim:     #5A4A3A;
       --line:    #E8E0D4;
       --font-heading: 'Playfair Display', Georgia, serif;
       --font-body:    'Inter', system-ui, sans-serif;
+      /* 밝은 바탕 위 작은 브랜드색 글자: 브랜드 색의 밝기만 낮춰 4.5:1 이상 (DESIGN.md) */
+      --primary-on-light: var(--primary);
+    }
+    @supports (color: oklch(from red l c h)) {
+      :root { --primary-on-light: oklch(from var(--primary) .52 c h); }
     }
 
     html { scroll-behavior: smooth; }
@@ -93,13 +98,13 @@
 
     .nav-cta-link {
       background: var(--primary);
-      color: #fff !important;
+      color: var(--dark) !important;
       padding: 9px 20px;
       border-radius: 40px;
       font-size: 12px !important;
       letter-spacing: .08em !important;
     }
-    .nav-cta-link:hover { background: #9a6130 !important; }
+    .nav-cta-link:hover { background: var(--dark) !important; color: #fff !important; }
 
     /* Hamburger */
     .nav-hamburger {
@@ -198,7 +203,7 @@
     }
 
     .hero-eyebrow {
-      font-size: 11px;
+      font-size: 12px;
       letter-spacing: .25em;
       text-transform: uppercase;
       color: var(--primary);
@@ -236,7 +241,7 @@
     .btn-caramel {
       display: inline-block;
       background: var(--primary);
-      color: #fff;
+      color: var(--dark);
       text-decoration: none;
       padding: 15px 36px;
       border-radius: 40px;
@@ -244,7 +249,7 @@
       letter-spacing: .08em;
       transition: background .2s, transform .2s;
     }
-    @media (hover: hover) and (pointer: fine) { .btn-caramel:hover { background: #9a6130; transform: translateY(-2px); } }
+    @media (hover: hover) and (pointer: fine) { .btn-caramel:hover { background: var(--dark); color: #fff; transform: translateY(-2px); } }
 
     .btn-ghost {
       display: inline-block;
@@ -270,8 +275,8 @@
       flex-direction: column;
       align-items: center;
       gap: 8px;
-      color: rgba(255,255,255,.4);
-      font-size: 10px;
+      color: rgba(255,255,255,.6);
+      font-size: 12px;
       letter-spacing: .15em;
       text-transform: uppercase;
     }
@@ -419,10 +424,10 @@
       display: flex;
       align-items: center;
       gap: 10px;
-      font-size: 11px;
+      font-size: 12px;
       letter-spacing: .2em;
       text-transform: uppercase;
-      color: var(--primary);
+      color: var(--primary-on-light);
       margin-bottom: 14px;
     }
     .section-eyebrow::before,
@@ -513,7 +518,7 @@
       margin-top: 14px;
       font-weight: 500;
       font-size: 15px;
-      color: var(--primary);
+      color: var(--primary-on-light);
       letter-spacing: .02em;
     }
 
@@ -630,10 +635,10 @@
     }
 
     .loc-label {
-      font-size: 11px;
+      font-size: 12px;
       letter-spacing: .1em;
       text-transform: uppercase;
-      color: rgba(255,255,255,.35);
+      color: rgba(255,255,255,.6);
       margin-bottom: 3px;
     }
 
@@ -644,6 +649,7 @@
     .loc-value a {
       color: inherit;
       text-decoration: none;
+      padding: 4px 0;
     }
     .loc-value a:hover { color: var(--primary); }
 
@@ -705,7 +711,7 @@
     .form-group.full { grid-column: 1 / -1; }
 
     .form-group label {
-      font-size: 11px;
+      font-size: 12px;
       letter-spacing: .12em;
       text-transform: uppercase;
       color: var(--mid);
@@ -747,7 +753,7 @@
     .form-submit {
       grid-column: 1 / -1;
       background: var(--primary);
-      color: #fff;
+      color: var(--dark);
       border: none;
       border-radius: 40px;
       padding: 17px 32px;
@@ -757,7 +763,7 @@
       cursor: pointer;
       transition: background .2s, transform .2s;
     }
-    @media (hover: hover) and (pointer: fine) { .form-submit:hover { background: #9a6130; transform: translateY(-2px); } }
+    @media (hover: hover) and (pointer: fine) { .form-submit:hover { background: var(--dark); color: #fff; transform: translateY(-2px); } }
     .form-submit:disabled { opacity: .6; transform: none; cursor: not-allowed; }
 
     .form-message {
@@ -861,10 +867,10 @@
     }
 
     .footer-col-title {
-      font-size: 11px;
+      font-size: 12px;
       letter-spacing: .15em;
       text-transform: uppercase;
-      color: rgba(250,247,242,.3);
+      color: rgba(250,247,242,.6);
       margin-bottom: 20px;
     }
 
@@ -880,6 +886,7 @@
       text-decoration: none;
       font-size: 14px;
       transition: color .2s;
+      padding: 4px 0;
     }
     .footer-links a:hover { color: var(--bg); }
 
@@ -895,10 +902,11 @@
     }
 
     .footer-bottom a {
-      color: rgba(250,247,242,.35);
+      color: rgba(250,247,242,.6);
       text-decoration: none;
+      padding: 4px 0;
     }
-    .footer-bottom a:hover { color: rgba(250,247,242,.7); }
+    .footer-bottom a:hover { color: rgba(250,247,242,.9); }
 
     @media (max-width: 768px) {
       .footer-top { grid-template-columns: 1fr; gap: 32px; }

@@ -1,6 +1,18 @@
 (function () {
   'use strict';
 
+  // Lucide 아이콘(인라인 SVG). 이모지 대신 씁니다 (DESIGN.md).
+  var ICON_PATHS = {
+    'check': '<path d="M20 6 9 17l-5-5"/>',
+    'link': '<path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>',
+    'pencil': '<path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/>',
+    'message-circle': '<path d="M2.992 16.342a2 2 0 0 1 .094 1.167l-1.065 3.29a1 1 0 0 0 1.236 1.168l3.413-.998a2 2 0 0 1 1.099.092 10 10 0 1 0-4.777-4.719"/>',
+    'paperclip': '<path d="m16 6-8.414 8.586a2 2 0 0 0 2.829 2.829l8.414-8.586a4 4 0 1 0-5.657-5.657l-8.379 8.551a6 6 0 1 0 8.485 8.485l8.379-8.551"/>'
+  };
+  function icon(name) {
+    return '<svg class="lucide" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + ICON_PATHS[name] + '</svg>';
+  }
+
   var sb = supabase.createClient(
     'https://vhnourjddnlslgabrasb.supabase.co',
     'sb_publishable_y5l1cAZXoAj8xaSVXUkBfw_Pk9pxb6H'
@@ -81,23 +93,23 @@
     // 구독 정보 카드
     var planLabels = { flat: 'Premium', basis: 'Premium', standard: 'Premium', premium: 'Premium' };
     var billingLabels = { monthly: 'Monatlich', yearly: 'Jährlich' };
-    var statusLabels = { active: '✓ Aktiv', inactive: 'Inaktiv', cancelled: 'Gekündigt' };
+    var statusLabels = { active: 'Aktiv', inactive: 'Inaktiv', cancelled: 'Gekündigt' };
 
     var infoCard =
       '<div class="info-card">' +
       '<h2>Ihr Abonnement</h2>' +
       '<div class="info-grid-2">' +
       infoField('Plan', '<span class="plan-tag">' + esc(planLabels[client.plan] || client.plan) + '</span>') +
-      infoField('Status', '<span class="badge badge-' + esc(client.status) + '">' + esc(statusLabels[client.status] || client.status) + '</span>') +
+      infoField('Status', '<span class="badge badge-' + esc(client.status) + '">' + (client.status === 'active' ? icon('check') + ' ' : '') + esc(statusLabels[client.status] || client.status) + '</span>') +
       infoField('Abrechnung', esc(billingLabels[client.billing_cycle] || client.billing_cycle)) +
       infoField('Nächste Zahlung', client.next_billing ? formatDate(client.next_billing) : '—') +
       '</div>' +
       (client.page_url
         ? '<div style="margin-top:16px"><div class="info-field"><label>Ihre Webseite</label>' +
-          '<a class="page-link" href="https://' + esc(client.page_url) + '" target="_blank">🔗 ' + esc(client.page_url) + '</a></div></div>'
+          '<a class="page-link" href="https://' + esc(client.page_url) + '" target="_blank">' + icon('link') + ' ' + esc(client.page_url) + '</a></div></div>'
         : '') +
       (EDITABLE_MENUS.indexOf(siteSlug) > -1
-        ? '<div style="margin-top:12px"><a class="btn btn-outline btn-sm" href="/' + siteSlug + '/menu/#edit">✏️ Speisekarte bearbeiten</a></div>'
+        ? '<div style="margin-top:12px"><a class="btn btn-outline btn-sm" href="/' + siteSlug + '/menu/#edit">' + icon('pencil') + ' Speisekarte bearbeiten</a></div>'
         : '') +
       stripeActionsHtml(client) +
       '</div>';
@@ -160,7 +172,7 @@
     // Messaging card for full clients
     var msgCard =
       '<div class="info-card" id="msgCard">' +
-      '<h2>💬 Nachrichten <span id="msgUnreadBadge" class="badge-count" style="display:none"></span></h2>' +
+      '<h2>' + icon('message-circle') + ' Nachrichten <span id="msgUnreadBadge" class="badge-count" style="display:none"></span></h2>' +
       '<div id="portalMsgThread" style="max-height:300px;overflow-y:auto;display:flex;flex-direction:column;gap:8px;margin-bottom:12px;padding:4px 0"></div>' +
       '<div style="display:flex;gap:8px;align-items:center">' +
       '<label for="portalMsgFile" style="cursor:pointer;width:38px;height:38px;display:flex;align-items:center;justify-content:center;border:1.5px solid var(--border);border-radius:8px;font-size:18px;flex-shrink:0;color:var(--text-muted)">+</label>' +
@@ -246,7 +258,7 @@
       '<div style="font-size:13px;color:var(--text-muted);margin-top:2px">' + st.desc + '</div></div>' +
       '</div></div>' +
       '<div class="info-card" id="msgCard">' +
-      '<h2>💬 Nachrichten <span id="msgUnreadBadge" class="badge-count" style="display:none"></span></h2>' +
+      '<h2>' + icon('message-circle') + ' Nachrichten <span id="msgUnreadBadge" class="badge-count" style="display:none"></span></h2>' +
       '<div id="portalMsgThread" style="max-height:300px;overflow-y:auto;display:flex;flex-direction:column;gap:8px;margin-bottom:12px;padding:4px 0"></div>' +
       '<div style="display:flex;gap:8px;align-items:center">' +
       '<label for="portalMsgFile" style="cursor:pointer;width:38px;height:38px;display:flex;align-items:center;justify-content:center;border:1.5px solid var(--border);border-radius:8px;font-size:18px;flex-shrink:0;color:var(--text-muted)">+</label>' +
@@ -293,7 +305,7 @@
       fileInput.addEventListener('change', async function() {
         var file = this.files[0];
         if (!file) return;
-        sendBtn.disabled = true; sendBtn.textContent = '⏳';
+        sendBtn.disabled = true; sendBtn.textContent = '…';
         try {
           var ext = file.name.split('.').pop();
           var path = 'chat/' + orderId + '/' + Date.now() + '.' + ext;
@@ -370,7 +382,7 @@
         var isImg = /\.(jpg|jpeg|png|gif|webp)$/i.test(m.attachment_name || m.attachment_url);
         attachHtml = isImg
           ? '<a href="' + safeUrl + '" target="_blank"><img src="' + safeUrl + '" style="max-width:220px;max-height:200px;border-radius:8px;display:block;margin-top:' + (m.content ? '6px' : '0') + '" /></a>'
-          : '<a href="' + safeUrl + '" target="_blank" style="display:inline-flex;align-items:center;gap:6px;color:inherit;font-size:12px;opacity:.85;text-decoration:underline;margin-top:' + (m.content ? '4px' : '0') + '">📎 ' + esc(m.attachment_name || 'Datei') + '</a>';
+          : '<a href="' + safeUrl + '" target="_blank" style="display:inline-flex;align-items:center;gap:6px;color:inherit;font-size:12px;opacity:.85;text-decoration:underline;margin-top:' + (m.content ? '4px' : '0') + '">' + icon('paperclip') + ' ' + esc(m.attachment_name || 'Datei') + '</a>';
       }
       return '<div style="display:flex;flex-direction:column;align-items:' + (isOwn ? 'flex-end' : 'flex-start') + '">' +
         '<div style="' + bubbleStyle + '">' + (m.content ? esc(m.content) : '') + attachHtml + '</div>' +

@@ -17,7 +17,7 @@
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:image" content="https://web.lokalonline.at/og-image.png" />
   <link rel="stylesheet" href="/css/fonts.css" />
-  <link rel="stylesheet" href="css/style.css?v=5" />
+  <link rel="stylesheet" href="css/style.css?v=6" />
   <link rel="icon" type="image/x-icon" href="/favicon.ico" />
   <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
   <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
@@ -70,7 +70,7 @@
   <!-- ░░ AUTH MODAL ░░ -->
   <div class="auth-overlay" id="authOverlay">
     <div class="auth-modal">
-      <button class="auth-close" id="closeAuth" aria-label="Schließen">✕</button>
+      <button class="auth-close" id="closeAuth" aria-label="Schließen"><svg class="lucide" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
       <div class="auth-logo">
         <span class="logo-dot"></span>
         lokalonline.at
@@ -87,7 +87,7 @@
       </div>
       <!-- Sent confirmation -->
       <div id="panelLoginSent" style="display:none;text-align:center;padding:8px 0">
-        <div style="font-size:40px;margin-bottom:12px">📬</div>
+        <div style="font-size:40px;margin-bottom:12px;color:var(--orange-ink)"><svg class="lucide" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 13V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v12c0 1.1.9 2 2 2h8"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/><path d="m16 19 2 2 4-4"/></svg></div>
         <h3 style="margin:0 0 8px;font-size:17px" data-de="E-Mail gesendet!" data-en="Email sent!">E-Mail gesendet!</h3>
         <p style="color:var(--text-muted);font-size:13px;line-height:1.6" data-de="Bitte überprüfen Sie Ihr Postfach und klicken Sie auf den Login-Link." data-en="Please check your inbox and click the login link.">Bitte überprüfen Sie Ihr Postfach und klicken Sie auf den Login-Link.</p>
         <button id="resendAuthBtn" style="margin-top:16px;background:none;border:none;color:var(--primary);cursor:pointer;font-size:13px;text-decoration:underline" data-de="Erneut senden" data-en="Resend">Erneut senden</button>
@@ -337,8 +337,9 @@
             <button type="submit" class="btn btn-dark" style="align-self:flex-start;padding:13px 32px" data-de="Anfrage absenden" data-en="Send inquiry">Anfrage absenden</button>
 
             <div class="form-success" id="formSuccess">
-              <span data-de="✓ Ihre Anfrage wurde gesendet! Wir melden uns bald." data-en="✓ Your inquiry was sent! We'll be in touch soon.">
-                ✓ Ihre Anfrage wurde gesendet! Wir melden uns bald.
+              <svg class="lucide" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
+              <span data-de="Ihre Anfrage wurde gesendet! Wir melden uns bald." data-en="Your inquiry was sent! We'll be in touch soon.">
+                Ihre Anfrage wurde gesendet! Wir melden uns bald.
               </span>
             </div>
           </form>
@@ -351,8 +352,8 @@
   <!-- ░░ PROMO POPUP ░░ -->
   <div class="popup-overlay" id="promoOverlay">
     <div class="popup" id="promoPopup" role="dialog" aria-modal="true">
-      <button class="popup-close" id="promoClose" aria-label="Schließen">✕</button>
-      <div class="popup-label">🎉 EARLY BIRD</div>
+      <button class="popup-close" id="promoClose" aria-label="Schließen"><svg class="lucide" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
+      <div class="popup-label"><svg class="lucide" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5.8 11.3 2 22l10.7-3.79"/><path d="M4 3h.01"/><path d="M22 8h.01"/><path d="M15 2h.01"/><path d="M22 20h.01"/><path d="m22 2-2.24.75a2.9 2.9 0 0 0-1.96 3.12c.1.86-.57 1.63-1.45 1.63h-.38c-.86 0-1.6.6-1.76 1.44L14 10"/><path d="m22 13-.82-.33c-.86-.34-1.82.2-1.98 1.11c-.11.7-.72 1.22-1.43 1.22H17"/><path d="m11 2 .33.82c.34.86-.2 1.82-1.11 1.98C9.52 4.9 9 5.52 9 6.23V7"/><path d="M11 13c1.93 1.93 2.83 4.17 2 5-.83.83-3.07-.07-5-2-1.93-1.93-2.83-4.17-2-5 .83-.83 3.07.07 5 2Z"/></svg> EARLY BIRD</div>
       <div class="popup-title" data-de="Erster Monat gratis!" data-en="First month free!">Erster Monat gratis!</div>
       <p class="popup-text" data-de="Für die ersten 10 Kunden: starten Sie ohne Risiko — der erste Monat ist kostenlos. Danach nur €19/Monat." data-en="For the first 10 customers: start risk-free — your first month is on us. Then just €19/month.">
         Für die ersten 10 Kunden: starten Sie ohne Risiko — der erste Monat ist kostenlos. Danach nur <strong style="color:#fff">€19/Monat</strong>.

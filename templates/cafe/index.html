@@ -183,14 +183,15 @@
     }
     .hero-bg.loaded { transform: scale(1); }
 
+    /* 사진 위 글자: 밝은 사진에서도 4.5:1이 되게, 글자가 놓이는 곳을 진하게 덮습니다 (DESIGN.md) */
     .hero-overlay {
       position: absolute;
       inset: 0;
       background: linear-gradient(
         135deg,
-        rgba(28,18,8,.72) 0%,
-        rgba(28,18,8,.45) 50%,
-        rgba(184,118,58,.3) 100%
+        rgba(28,18,8,.82) 0%,
+        rgba(28,18,8,.66) 50%,
+        rgba(28,18,8,.6) 100%
       );
     }
 
@@ -206,7 +207,7 @@
       font-size: 12px;
       letter-spacing: .25em;
       text-transform: uppercase;
-      color: var(--primary);
+      color: #fff;
       margin-bottom: 20px;
     }
 
@@ -224,7 +225,7 @@
 
     .hero-sub {
       font-size: 16px;
-      color: rgba(255,255,255,.7);
+      color: rgba(255,255,255,.9);
       max-width: 480px;
       margin: 0 auto 40px;
       font-weight: 300;
@@ -275,7 +276,7 @@
       flex-direction: column;
       align-items: center;
       gap: 8px;
-      color: rgba(255,255,255,.6);
+      color: rgba(255,255,255,.85);
       font-size: 12px;
       letter-spacing: .15em;
       text-transform: uppercase;

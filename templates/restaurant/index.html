@@ -204,15 +204,18 @@
       to   { transform: scale(1)    translate(-1%, -1%); }
     }
 
+    /* 사진 위 글자: 밝은 사진에서도 4.5:1이 되게, 글자가 놓이는 곳을 진하게 덮습니다 (DESIGN.md) */
     .slide-overlay {
       position: absolute;
       inset: 0;
       background: linear-gradient(
         to bottom,
-        rgba(0,0,0,.15) 0%,
-        rgba(0,0,0,.0)  40%,
-        rgba(0,0,0,.55) 75%,
-        rgba(0,0,0,.75) 100%
+        rgba(0,0,0,.72) 0%,
+        rgba(0,0,0,.55) 16%,
+        rgba(0,0,0,.2)  32%,
+        rgba(0,0,0,.2)  38%,
+        rgba(0,0,0,.72) 55%,
+        rgba(0,0,0,.85) 100%
       );
     }
 
@@ -228,7 +231,7 @@
       font-size: 12px;
       letter-spacing: .22em;
       text-transform: uppercase;
-      color: var(--primary-on-dark);
+      color: #fff;
       margin-bottom: 16px;
     }
 
@@ -246,7 +249,7 @@
 
     .slide-desc {
       font-size: 16px;
-      color: rgba(255,255,255,.7);
+      color: rgba(255,255,255,.9);
       max-width: 480px;
       font-weight: 300;
     }

@@ -456,7 +456,7 @@ nav.scrolled { border-color:var(--line); }
   text-decoration:none; transition:background 0.2s;
 }
 .instagram-bar:hover { background:var(--warm); }
-.ig-icon { font-size:18px; }
+.ig-icon { font-size:18px; color:var(--black); }
 .ig-text { font-size:12px; font-weight:300; letter-spacing:0.12em; color:var(--dim); }
 .ig-handle { font-size:13px; font-weight:400; color:var(--black); }
 
@@ -577,6 +577,8 @@ footer {
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
 }
+/* Lucide 아이콘: 둘레 글자 크기를 따라가고, 글줄 가운데에 놓입니다 (DESIGN.md) */
+.lucide { display: inline-block; width: 1.15em; height: 1.15em; vertical-align: -0.2em; flex-shrink: 0; }
 </style>
 <script type="application/ld+json">
 {
@@ -829,8 +831,8 @@ footer {
     <p class="res-note" data-i="res_note">Für Gruppen, besondere Anlässe oder wenn Sie sichergehen möchten — senden Sie uns Ihre Anfrage.</p>
     <div class="res-divider"></div>
     <div class="res-quick">
-      <a href="tel:+4357333789">📞 +43 57 333 789</a>
-      <a href="mailto:yori2wien@gmail.com">✉ yori2wien@gmail.com</a>
+      <a href="tel:+4357333789"><svg class="lucide" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13.832 16.568a1 1 0 0 0 1.213-.303l.355-.465A2 2 0 0 1 17 15h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2A18 18 0 0 1 2 4a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v3a2 2 0 0 1-.8 1.6l-.468.351a1 1 0 0 0-.292 1.233 14 14 0 0 0 6.392 6.384"/></svg> +43 57 333 789</a>
+      <a href="mailto:yori2wien@gmail.com"><svg class="lucide" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7"/><rect x="2" y="4" width="20" height="16" rx="2"/></svg> yori2wien@gmail.com</a>
     </div>
   </div>
   <div class="res-form fade-in fd1">
@@ -902,7 +904,7 @@ footer {
 
 <!-- INSTAGRAM -->
 <a href="https://www.instagram.com/yoriwien2/" target="_blank" class="instagram-bar">
-  <span class="ig-icon">📸</span>
+  <span class="ig-icon"><svg class="lucide" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13.997 4a2 2 0 0 1 1.76 1.05l.486.9A2 2 0 0 0 18.003 7H20a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h1.997a2 2 0 0 0 1.759-1.048l.489-.904A2 2 0 0 1 10.004 4z"/><circle cx="12" cy="13" r="3"/></svg></span>
   <span class="ig-text" data-i="ig_text">Folgen Sie uns auf Instagram</span>
   <span class="ig-handle">@yoriwien2</span>
 </a>

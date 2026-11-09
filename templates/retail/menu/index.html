@@ -283,11 +283,11 @@
       cursor: default;
       overflow: hidden;
     }
-    .product-card:hover {
+    @media (hover: hover) and (pointer: fine) { .product-card:hover {
       border-color: var(--dark);
       transform: translateY(-3px);
       box-shadow: 0 12px 40px rgba(0,0,0,.08);
-    }
+    } }
 
     .product-img-wrap {
       aspect-ratio: 4/3;
@@ -303,7 +303,7 @@
       display: block;
       transition: transform .5s ease;
     }
-    .product-card:hover .product-img-wrap img { transform: scale(1.04); }
+    @media (hover: hover) and (pointer: fine) { .product-card:hover .product-img-wrap img { transform: scale(1.04); } }
 
     .product-img-placeholder {
       width: 100%;
@@ -407,7 +407,7 @@
       opacity: .7;
       transition: opacity .4s, transform .5s;
     }
-    .showcase-card:hover img { opacity: .85; transform: scale(1.04); }
+    @media (hover: hover) and (pointer: fine) { .showcase-card:hover img { opacity: .85; transform: scale(1.04); } }
 
     .showcase-card-body {
       position: absolute;
@@ -535,7 +535,11 @@
     @media (max-width: 480px) {
       .product-grid { grid-template-columns: repeat(2, 1fr); }
     }
-  </style>
+  /* 동작 줄이기를 켠 사람에게는 움직임을 끕니다 (DESIGN.md) */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+}
+</style>
 </head>
 <body>
 

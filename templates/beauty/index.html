@@ -204,7 +204,7 @@ section { padding: 100px 0; }
   transition: transform 0.6s ease;
   display: block;
 }
-.gallery-item:hover img { transform: scale(1.04); }
+@media (hover: hover) and (pointer: fine) { .gallery-item:hover img { transform: scale(1.04); } }
 .gallery-item:nth-child(1) { grid-row: span 2; height: 500px; }
 .gallery-item:nth-child(2) { height: 240px; }
 .gallery-item:nth-child(3) { height: 240px; }
@@ -381,6 +381,10 @@ footer {
   .footer-inner { grid-template-columns: 1fr; gap: 32px; }
   .footer-bottom { flex-direction: column; gap: 12px; text-align: center; }
   .nav-center { position: static; transform: none; }
+}
+/* 동작 줄이기를 켠 사람에게는 움직임을 끕니다 (DESIGN.md) */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
 }
 </style>
 </head>

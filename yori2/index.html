@@ -188,7 +188,7 @@ nav.scrolled { border-color:var(--line); }
   background-size:cover; background-position:center;
   transition:transform 0.8s ease;
 }
-.about-photo:hover .about-photo-img { transform:scale(1.03); }
+@media (hover: hover) and (pointer: fine) { .about-photo:hover .about-photo-img { transform:scale(1.03); } }
 .about-text {
   padding:88px 72px; display:flex; flex-direction:column;
   justify-content:center; background:var(--white);
@@ -232,7 +232,7 @@ nav.scrolled { border-color:var(--line); }
 }
 .btn-link:hover { color:var(--red); border-color:var(--red); }
 .btn-link .arrow { transition:transform 0.2s; }
-.btn-link:hover .arrow { transform:translateX(4px); }
+@media (hover: hover) and (pointer: fine) { .btn-link:hover .arrow { transform:translateX(4px); } }
 
 /* ── MENU BAND ── */
 .menu-band {
@@ -273,7 +273,7 @@ nav.scrolled { border-color:var(--line); }
   background-size:cover; background-position:center;
   transition:transform 0.7s ease;
 }
-.photo-grid-item:hover { transform:scale(1.02); }
+@media (hover: hover) and (pointer: fine) { .photo-grid-item:hover { transform:scale(1.02); } }
 .photo-grid-item:first-child { border-right:1px solid var(--line); }
 .photo-grid-caption {
   position:absolute; bottom:0; left:0; right:0;
@@ -572,6 +572,10 @@ footer {
   --img-ext2: url('img/slide2.jpg');
   --img-iroom: url('img/iroom.jpg');
   --img-ihall: url('img/ihall.jpg');
+}
+/* 동작 줄이기를 켠 사람에게는 움직임을 끕니다 (DESIGN.md) */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
 }
 </style>
 <script type="application/ld+json">

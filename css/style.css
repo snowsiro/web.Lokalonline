@@ -5,7 +5,8 @@
   --dark:        #1b0d07;
   --dark-2:      #251208;
   --orange:      #e06535;
-  --orange-dark: #c4531f;
+  --orange-dark: #c4531f;  /* 흰 글자를 올리는 버튼 배경: 4.6:1 */
+  --orange-ink:  #a8461a;  /* 작은 주황 글자와 버튼 hover: 흰·크림 바탕 5:1 이상 */
   --cream:       #f4efe9;
   --cream-2:     #ede8e2;
   --white:       #ffffff;
@@ -58,8 +59,8 @@ img { max-width: 100%; display: block; }
   white-space: nowrap;
   text-decoration: none;
 }
-.btn-primary  { background: var(--orange); color: #fff; border-color: var(--orange); }
-.btn-primary:hover { background: var(--orange-dark); border-color: var(--orange-dark); }
+.btn-primary  { background: var(--orange-dark); color: #fff; border-color: var(--orange-dark); }
+.btn-primary:hover { background: var(--orange-ink); border-color: var(--orange-ink); }
 .btn-outline  { background: transparent; color: var(--text); border-color: var(--border); }
 .btn-outline:hover { background: var(--cream); }
 .btn-dark     { background: var(--text); color: #fff; border-color: var(--text); }
@@ -273,7 +274,7 @@ img { max-width: 100%; display: block; }
   transition: transform 0.25s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.25s;
   display: block;
 }
-.hero-circle-link:hover { transform: translateY(-10px); box-shadow: 0 16px 40px rgba(0,0,0,0.55); z-index: 2; }
+@media (hover: hover) and (pointer: fine) { .hero-circle-link:hover { transform: translateY(-10px); box-shadow: 0 16px 40px rgba(0,0,0,0.55); z-index: 2; } }
 .hero-circle-label { display: none; }
 .hero-circle-placeholder {
   width: 156px; height: 156px;
@@ -298,7 +299,7 @@ img { max-width: 100%; display: block; }
   font-weight: 700;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--orange);
+  color: var(--orange-ink);
   margin-bottom: 12px;
   text-align: center;
 }
@@ -325,11 +326,11 @@ img { max-width: 100%; display: block; }
   padding: 36px 28px;
   transition: transform 0.25s cubic-bezier(0.34,1.56,0.64,1), border-color 0.2s, box-shadow 0.25s;
 }
-.service-card:hover {
+@media (hover: hover) and (pointer: fine) { .service-card:hover {
   border-color: var(--orange);
   transform: translateY(-8px);
   box-shadow: 0 12px 32px rgba(224,101,53,0.15);
-}
+} }
 .service-icon {
   width: 36px; height: 36px;
   margin-bottom: 24px;
@@ -341,13 +342,13 @@ img { max-width: 100%; display: block; }
   color: var(--text);
   margin-bottom: 12px;
 }
-.service-title.accent { color: var(--orange); }
+.service-title.accent { color: var(--orange-ink); }
 .service-text {
   font-size: 14px;
   color: var(--text-muted);
   line-height: 1.65;
 }
-.service-text.accent { color: var(--orange); }
+.service-text.accent { color: var(--orange-ink); }
 
 /* ===== HOW IT WORKS ===== */
 .how-it-works {
@@ -403,7 +404,7 @@ img { max-width: 100%; display: block; }
   object-fit: cover;
   transition: transform 0.4s ease;
 }
-.mosaic-card:hover .mosaic-img { transform: scale(1.04); }
+@media (hover: hover) and (pointer: fine) { .mosaic-card:hover .mosaic-img { transform: scale(1.04); } }
 .mosaic-overlay {
   position: absolute;
   inset: 0;
@@ -880,4 +881,9 @@ img { max-width: 100%; display: block; }
   .pricing-checks  { gap: 16px; flex-direction: column; align-items: center; }
   .popup           { max-width: calc(100vw - 48px); }
   .container       { padding: 0 16px; }
+}
+
+/* 동작 줄이기를 켠 사람에게는 움직임을 끕니다 (DESIGN.md) */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
 }

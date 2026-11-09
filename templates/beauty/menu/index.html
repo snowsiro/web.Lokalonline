@@ -182,7 +182,7 @@
       white-space: nowrap;
       transition: background .2s, transform .2s;
     }
-    .cta-strip-btn:hover { background: rgba(255,255,255,.9); transform: translateY(-1px); }
+    @media (hover: hover) and (pointer: fine) { .cta-strip-btn:hover { background: rgba(255,255,255,.9); transform: translateY(-1px); } }
 
     /* ── CAT NAV ── */
     #cat-nav {
@@ -394,7 +394,7 @@
       font-family: var(--font-body);
       transition: background .2s, transform .2s;
     }
-    .booking-cta-btn:hover { background: var(--primary); transform: translateY(-2px); }
+    @media (hover: hover) and (pointer: fine) { .booking-cta-btn:hover { background: var(--primary); transform: translateY(-2px); } }
 
     .booking-cta-phone {
       margin-top: 20px;
@@ -461,7 +461,11 @@
       #booking-cta { padding: 64px 6vw; }
       #menu-footer { padding: 28px 6vw; }
     }
-  </style>
+  /* 동작 줄이기를 켠 사람에게는 움직임을 끕니다 (DESIGN.md) */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+}
+</style>
 </head>
 <body>
 

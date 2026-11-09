@@ -21,6 +21,11 @@
       --line:    #DDDAD4;
       --font-heading: 'DM Serif Display', Georgia, serif;
       --font-body:    'DM Sans', system-ui, sans-serif;
+      /* 어두운 바탕 위 작은 브랜드색 글자: 브랜드 색의 밝기만 올려 4.5:1 이상 (DESIGN.md) */
+      --primary-on-dark: var(--primary);
+    }
+    @supports (color: oklch(from red l c h)) {
+      :root { --primary-on-dark: oklch(from var(--primary) .68 c h); }
     }
 
     html { scroll-behavior: smooth; }
@@ -54,16 +59,17 @@
       border: none;
       color: var(--mid);
       font-family: var(--font-body);
-      font-size: 11px;
+      font-size: 12px;
       letter-spacing: .12em;
       text-transform: uppercase;
       cursor: pointer;
       padding: 4px 8px;
       transition: color .2s;
+      min-height: 24px;
     }
     .lang-btn.active { color: var(--bg); }
     .lang-btn:hover  { color: var(--bg); }
-    .lang-sep { color: #333; font-size: 11px; }
+    .lang-sep { color: #333; font-size: 12px; }
 
     /* ── NAV ── */
     #main-nav {
@@ -113,10 +119,10 @@
     }
 
     .hero-eyebrow {
-      font-size: 11px;
+      font-size: 12px;
       letter-spacing: .22em;
       text-transform: uppercase;
-      color: var(--primary);
+      color: var(--primary-on-dark);
       margin-bottom: 20px;
     }
 
@@ -156,7 +162,7 @@
     .cat-nav-link {
       flex-shrink: 0;
       padding: 18px 24px;
-      color: rgba(255,255,255,.4);
+      color: rgba(255,255,255,.6);
       text-decoration: none;
       font-size: 12px;
       letter-spacing: .12em;
@@ -165,7 +171,7 @@
       border-bottom: 2px solid transparent;
       white-space: nowrap;
     }
-    .cat-nav-link:hover { color: rgba(255,255,255,.8); }
+    .cat-nav-link:hover { color: rgba(255,255,255,.9); }
     .cat-nav-link.active {
       color: #fff;
       border-bottom-color: var(--primary);
@@ -193,7 +199,7 @@
     .cat-number {
       font-family: var(--font-heading);
       font-size: 13px;
-      color: var(--primary);
+      color: var(--primary-on-dark);
       letter-spacing: .1em;
     }
 
@@ -243,7 +249,7 @@
 
     .item-name-alt {
       font-size: 12px;
-      color: rgba(255,255,255,.3);
+      color: rgba(255,255,255,.6);
       font-style: italic;
       margin-bottom: 8px;
     }
@@ -258,7 +264,7 @@
     .item-price {
       font-family: var(--font-heading);
       font-size: 18px;
-      color: var(--primary);
+      color: var(--primary-on-dark);
       white-space: nowrap;
       flex-shrink: 0;
       padding-top: 2px;
@@ -300,10 +306,10 @@
     }
 
     .info-label {
-      font-size: 11px;
+      font-size: 12px;
       letter-spacing: .1em;
       text-transform: uppercase;
-      color: rgba(255,255,255,.3);
+      color: rgba(255,255,255,.6);
       margin-bottom: 4px;
     }
 
@@ -331,7 +337,7 @@
 
     .footer-copy {
       font-size: 12px;
-      color: rgba(255,255,255,.25);
+      color: rgba(255,255,255,.6);
     }
 
     .footer-links {
@@ -339,12 +345,13 @@
       gap: 24px;
     }
     .footer-links a {
-      color: rgba(255,255,255,.3);
+      color: rgba(255,255,255,.6);
       text-decoration: none;
       font-size: 12px;
       transition: color .2s;
+      padding: 4px 0;
     }
-    .footer-links a:hover { color: rgba(255,255,255,.6); }
+    .footer-links a:hover { color: rgba(255,255,255,.9); }
 
     /* ── SCROLL REVEAL ── */
     .reveal {

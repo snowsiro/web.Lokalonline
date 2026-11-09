@@ -16,11 +16,16 @@
       --accent:  #B8763A;
       --bg:      #FAF7F2;
       --dark:    #1C1208;
-      --mid:     #8C7B6B;
+      --mid:     #7B6C5E;
       --dim:     #5A4A3A;
       --line:    #E8E0D4;
       --font-heading: 'Playfair Display', Georgia, serif;
       --font-body:    'Inter', system-ui, sans-serif;
+      /* 밝은 바탕 위 작은 브랜드색 글자: 브랜드 색의 밝기만 낮춰 4.5:1 이상 (DESIGN.md) */
+      --primary-on-light: var(--primary);
+    }
+    @supports (color: oklch(from red l c h)) {
+      :root { --primary-on-light: oklch(from var(--primary) .52 c h); }
     }
 
     html { scroll-behavior: smooth; }
@@ -72,6 +77,7 @@
       font-size: 13px;
       letter-spacing: .06em;
       transition: color .2s;
+      min-height: 24px;
     }
     .nav-back:hover { color: var(--primary); }
 
@@ -85,12 +91,13 @@
       border: none;
       color: var(--mid);
       font-family: var(--font-body);
-      font-size: 11px;
+      font-size: 12px;
       letter-spacing: .1em;
       text-transform: uppercase;
       cursor: pointer;
       padding: 4px 7px;
       transition: color .2s;
+      min-height: 24px;
     }
     .lang-btn.active { color: var(--dark); font-weight: 500; }
     .lang-btn:hover  { color: var(--primary); }
@@ -111,7 +118,7 @@
     }
 
     .hero-eyebrow {
-      font-size: 11px;
+      font-size: 12px;
       letter-spacing: .22em;
       text-transform: uppercase;
       color: var(--primary);
@@ -180,7 +187,7 @@
     }
     .cat-nav-link:hover { color: var(--dark); }
     .cat-nav-link.active {
-      color: var(--primary);
+      color: var(--primary-on-light);
       border-bottom-color: var(--primary);
       font-weight: 500;
     }
@@ -248,13 +255,13 @@
 
     .item-allergen {
       margin-top: 6px;
-      font-size: 11px;
-      color: rgba(90,74,58,.5);
+      font-size: 12px;
+      color: var(--mid);
       letter-spacing: .04em;
     }
     .item-allergen::before {
       content: '⚠ ';
-      font-size: 10px;
+      font-size: 12px;
     }
 
     .item-right {
@@ -265,7 +272,7 @@
     .item-price {
       font-family: var(--font-heading);
       font-size: 17px;
-      color: var(--primary);
+      color: var(--primary-on-light);
     }
 
     /* ── ALLERGEN NOTE ── */
@@ -292,10 +299,10 @@
     }
 
     .info-col-title {
-      font-size: 11px;
+      font-size: 12px;
       letter-spacing: .18em;
       text-transform: uppercase;
-      color: rgba(255,255,255,.3);
+      color: rgba(255,255,255,.6);
       margin-bottom: 16px;
     }
 
@@ -330,7 +337,7 @@
 
     .footer-copy {
       font-size: 12px;
-      color: rgba(255,255,255,.25);
+      color: rgba(255,255,255,.6);
     }
 
     .footer-links {
@@ -338,12 +345,13 @@
       gap: 20px;
     }
     .footer-links a {
-      color: rgba(255,255,255,.3);
+      color: rgba(255,255,255,.6);
       text-decoration: none;
       font-size: 12px;
       transition: color .2s;
+      padding: 4px 0;
     }
-    .footer-links a:hover { color: rgba(255,255,255,.6); }
+    .footer-links a:hover { color: rgba(255,255,255,.9); }
 
     /* ── REVEAL ── */
     .reveal {

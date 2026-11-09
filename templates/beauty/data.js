@@ -11,7 +11,7 @@ window.SITE_DATA = {
     accent:  '#C9A96E',
     bg:      '#FAF9F7',
     dark:    '#1A1A1A',
-    mid:     '#8A8480',
+    mid:     '#746F6C',
     dim:     '#6B6865',
     line:    '#E8E4DF'
   },

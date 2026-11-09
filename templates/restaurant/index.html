@@ -22,6 +22,11 @@
       --line:    #DDDAD4;
       --font-heading: 'DM Serif Display', Georgia, serif;
       --font-body:    'DM Sans', system-ui, sans-serif;
+      /* 어두운 바탕 위 작은 브랜드색 글자: 브랜드 색의 밝기만 올려 4.5:1 이상 (DESIGN.md) */
+      --primary-on-dark: var(--primary);
+    }
+    @supports (color: oklch(from red l c h)) {
+      :root { --primary-on-dark: oklch(from var(--primary) .68 c h); }
     }
 
     html { scroll-behavior: smooth; }
@@ -54,16 +59,17 @@
       border: none;
       color: var(--mid);
       font-family: var(--font-body);
-      font-size: 11px;
+      font-size: 12px;
       letter-spacing: .12em;
       text-transform: uppercase;
       cursor: pointer;
       padding: 4px 8px;
       transition: color .2s;
+      min-height: 24px;
     }
     .lang-btn.active { color: var(--bg); }
     .lang-btn:hover  { color: var(--bg); }
-    .lang-sep { color: #444; font-size: 11px; }
+    .lang-sep { color: #444; font-size: 12px; }
 
     /* ── NAV ────────────────────────────────────────────── */
     #main-nav {
@@ -219,10 +225,10 @@
     }
 
     .slide-eyebrow {
-      font-size: 11px;
+      font-size: 12px;
       letter-spacing: .22em;
       text-transform: uppercase;
-      color: var(--primary);
+      color: var(--primary-on-dark);
       margin-bottom: 16px;
     }
 
@@ -299,8 +305,8 @@
       flex-direction: column;
       align-items: center;
       gap: 8px;
-      color: rgba(255,255,255,.4);
-      font-size: 10px;
+      color: rgba(255,255,255,.6);
+      font-size: 12px;
       letter-spacing: .15em;
       text-transform: uppercase;
       animation: fadeInUp 2s 1.5s both;
@@ -367,12 +373,13 @@
     }
 
     .section-eyebrow {
-      font-size: 11px;
+      font-size: 12px;
       letter-spacing: .2em;
       text-transform: uppercase;
       color: var(--primary);
       margin-bottom: 16px;
     }
+    #hours .section-eyebrow, #reviews .section-eyebrow { color: var(--primary-on-dark); }
 
     .section-title {
       font-family: var(--font-heading);
@@ -436,7 +443,7 @@
 
     .menu-band-text .band-sub {
       margin-top: 16px;
-      color: rgba(248,247,244,.45);
+      color: rgba(248,247,244,.6);
       font-size: 15px;
       max-width: 400px;
     }
@@ -531,7 +538,7 @@
     .hours-table td:nth-child(2) { font-weight: 500; }
     .hours-table td:last-child {
       font-size: 12px;
-      color: rgba(248,247,244,.35);
+      color: rgba(248,247,244,.6);
       text-align: right;
     }
 
@@ -560,10 +567,10 @@
     }
 
     .contact-label {
-      font-size: 11px;
+      font-size: 12px;
       letter-spacing: .1em;
       text-transform: uppercase;
-      color: rgba(248,247,244,.4);
+      color: rgba(248,247,244,.6);
       margin-bottom: 2px;
     }
 
@@ -619,10 +626,11 @@
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      color: var(--primary);
+      color: var(--primary-on-dark);
       text-decoration: none;
       font-size: 13px;
       letter-spacing: .06em;
+      min-height: 24px;
     }
     .map-card-link:hover { text-decoration: underline; }
 
@@ -657,7 +665,7 @@
     .reservation-note {
       margin-top: 24px;
       font-size: 13px;
-      color: var(--mid);
+      color: var(--dim);
       line-height: 1.7;
     }
 
@@ -675,7 +683,7 @@
     .form-group.full { grid-column: 1 / -1; }
 
     .form-group label {
-      font-size: 11px;
+      font-size: 12px;
       letter-spacing: .12em;
       text-transform: uppercase;
       color: var(--dim);
@@ -753,7 +761,7 @@
 
     .reviews-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(min(300px, 100%), 1fr));
       gap: 24px;
     }
 
@@ -789,7 +797,7 @@
     }
 
     .reviews-empty {
-      color: rgba(248,247,244,.3);
+      color: rgba(248,247,244,.6);
       font-style: italic;
     }
 
@@ -869,10 +877,10 @@
     }
 
     .footer-col-title {
-      font-size: 11px;
+      font-size: 12px;
       letter-spacing: .15em;
       text-transform: uppercase;
-      color: rgba(248,247,244,.3);
+      color: rgba(248,247,244,.6);
       margin-bottom: 20px;
     }
 
@@ -888,6 +896,7 @@
       text-decoration: none;
       font-size: 14px;
       transition: color .2s;
+      padding: 4px 0;
     }
     .footer-links a:hover { color: var(--bg); }
 
@@ -903,10 +912,11 @@
     }
 
     .footer-bottom a {
-      color: rgba(248,247,244,.35);
+      color: rgba(248,247,244,.6);
       text-decoration: none;
+      padding: 4px 0;
     }
-    .footer-bottom a:hover { color: rgba(248,247,244,.7); }
+    .footer-bottom a:hover { color: rgba(248,247,244,.9); }
 
     @media (max-width: 768px) {
       .footer-inner { grid-template-columns: 1fr; gap: 32px; }
